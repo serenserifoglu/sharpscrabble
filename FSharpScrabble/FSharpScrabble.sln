@@ -5,7 +5,7 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Scrabble.Core", "FSharpScra
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Scrabble.Driver", "Driver\Scrabble.Driver.fsproj", "{D20C633D-A46C-4A1A-A281-685D6E9E87B4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrabble.Dictionary", "Scrabble.Dictionary\Scrabble.Dictionary.csproj", "{2DFAFD45-2278-4BA6-B18A-1235FB865AC4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrabble.Dictionary", "Dictionary\Scrabble.Dictionary.csproj", "{2DFAFD45-2278-4BA6-B18A-1235FB865AC4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
