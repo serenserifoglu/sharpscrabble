@@ -4,7 +4,7 @@ open System
 
 type Agent(playerId:int) =
     let mutable myturn = false
-    let mutable tiles = null //empty list of tiles for now?
+    let mutable tiles = [] //empty list of tiles for now?
 
     //2 players for now
 type Player1() =
