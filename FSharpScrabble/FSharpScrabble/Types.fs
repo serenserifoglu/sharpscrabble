@@ -112,6 +112,8 @@ and Game() =
 /// A player's move is a set of coordinates and tiles. This will then validate whether or not the tiles form a valid move
 and Move() = 
     let mutable letters : Map<Coordinate, Tile> = Map.empty
+    let CheckMoveOccupied(c:Coordinate) =
+        letters.ContainsKey(c) || Game.Instance.PlayingBoard.HasTile(c)
     member this.Letters with get() = letters
     member this.AddTile(c:Coordinate, t:Tile) = 
         letters <- letters.Add(c, t)
@@ -127,8 +129,9 @@ and Move() =
         let sorted = letters |> Seq.sortBy ToKey |> Seq.toList
         let first = sorted |> Seq.head |> ToKey
         let last = sorted |> Seq.skip (sorted.Length - 1) |> Seq.head |> ToKey
-        Coordinate.Between(first, last) |> Seq.forall (fun c -> this.CheckMoveOccupied(c))
+        Coordinate.Between(first, last) |> Seq.forall (fun c -> CheckMoveOccupied(c))
+    //member this.IsConnected() = 
+    //    Game.Instance.IsOpeningMove || 
 
-    member this.CheckMoveOccupied(c:Coordinate) =
-        letters.ContainsKey(c) || Game.Instance.PlayingBoard.HasTile(c)
+    
         
