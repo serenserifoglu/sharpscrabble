@@ -60,6 +60,24 @@ type Board() =
     //Big todo on this next function...yeah...
     //member this.OccupiedSquares() : Map<Coordinate, Square> = 
         
+type Move() = 
+    let mutable letters : Map<Coordinate, Tile> = Map.empty
+    member this.AddTile(c:Coordinate, t:Tile) = 
+        letters <- letters.Add(c, t)
+    member this.IsAligned() = 
+        if letters.Count <= 1 then
+            true
+        else
+            let c0 = (Seq.head letters) |> (fun pair -> pair.Key)
+            let v = letters |> Seq.map (fun pair -> pair.Key.X) |> Seq.forall (fun x -> c0.X = x)
+            let h = letters |> Seq.map (fun pair -> pair.Key.Y) |> Seq.forall (fun y -> c0.Y = y)
+            v || h
+    member this.IsConsecutive() =
+        let sorted = letters |> Seq.sortBy (fun pair -> pair.Key) |> Seq.toList
+        let last = sorted |> Seq.skip (sorted.Length - 1) |> Seq.head
+        
+        raise (NotImplementedException("not done with this method yet..."))
+        
 
 [<AbstractClass>]
 type Player(name:string) =
