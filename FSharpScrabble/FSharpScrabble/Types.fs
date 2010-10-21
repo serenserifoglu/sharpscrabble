@@ -45,6 +45,17 @@ type Bag() =
     member this.Take() = 
         this.Take(1).[0]
 
+[<AbstractClass>]
+type Player(name:string) =
+    let mutable tiles : Tile array = Array.zeroCreate ScrabbleConfig.MaxTiles
+    member this.Name with get() = name
+
+type HumanPlayer(name:string) =
+    inherit Player(name)
+
+type ComputerPlayer(name:string) = 
+    inherit Player(name)
+
 type Board() = 
     let grid : Square[,] = Array2D.init ScrabbleConfig.BoardLength ScrabbleConfig.BoardLength (fun x y -> ScrabbleConfig.BoardLayout (Coordinate(x, y))) 
     member this.Get(c:Coordinate) =
@@ -58,6 +69,8 @@ type Board() =
             this.Get(c).Tile <- t
         else
             raise (Exception("A tile already exists on the square."))
+    member this.Put(m:Move) = 
+        m.Letters |> Seq.toList |> Seq.iter (fun (pair:Collections.Generic.KeyValuePair<Coordinate, Tile>) -> this.Put(pair.Value, pair.Key))
 
     member this.OccupiedSquares() : Map<Coordinate, Square> = 
         Map.ofList [ for i in 0 .. (Array2D.length1 grid) - 1 do
@@ -81,15 +94,7 @@ type Board() =
                     printf " _ "
             printfn ""
 
-[<AbstractClass>]
-type Player(name:string) =
-    let mutable tiles : Tile array = Array.zeroCreate ScrabbleConfig.MaxTiles
-    member this.Name with get() = name
-
-type HumanPlayer(name:string) =
-    inherit Player(name)
-
-type GameState() = 
+and GameState(players : Player list) = 
     let bag = Bag()
     let board = Board()
     let moveCount = 0
@@ -97,14 +102,15 @@ type GameState() =
     member this.PlayingBoard with get() = board
     member this.MoveCount with get() = moveCount
     member this.IsOpeningMove with get() = moveCount = 0
+    member this.Players with get() = players
 
 /// A singleton that will represent the game board, bag of tiles, players, move count, etc.
-type Game() = 
-    static let instance = lazy(GameState())
+and Game() = 
+    static let instance = lazy(GameState([ HumanPlayer("Will") :> Player; ComputerPlayer("Com") :> Player ])) //Pretty sweet, huh? Hard coding stuff...
     static member Instance with get() = instance.Value
 
 /// A player's move is a set of coordinates and tiles. This will then validate whether or not the tiles form a valid move
-type Move() = 
+and Move() = 
     let mutable letters : Map<Coordinate, Tile> = Map.empty
     member this.Letters with get() = letters
     member this.AddTile(c:Coordinate, t:Tile) = 
@@ -124,5 +130,5 @@ type Move() =
         Coordinate.Between(first, last) |> Seq.forall (fun c -> this.CheckMoveOccupied(c))
 
     member this.CheckMoveOccupied(c:Coordinate) =
-        letters.ContainsKey(c) || Game.Instance.PlayingBoard.HasTile(c) //Game.PlayingBoard().HasTile(c)
+        letters.ContainsKey(c) || Game.Instance.PlayingBoard.HasTile(c)
         

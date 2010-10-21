@@ -11,6 +11,6 @@ open Scrabble.Tests
   but eventually we can invoke our GUI here, whether it's WPF or something else.
 *)
 
-
 //coordTest()
+moveTest()
 boardTest()

@@ -36,7 +36,11 @@ let bagTest() =
 
 let moveTest() = 
     let m = Move()
-    m.AddTile(Coordinate(0, 0), Tile('W'))
+    m.AddTile(Coordinate(10, 6), Tile('S'))
+    m.AddTile(Coordinate(10, 7), Tile('H'))
+    m.AddTile(Coordinate(10, 8), Tile('I'))
+    m.AddTile(Coordinate(10, 9), Tile('T'))
+    Game.Instance.PlayingBoard.Put(m)
 
 let boardTest() = 
     Game.Instance.PlayingBoard.Put(Tile('W'), Coordinate(0, 0))
