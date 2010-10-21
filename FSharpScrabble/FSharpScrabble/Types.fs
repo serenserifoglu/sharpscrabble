@@ -89,16 +89,19 @@ type Player(name:string) =
 type HumanPlayer(name:string) =
     inherit Player(name)
 
+type GameState() = 
+    let bag = Bag()
+    let board = Board()
+    let moveCount = 0
+    member this.TileBag with get() = bag
+    member this.PlayingBoard with get() = board
+    member this.MoveCount with get() = moveCount
+    member this.IsOpeningMove with get() = moveCount = 0
+
 /// A singleton that will represent the game board, bag of tiles, players, move count, etc.
-module Game = 
-    let private instance = lazy( (Bag(), Board()) ) //This is a pretty poor implementation of a singleton, I should probably be using a more rigid structure here rather than a tuple
-    let Instance() = instance.Value
-    let TileBag() = 
-        let bag, _ = instance.Value
-        bag
-    let PlayingBoard() =
-        let _, board = instance.Value
-        board
+type Game() = 
+    static let instance = lazy(GameState())
+    static member Instance with get() = instance.Value
 
 /// A player's move is a set of coordinates and tiles. This will then validate whether or not the tiles form a valid move
 type Move() = 
@@ -121,5 +124,5 @@ type Move() =
         Coordinate.Between(first, last) |> Seq.forall (fun c -> this.CheckMoveOccupied(c))
 
     member this.CheckMoveOccupied(c:Coordinate) =
-        letters.ContainsKey(c) || Game.PlayingBoard().HasTile(c)
+        letters.ContainsKey(c) || Game.Instance.PlayingBoard.HasTile(c) //Game.PlayingBoard().HasTile(c)
         
