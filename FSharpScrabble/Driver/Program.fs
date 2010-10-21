@@ -14,4 +14,5 @@ open Scrabble.Tests
 //CoordTest()
 //MoveTest()
 //BoardTest()
-NeighborTest()
+//NeighborTest()
+ConnectedMoveTest()

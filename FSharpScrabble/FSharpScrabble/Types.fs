@@ -78,6 +78,10 @@ type Board() =
                             let s = Array2D.get grid i j
                             if s.Tile <> null then
                                 yield (Coordinate(i, j), s) ]
+
+    member this.HasNeighboringTile(c:Coordinate) =
+        c.Neighbors() |> Seq.exists (fun n -> this.HasTile(n))
+
     member this.PrettyPrint() = 
         printf "   "
         for j in 0 .. (Array2D.length2 grid) - 1 do
@@ -97,12 +101,16 @@ type Board() =
 and GameState(players : Player list) = 
     let bag = Bag()
     let board = Board()
-    let moveCount = 0
+    let mutable moveCount = 0
+    //Properties
     member this.TileBag with get() = bag
     member this.PlayingBoard with get() = board
     member this.MoveCount with get() = moveCount
     member this.IsOpeningMove with get() = moveCount = 0
     member this.Players with get() = players
+    //Public Methods
+    member this.NextMove() =
+        moveCount <- moveCount + 1
 
 /// A singleton that will represent the game board, bag of tiles, players, move count, etc.
 and Game() = 
@@ -112,8 +120,15 @@ and Game() =
 /// A player's move is a set of coordinates and tiles. This will then validate whether or not the tiles form a valid move
 and Move() = 
     let mutable letters : Map<Coordinate, Tile> = Map.empty
+
     let CheckMoveOccupied(c:Coordinate) =
         letters.ContainsKey(c) || Game.Instance.PlayingBoard.HasTile(c)
+    let Range() = 
+        let sorted = letters |> Seq.sortBy ToKey |> Seq.toList
+        let first = sorted |> Seq.head |> ToKey
+        let last = sorted |> Seq.skip (sorted.Length - 1) |> Seq.head |> ToKey
+        Coordinate.Between(first, last)
+
     member this.Letters with get() = letters
     member this.AddTile(c:Coordinate, t:Tile) = 
         letters <- letters.Add(c, t)
@@ -125,13 +140,8 @@ and Move() =
             let v = letters |> Seq.map (fun pair -> pair.Key.X) |> Seq.forall (fun x -> c0.X = x)
             let h = letters |> Seq.map (fun pair -> pair.Key.Y) |> Seq.forall (fun y -> c0.Y = y)
             v || h
-    member this.IsConsecutive() =
-        let sorted = letters |> Seq.sortBy ToKey |> Seq.toList
-        let first = sorted |> Seq.head |> ToKey
-        let last = sorted |> Seq.skip (sorted.Length - 1) |> Seq.head |> ToKey
-        Coordinate.Between(first, last) |> Seq.forall (fun c -> CheckMoveOccupied(c))
-    //member this.IsConnected() = 
-    //    Game.Instance.IsOpeningMove || 
-
     
-        
+    member this.IsConsecutive() =
+        Range() |> Seq.forall (fun c -> CheckMoveOccupied(c))
+    member this.IsConnected() = 
+        Game.Instance.IsOpeningMove || Range() |> Seq.exists (fun c -> Game.Instance.PlayingBoard.HasTile(c) || Game.Instance.PlayingBoard.HasNeighboringTile(c))
