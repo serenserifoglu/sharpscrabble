@@ -3,8 +3,6 @@ C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\b
 C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\bin\Debug\Scrabble.Core.dll
 C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\bin\Debug\Scrabble.Core.pdb
 C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\obj\x86\Debug\ResolveAssemblyReference.cache
-C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\obj\x86\Debug\ScrabbleBoard.baml
-C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\obj\x86\Debug\ScrabbleBoard.g.cs
 C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\obj\x86\Debug\App.g.cs
 C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\obj\x86\Debug\Scrabble.UI_MarkupCompile.cache
 C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\obj\x86\Debug\Scrabble.UI.g.resources
@@ -13,3 +11,15 @@ C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\o
 C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\obj\x86\Debug\GenerateResource.write.1.tlog
 C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\obj\x86\Debug\Scrabble.UI.exe
 C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\obj\x86\Debug\Scrabble.UI.pdb
+C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\obj\x86\Debug\Board.baml
+C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\obj\x86\Debug\BoardSquare.baml
+C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\obj\x86\Debug\Tiles.baml
+C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\obj\x86\Debug\Board.g.cs
+C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\obj\x86\Debug\MainWindow.g.cs
+C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\obj\x86\Debug\BoardSquare.g.cs
+C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\obj\x86\Debug\Tiles.g.cs
+C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\obj\x86\Debug\GeneratedInternalTypeHelper.g.cs
+C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\obj\x86\Debug\Scrabble.UI_MarkupCompile.lref
+C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\obj\x86\Debug\MainWindow.baml
+C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\obj\x86\Debug\Tile.baml
+C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\obj\x86\Debug\Tile.g.cs

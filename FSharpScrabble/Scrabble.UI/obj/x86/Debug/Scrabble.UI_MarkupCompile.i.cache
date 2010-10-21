@@ -10,11 +10,11 @@ none
 false
 DEBUG;TRACE
 C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\App.xaml
-41669333015
+5425960847
 
-9184624004
+10-327121950
 131878836881
-Board.xaml;MainWindow.xaml;BoardSquare.xaml;Tiles.xaml;
+Board.xaml;MainWindow.xaml;BoardSquare.xaml;Tile.xaml;Tiles.xaml;
 
-False
+True
 
