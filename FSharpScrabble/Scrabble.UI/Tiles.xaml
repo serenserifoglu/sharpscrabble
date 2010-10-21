@@ -6,7 +6,5 @@
       mc:Ignorable="d" 
       d:DesignHeight="50" d:DesignWidth="400">
 
-    <Grid>
-        
-    </Grid>
+    <StackPanel x:Name="TileRack" Orientation="Horizontal"></StackPanel>
 </UserControl>

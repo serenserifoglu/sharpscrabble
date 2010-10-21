@@ -22,8 +22,23 @@ namespace Scrabble.UI
         public Tiles()
         {
             InitializeComponent();
+            
+            //Just for testing
+            PlayerTiles = new List<Tile>() { new Tile("A", 1) };
+
+            Redraw();
         }
 
-        public List<BoardSquare> PlayerTiles { get; set; }
+        public void Redraw()
+        {
+            if(TileRack.Children.Count > 0) TileRack.Children.Clear();
+            
+            foreach (Tile tile in PlayerTiles)
+            {
+                TileRack.Children.Add(tile);
+            }
+        }
+
+        public List<Tile> PlayerTiles { get; set; }
     }
 }
