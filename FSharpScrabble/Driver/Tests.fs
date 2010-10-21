@@ -46,7 +46,7 @@ let MoveTest() =
     
     Game.Instance.PlayingBoard.Put(m)
 
-let ConnectedMoveTest() = 
+let ValidConnectedMoves() = 
     let m0 = Move()
     m0.AddTile(Coordinate(10, 6), Tile('H'))
     m0.AddTile(Coordinate(10, 7), Tile('E'))
@@ -66,6 +66,63 @@ let ConnectedMoveTest() =
     m1.AddTile(Coordinate(11, 10), Tile('R'))
     m1.AddTile(Coordinate(12, 10), Tile('L'))
     m1.AddTile(Coordinate(13, 10), Tile('D'))
+
+    let aligned = m1.IsAligned()
+    let consecutive = m1.IsConsecutive()
+    let connected = m1.IsConnected()
+
+    Game.Instance.PlayingBoard.Put(m1)
+
+    Game.Instance.PlayingBoard.PrettyPrint()
+
+let DisjointMoves() = 
+    let m0 = Move()
+    m0.AddTile(Coordinate(10, 6), Tile('H'))
+    m0.AddTile(Coordinate(10, 7), Tile('E'))
+    m0.AddTile(Coordinate(10, 8), Tile('L'))
+    m0.AddTile(Coordinate(10, 9), Tile('L'))
+    m0.AddTile(Coordinate(10, 10), Tile('O'))
+
+    let aligned = m0.IsAligned()
+    let consecutive = m0.IsConsecutive()
+    let connected = m0.IsConnected()
+    
+    Game.Instance.PlayingBoard.Put(m0)
+    Game.Instance.NextMove()
+
+    let m1 = Move()
+    m1.AddTile(Coordinate(5, 12), Tile('P'))
+    m1.AddTile(Coordinate(6, 12), Tile('O'))
+    m1.AddTile(Coordinate(7, 12), Tile('O'))
+    m1.AddTile(Coordinate(8, 12), Tile('P'))
+
+    let aligned = m1.IsAligned()
+    let consecutive = m1.IsConsecutive()
+    let connected = m1.IsConnected()
+
+    Game.Instance.PlayingBoard.Put(m1)
+
+    Game.Instance.PlayingBoard.PrettyPrint()
+
+let ExtendMove() = 
+    let m0 = Move()
+    m0.AddTile(Coordinate(10, 6), Tile('H'))
+    m0.AddTile(Coordinate(10, 7), Tile('E'))
+    m0.AddTile(Coordinate(10, 8), Tile('L'))
+    m0.AddTile(Coordinate(10, 9), Tile('L'))
+
+    let aligned = m0.IsAligned()
+    let consecutive = m0.IsConsecutive()
+    let connected = m0.IsConnected()
+    
+    Game.Instance.PlayingBoard.Put(m0)
+    Game.Instance.NextMove()
+
+    let m1 = Move()
+    m1.AddTile(Coordinate(9, 10), Tile('P'))
+    m1.AddTile(Coordinate(10, 10), Tile('O'))
+    m1.AddTile(Coordinate(11, 10), Tile('O'))
+    m1.AddTile(Coordinate(12, 10), Tile('P'))
 
     let aligned = m1.IsAligned()
     let consecutive = m1.IsConsecutive()

@@ -15,4 +15,6 @@ open Scrabble.Tests
 //MoveTest()
 //BoardTest()
 //NeighborTest()
-ConnectedMoveTest()
+//ValidConnectedMoves()
+//DisjointMoves()
+ExtendMove()
