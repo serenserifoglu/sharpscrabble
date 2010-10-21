@@ -1,0 +1,15 @@
+C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\bin\Debug\Scrabble.UI.exe
+C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\bin\Debug\Scrabble.UI.pdb
+C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\bin\Debug\Scrabble.Core.dll
+C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\bin\Debug\Scrabble.Core.pdb
+C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\obj\x86\Debug\ScrabbleBoard.baml
+C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\obj\x86\Debug\ScrabbleBoard.g.cs
+C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\obj\x86\Debug\App.g.cs
+C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\obj\x86\Debug\Scrabble.UI_MarkupCompile.cache
+C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\obj\x86\Debug\Scrabble.UI.g.resources
+C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\obj\x86\Debug\Scrabble.UI.Properties.Resources.resources
+C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\obj\x86\Debug\GenerateResource.read.1.tlog
+C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\obj\x86\Debug\Scrabble.UI.exe
+C:\Users\Matt\Documents\coursework\csci6960\project\FSharpScrabble\Scrabble.UI\obj\x86\Debug\Scrabble.UI.pdb
