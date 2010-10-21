@@ -5,6 +5,15 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       mc:Ignorable="d" 
       d:DesignHeight="50" d:DesignWidth="400">
-
-    <StackPanel x:Name="TileRack" Orientation="Horizontal"></StackPanel>
+    <Grid VerticalAlignment="Center">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="75"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <TextBlock x:Name="PlayerDisplayName" Grid.Column="0" Text="Pl. Name" Foreground="Black">
+            
+        </TextBlock>
+        <StackPanel x:Name="TileRack" Orientation="Horizontal" VerticalAlignment="Center" Grid.Column="1"></StackPanel>
+    </Grid>
+    
 </UserControl>

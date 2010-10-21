@@ -22,13 +22,14 @@ namespace Scrabble.UI
         public Tile()
         {
             InitializeComponent();
-            Redraw();
+            
         }
 
         public Tile(string letter, int score) : this()
         {
             Letter = letter;
             Score = score;
+            Redraw();
         }
 
         public void Redraw()

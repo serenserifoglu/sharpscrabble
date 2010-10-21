@@ -26,12 +26,26 @@ namespace Scrabble.UI
         {
             InitializeComponent();
             //create list o' squares
-
+            Redraw();
         }
 
         public void Redraw()
         {
-            
+            System.Windows.GridLength g = new GridLength(40);
+            //silly test loop
+            for (int h = 0; h < 15; h++)
+            {
+                BoardGrid.RowDefinitions.Add(new RowDefinition() { Height = g });
+                for (int v = 0; v < 15; v++)
+                {
+                    BoardGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = g });
+                    BoardSquare square = new BoardSquare();
+                    BoardGrid.Children.Add(square);
+                    Grid.SetColumn(square, v);
+                    Grid.SetRow(square, h);
+                }
+            }
+
         }
 
 

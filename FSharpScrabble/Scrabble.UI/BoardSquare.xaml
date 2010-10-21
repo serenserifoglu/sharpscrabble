@@ -4,8 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             d:DesignHeight="40" d:DesignWidth="40">
-    <Grid>
+             d:DesignHeight="40" d:DesignWidth="40" Background="White" BorderBrush="Black" BorderThickness="1">
+    <Canvas Height="40" Width="40">
             
-    </Grid>
+    </Canvas>
 </UserControl>
