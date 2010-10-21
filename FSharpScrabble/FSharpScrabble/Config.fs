@@ -3,9 +3,26 @@
 open System
 open Scrabble.Core.Squares
 
+/// A simple, sortable class for an (X, Y) coordinate pair for the game board.
 type Coordinate(x:int, y:int) = 
     member this.X with get() = x
     member this.Y with get() = y
+    member this.Print() = 
+        printfn "(%i, %i)" this.X this.Y
+
+    //Static members
+    static member Between(c0:Coordinate, c1:Coordinate) =
+        let coords = Seq.ofList [ c0; c1 ]
+        let first = coords |> Seq.min
+        let last = coords |> Seq.max
+        if first.X = last.X then
+            [| first.Y .. last.Y |] |> Seq.map (fun y -> Coordinate(first.X, y)) |> Seq.toArray
+        else if first.Y = last.Y then
+            [| first.X .. last.X |] |> Seq.map (fun x -> Coordinate(x, first.Y)) |> Seq.toArray
+        else
+            raise (Exception("Coordinates are not on the same axis."))
+
+    //IComparable interface
     interface IComparable with  
          member this.CompareTo(o) = 
             let other = o :?> Coordinate

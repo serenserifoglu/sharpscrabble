@@ -39,6 +39,7 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helper.fs" />
     <Compile Include="Squares.fs" />
     <Compile Include="Config.fs" />
     <Compile Include="Types.fs" />

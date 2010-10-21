@@ -3,6 +3,7 @@
 open System
 open Scrabble.Core.Config
 open Scrabble.Core.Squares
+open Scrabble.Core.Helper
 
 type Tile(letter:char) = 
     let getScore l = 
@@ -45,7 +46,7 @@ type Bag() =
         this.Take(1).[0]
 
 type Board() = 
-    let grid = Array2D.init ScrabbleConfig.BoardLength ScrabbleConfig.BoardLength (fun x y -> ScrabbleConfig.BoardLayout (Coordinate(x, y))) 
+    let grid : Square[,] = Array2D.init ScrabbleConfig.BoardLength ScrabbleConfig.BoardLength (fun x y -> ScrabbleConfig.BoardLayout (Coordinate(x, y))) 
     member this.Get(c:Coordinate) =
         this.Get(c.X, c.Y)
     member this.Get(x:int, y:int) =
@@ -57,35 +58,68 @@ type Board() =
             this.Get(c).Tile <- t
         else
             raise (Exception("A tile already exists on the square."))
-    //Big todo on this next function...yeah...
-    //member this.OccupiedSquares() : Map<Coordinate, Square> = 
-        
-type Move() = 
-    let mutable letters : Map<Coordinate, Tile> = Map.empty
-    member this.AddTile(c:Coordinate, t:Tile) = 
-        letters <- letters.Add(c, t)
-    member this.IsAligned() = 
-        if letters.Count <= 1 then
-            true
-        else
-            let c0 = (Seq.head letters) |> (fun pair -> pair.Key)
-            let v = letters |> Seq.map (fun pair -> pair.Key.X) |> Seq.forall (fun x -> c0.X = x)
-            let h = letters |> Seq.map (fun pair -> pair.Key.Y) |> Seq.forall (fun y -> c0.Y = y)
-            v || h
-    member this.IsConsecutive() =
-        let sorted = letters |> Seq.sortBy (fun pair -> pair.Key) |> Seq.toList
-        let last = sorted |> Seq.skip (sorted.Length - 1) |> Seq.head
-        
-        raise (NotImplementedException("not done with this method yet..."))
-        
+
+    member this.OccupiedSquares() : Map<Coordinate, Square> = 
+        Map.ofList [ for i in 0 .. (Array2D.length1 grid) - 1 do
+                        for j in 0 .. (Array2D.length2 grid) - 1 do
+                            let s = Array2D.get grid i j
+                            if s.Tile <> null then
+                                yield (Coordinate(i, j), s) ]
+    member this.PrettyPrint() = 
+        printf "   "
+        for j in 0 .. (Array2D.length2 grid) - 1 do
+            printf "%2i " j
+        printfn ""
+        for i in 0 .. (Array2D.length1 grid) - 1 do
+            printf "%2i " i
+            for j in 0 .. (Array2D.length2 grid) - 1 do
+                let s = Array2D.get grid i j
+                if s.Tile <> null then
+                    let tile = s.Tile :?> Tile
+                    printf " %c " tile.Letter
+                else
+                    printf " _ "
+            printfn ""
 
 [<AbstractClass>]
 type Player(name:string) =
     let mutable tiles : Tile array = Array.zeroCreate ScrabbleConfig.MaxTiles
     member this.Name with get() = name
 
-    //OK this doesn't make any sense...why doesn't this compile?
-    //member this.Tiles() = tiles |> Seq.filter (fun t -> t <> null) |> Seq.toList
-
 type HumanPlayer(name:string) =
     inherit Player(name)
+
+/// A singleton that will represent the game board, bag of tiles, players, move count, etc.
+module Game = 
+    let private instance = lazy( (Bag(), Board()) ) //This is a pretty poor implementation of a singleton, I should probably be using a more rigid structure here rather than a tuple
+    let Instance() = instance.Value
+    let TileBag() = 
+        let bag, _ = instance.Value
+        bag
+    let PlayingBoard() =
+        let _, board = instance.Value
+        board
+
+/// A player's move is a set of coordinates and tiles. This will then validate whether or not the tiles form a valid move
+type Move() = 
+    let mutable letters : Map<Coordinate, Tile> = Map.empty
+    member this.Letters with get() = letters
+    member this.AddTile(c:Coordinate, t:Tile) = 
+        letters <- letters.Add(c, t)
+    member this.IsAligned() = 
+        if letters.Count <= 1 then
+            true
+        else
+            let c0 = (Seq.head letters) |> ToKey // note: added the helper method "ToKey" to replace this: (fun pair -> pair.Key)
+            let v = letters |> Seq.map (fun pair -> pair.Key.X) |> Seq.forall (fun x -> c0.X = x)
+            let h = letters |> Seq.map (fun pair -> pair.Key.Y) |> Seq.forall (fun y -> c0.Y = y)
+            v || h
+    member this.IsConsecutive() =
+        let sorted = letters |> Seq.sortBy ToKey |> Seq.toList
+        let first = sorted |> Seq.head |> ToKey
+        let last = sorted |> Seq.skip (sorted.Length - 1) |> Seq.head |> ToKey
+        Coordinate.Between(first, last) |> Seq.forall (fun c -> this.CheckMoveOccupied(c))
+
+    member this.CheckMoveOccupied(c:Coordinate) =
+        letters.ContainsKey(c) || Game.PlayingBoard().HasTile(c)
+        
