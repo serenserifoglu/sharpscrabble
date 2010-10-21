@@ -40,6 +40,13 @@ namespace Scrabble.UI
                 {
                     BoardGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = g });
                     BoardSquare square = new BoardSquare();
+                    if (v == 7 && h == 7)
+                    {
+                        ImageBrush ib = new ImageBrush();
+
+                        ib.ImageSource = new BitmapImage(new Uri("images\\CenterSquare.png"));
+                        square.Background = ib;
+                    }
                     BoardGrid.Children.Add(square);
                     Grid.SetColumn(square, v);
                     Grid.SetRow(square, h);
