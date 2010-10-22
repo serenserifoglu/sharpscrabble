@@ -25,9 +25,23 @@ namespace Scrabble.UI
             InitializeComponent();
         }
 
-        public void Put(Squares.Square sqToPlace)
+        public void Put(Tile sqToPlace)
         {
-
+            if (PlacedTile == null)
+                PlacedTile = sqToPlace;
+            else
+                throw new Exception("There's already a tile there.  Wrong game, dude.");
         }
+
+        public void Redraw()
+        {
+            if (PlacedTile != null)
+            {
+                SquareContainer.Children.Clear();
+                SquareContainer.Children.Add(PlacedTile);
+            }
+        }
+
+        public Tile PlacedTile { get; set; }
     }
 }

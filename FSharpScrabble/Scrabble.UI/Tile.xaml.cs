@@ -22,7 +22,7 @@ namespace Scrabble.UI
         public Tile()
         {
             InitializeComponent();
-            
+
         }
 
         public Tile(string letter, int score) : this()
@@ -35,6 +35,7 @@ namespace Scrabble.UI
         public void Redraw()
         {
             DisplayLetter.Text = Letter;
+            DisplayScore.Text = Score.ToString();
         }
         public string Letter { get; set; }
         public int Score { get; set; }
