@@ -17,4 +17,5 @@ open Scrabble.Tests
 //NeighborTest()
 //ValidConnectedMoves()
 //DisjointMoves()
+//DictionaryTest()
 ExtendMove()

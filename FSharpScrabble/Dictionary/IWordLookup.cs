@@ -5,6 +5,6 @@ namespace Scrabble.Dictionary
 {
     public interface IWordLookup
     {
-        List<string> FindAllWords (IEnumerable<Types.Tile> letters, int minLength = 2, int maxLength = int.MaxValue);
+        List<string> FindAllWords (IEnumerable<Types.Tile> letters, int minLength = 2, int maxLength = 15);
     }
 }

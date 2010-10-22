@@ -3,6 +3,7 @@
 open Scrabble.Core.Squares
 open Scrabble.Core.Types
 open Scrabble.Core.Config
+open Scrabble.Dictionary
 
 let CoordTest() = 
     let c0 = Coordinate(8, 0)
@@ -153,3 +154,19 @@ let NeighborTest() =
     PrintNeighbors(4, 6)
     printfn "Neighboring squares of (14, 10) are:"
     PrintNeighbors(14, 10)
+
+
+
+let DictionaryTest() =
+    //this will take a few seconds to initialize the dictionary's data structure
+    let lookup = WordLookup() 
+
+    let tiles = seq [| Tile('E'); Tile('A'); Tile('T'); Tile('S'); Tile('T');  |]
+
+    let watch = System.Diagnostics.Stopwatch()
+    watch.Start()
+    let words = lookup.FindAllWords(tiles)
+    watch.Stop()
+
+    words |> Seq.iter (printf "%s\n")
+    printfn "word lookup time: %im %is %ims" watch.Elapsed.Minutes watch.Elapsed.Seconds watch.Elapsed.Milliseconds

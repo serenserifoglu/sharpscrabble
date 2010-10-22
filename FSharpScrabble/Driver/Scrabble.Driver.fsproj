@@ -46,6 +46,11 @@
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Dictionary\Scrabble.Dictionary.csproj">
+      <Name>Scrabble.Dictionary</Name>
+      <Project>{2dfafd45-2278-4ba6-b18a-1235fb865ac4}</Project>
+      <Private>True</Private>
+    </ProjectReference>
     <ProjectReference Include="..\FSharpScrabble\Scrabble.Core.fsproj">
       <Name>Scrabble.Core</Name>
       <Project>{82edb7d2-782c-4985-84f8-ec61d8af52c8}</Project>
