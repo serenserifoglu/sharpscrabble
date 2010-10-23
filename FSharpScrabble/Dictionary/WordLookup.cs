@@ -15,9 +15,15 @@ namespace Scrabble.Dictionary
         // the strings, since we can sort and lookup instead.
         private static Dictionary<string, List<string>> OfficialWords;
 
+        /// <summary>
+        /// Used for normal lookups of human generated input.
+        /// </summary>
+        private static HashSet<string> ValidWords;
+
         static WordLookup ()
         {
             OfficialWords = new Dictionary<string, List<string>>();
+            ValidWords = new HashSet<string>();
 
             var words = File.ReadAllLines(@"..\..\..\Dictionary\OfficialDictionary\twl.txt")
                 .ToList()
@@ -25,6 +31,7 @@ namespace Scrabble.Dictionary
 
             foreach (var word in words)
             {
+                ValidWords.Add(word);
                 var alphabetized = new string(word.OrderBy(_ => _).ToArray());
 
                 List<string> existing = null;
@@ -78,6 +85,19 @@ namespace Scrabble.Dictionary
             }
 
             return validWords;
+        }
+
+        /// <summary>
+        /// Returns true if the given word is in the scrabble dictionary.
+        /// </summary>
+        /// <param name="word"></param>
+        /// <returns></returns>
+        public bool IsValidWord(string word)
+        {
+            if (String.IsNullOrWhiteSpace(word))
+                return false;
+            else
+                return ValidWords.Contains(word.ToLower());
         }
     }
 }

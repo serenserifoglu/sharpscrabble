@@ -45,6 +45,13 @@
     <Compile Include="Config.fs" />
     <Compile Include="Types.fs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Dictionary\Scrabble.Dictionary.csproj">
+      <Name>Scrabble.Dictionary</Name>
+      <Project>{2dfafd45-2278-4ba6-b18a-1235fb865ac4}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\FSharp\1.0\Microsoft.FSharp.Targets" Condition="!Exists('$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll')" />
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft F#\v4.0\Microsoft.FSharp.Targets" Condition=" Exists('$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

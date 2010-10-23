@@ -114,6 +114,12 @@ let RunTest() =
     let banana = r.ToWord()
     Game.Instance.PlayingBoard.PrettyPrint()
 
+let ValidWordTest() =
+    let valid1 = Game.Instance.Dictionary.IsValidWord("banana")
+    let valid2 = Game.Instance.Dictionary.IsValidWord("piss")
+    let valid3 = Game.Instance.Dictionary.IsValidWord("noob")
+    ()
+
 let BoardTest() = 
     Game.Instance.PlayingBoard.Put(Tile('W'), Coordinate(0, 0))
     Game.Instance.PlayingBoard.Put(Tile('I'), Coordinate(1, 0))

@@ -21,3 +21,6 @@ open Scrabble.Tests
 //ExtendMove()
 
 RunTest()
+ValidWordTest()
+
+let x = "wtf"

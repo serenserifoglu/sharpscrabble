@@ -4,6 +4,7 @@ open System
 open Scrabble.Core.Config
 open Scrabble.Core.Squares
 open Scrabble.Core.Helper
+open Scrabble.Dictionary
 
 type Tile(letter:char) = 
     let getScore l = 
@@ -98,16 +99,18 @@ type Board() =
                     printf " _ "
             printfn ""
 
-and GameState(players : Player list) = 
+and GameState(players:Player list) = 
     let bag = Bag()
     let board = Board()
     let mutable moveCount = 0
+    let wordLookup = lazy(WordLookup())
     //Properties
     member this.TileBag with get() = bag
     member this.PlayingBoard with get() = board
     member this.MoveCount with get() = moveCount
     member this.IsOpeningMove with get() = moveCount = 0
     member this.Players with get() = players
+    member this.Dictionary with get() = wordLookup.Value
     //Public Methods
     member this.NextMove() =
         moveCount <- moveCount + 1
