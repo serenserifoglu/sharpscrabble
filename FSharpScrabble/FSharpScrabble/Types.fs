@@ -118,20 +118,26 @@ and Game() =
     static member Instance with get() = instance.Value
 
 /// A player's move is a set of coordinates and tiles. This will then validate whether or not the tiles form a valid move
-and Move() = 
-    let mutable letters : Map<Coordinate, Tile> = Map.empty
+and Move(letters:Map<Coordinate, Tile>) = 
+    let sorted = letters |> Seq.sortBy ToKey |> Seq.toList
+    let first = sorted |> Seq.head |> ToKey
+    let last = sorted |> Seq.skip (sorted.Length - 1) |> Seq.head |> ToKey
+    let range = 
+        try
+            Coordinate.Between(first, last)
+        with 
+            | UnsupportedCoordinateException(msg) -> raise (InvalidMoveException(msg))
+    let orientation = 
+        if first.X = last.X then
+            Orientation.Horizontal
+        else
+            Orientation.Vertical
 
     let CheckMoveOccupied(c:Coordinate) =
-        letters.ContainsKey(c) || Game.Instance.PlayingBoard.HasTile(c)
-    let Range() = 
-        let sorted = letters |> Seq.sortBy ToKey |> Seq.toList
-        let first = sorted |> Seq.head |> ToKey
-        let last = sorted |> Seq.skip (sorted.Length - 1) |> Seq.head |> ToKey
-        Coordinate.Between(first, last)
+            letters.ContainsKey(c) || Game.Instance.PlayingBoard.HasTile(c)
 
+    member this.Orientation with get() = orientation
     member this.Letters with get() = letters
-    member this.AddTile(c:Coordinate, t:Tile) = 
-        letters <- letters.Add(c, t)
     member this.IsAligned() = 
         if letters.Count <= 1 then
             true
@@ -142,9 +148,9 @@ and Move() =
             v || h
     
     member this.IsConsecutive() =
-        Range() |> Seq.forall (fun c -> CheckMoveOccupied(c))
+        range |> Seq.forall (fun c -> CheckMoveOccupied(c))
     member this.IsConnected() = 
-        Game.Instance.IsOpeningMove || Range() |> Seq.exists (fun c -> Game.Instance.PlayingBoard.HasTile(c) || Game.Instance.PlayingBoard.HasNeighboringTile(c))
+        Game.Instance.IsOpeningMove || range |> Seq.exists (fun c -> Game.Instance.PlayingBoard.HasTile(c) || Game.Instance.PlayingBoard.HasNeighboringTile(c))
     member this.ContainsStartSquare() = 
         letters.ContainsKey(ScrabbleConfig.StartCoordinate)
 

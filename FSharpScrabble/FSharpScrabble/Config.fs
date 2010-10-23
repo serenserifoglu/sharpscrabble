@@ -43,7 +43,7 @@ type Coordinate(x:int, y:int) =
         else if first.Y = last.Y then
             [| first.X .. last.X |] |> Seq.map (fun x -> Coordinate(x, first.Y)) |> Seq.toArray
         else
-            raise (Exception("Coordinates are not on the same axis."))
+            raise (UnsupportedCoordinateException("Coordinates are not on the same axis."))
     static member ValidXY(i:int) = 
         i >= 0 && i < ScrabbleConfig.BoardLength
 
