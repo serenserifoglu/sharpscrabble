@@ -104,6 +104,16 @@ let ExtendMove() =
 
     Game.Instance.PlayingBoard.PrettyPrint()
 
+let RunTest() = 
+    let m = Move(Map.ofList [ (Coordinate(10, 6), Tile('B')); (Coordinate(10, 7), Tile('A')); (Coordinate(10, 8), Tile('N')); (Coordinate(10, 9), Tile('A')); (Coordinate(10, 10), Tile('N')); (Coordinate(10, 11), Tile('A'));])
+    Game.Instance.PlayingBoard.Put(m)
+    let m2 = Move(Map.ofList [ (Coordinate(10, 12), Tile('S')); (Coordinate(11, 12), Tile('H')); (Coordinate(12, 12), Tile('I')); (Coordinate(13, 12), Tile('T')) ] )
+    Game.Instance.PlayingBoard.Put(m2)
+
+    let r = Run(Coordinate(10, 8), Orientation.Vertical)
+    let banana = r.ToWord()
+    Game.Instance.PlayingBoard.PrettyPrint()
+
 let BoardTest() = 
     Game.Instance.PlayingBoard.Put(Tile('W'), Coordinate(0, 0))
     Game.Instance.PlayingBoard.Put(Tile('I'), Coordinate(1, 0))

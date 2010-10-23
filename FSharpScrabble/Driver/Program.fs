@@ -18,4 +18,6 @@ open Scrabble.Tests
 //ValidConnectedMoves()
 //DisjointMoves()
 //DictionaryTest()
-ExtendMove()
+//ExtendMove()
+
+RunTest()

@@ -6,7 +6,6 @@ open Scrabble.Core.Squares
 type Orientation =
     | Vertical = 0
     | Horizontal = 1
-    | Jagged = 2
 
 /// A simple, sortable class for an (X, Y) coordinate pair for the game board.
 type Coordinate(x:int, y:int) = 
@@ -28,10 +27,17 @@ type Coordinate(x:int, y:int) =
             if Coordinate.ValidXY(this.Y + 1) then
                 yield Coordinate(this.X, this.Y + 1)
         ]
-    (*
+    /// Well this sucks, apparently types aren't nullable. This is shitty design to have objects be in invalid states, but I'm not sure how to rework this...
+    member this.IsValid() =
+        Coordinate.ValidXY(this.X) && Coordinate.ValidXY(this.Y)
     member this.Next(o:Orientation) = 
-        if o = Orientation.Horizontal then
-      *)      
+        match o with
+        | Orientation.Horizontal -> Coordinate(this.X + 1, this.Y)
+        | _ -> Coordinate(this.X, this.Y + 1)
+    member this.Prev(o:Orientation) = 
+        match o with
+        | Orientation.Horizontal -> Coordinate(this.X - 1, this.Y)
+        | _ -> Coordinate(this.X, this.Y - 1)
 
     //Static members
     static member Between(c0:Coordinate, c1:Coordinate) =

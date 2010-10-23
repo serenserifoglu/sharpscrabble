@@ -90,7 +90,7 @@ type Board() =
         for i in 0 .. (Array2D.length1 grid) - 1 do
             printf "%2i " i
             for j in 0 .. (Array2D.length2 grid) - 1 do
-                let s = Array2D.get grid i j
+                let s = Array2D.get grid j i
                 if s.Tile <> null then
                     let tile = s.Tile :?> Tile
                     printf " %c " tile.Letter
@@ -154,9 +154,24 @@ and Move(letters:Map<Coordinate, Tile>) =
     member this.ContainsStartSquare() = 
         letters.ContainsKey(ScrabbleConfig.StartCoordinate)
 
-//A Run is a series of connected letters in a given direction. This type takes a location and direction and constructs a map of connected tiles to letters in the given direction.
-and Run(loc:Coordinate, o:Orientation) = 
-    let letters = Map.ofList [
-        
-    ]
+/// A Run is a series of connected letters in a given direction. This type takes a location and direction and constructs a map of connected tiles to letters in the given direction.
+and Run(c:Coordinate, o:Orientation) = 
+    let rec Check(c:Coordinate, o:Orientation, increment) =
+        if not (c.IsValid()) then
+            []
+        else 
+            let s = Game.Instance.PlayingBoard.Get(c)
+            if s.Tile <> null then
+                let next = increment(c, o)
+                s :: Check(next, o, increment)
+            else
+                []
+            
+    let prevSquares = Check(c, o, (fun (c:Coordinate, o:Orientation) -> c.Prev(o)))
+    let nextSquares = Check(c.Next(o), o, (fun (c:Coordinate, o:Orientation) -> c.Next(o)))
+    let squares = (List.rev prevSquares) @ nextSquares 
     member this.Orientation with get() = o
+    member this.Squares with get() = squares
+    member this.Length with get() = squares.Length
+    member this.ToWord() =
+        squares |> List.map (fun s -> s.Tile :?> Tile) |> List.map (fun t -> t.Letter.ToString()) |> List.reduce (fun s0 s1 -> s0 + s1)
