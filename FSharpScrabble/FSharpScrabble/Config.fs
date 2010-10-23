@@ -3,6 +3,11 @@
 open System
 open Scrabble.Core.Squares
 
+type Orientation =
+    | Vertical = 0
+    | Horizontal = 1
+    | Jagged = 2
+
 /// A simple, sortable class for an (X, Y) coordinate pair for the game board.
 type Coordinate(x:int, y:int) = 
     member this.X with get() = x
@@ -23,6 +28,10 @@ type Coordinate(x:int, y:int) =
             if Coordinate.ValidXY(this.Y + 1) then
                 yield Coordinate(this.X, this.Y + 1)
         ]
+    (*
+    member this.Next(o:Orientation) = 
+        if o = Orientation.Horizontal then
+      *)      
 
     //Static members
     static member Between(c0:Coordinate, c1:Coordinate) =
@@ -59,6 +68,7 @@ and ScrabbleConfig() =
     static member LetterQuantity : Map<char, int> = Map.ofList [ ('A', 9) ; ('B', 2) ; ('C', 2) ; ('D', 4) ; ('E', 12) ; ('F', 2) ; ('G', 3) ; ('H', 2) ; ('I', 9) ; ('J', 1) ; ('K', 1) ; ('L', 4) ; ('M', 2) ; ('N', 6) ; ('O', 8) ; ('P', 2) ; ('Q', 1) ; ('R', 6) ; ('S', 4) ; ('T', 6) ; ('U', 4) ; ('V', 2) ; ('W', 2) ; ('X', 1) ; ('Y', 2) ; ('Z', 1) ]
     static member MaxTiles : int = 7
     static member BoardLength : int = 15
+    static member StartCoordinate with get() = Coordinate(7, 7)
     static member BoardLayout(c:Coordinate) =  // I hope I didn't fuck this up. This is left handed coordinates btw. Top left is (0, 0)
         match c.X, c.Y with
         | (0, 0) | (0, 7) | (0, 14) | (7, 0) | (14, 0) | (7, 14) | (14, 7) | (14, 14) -> TripleWordSquare() :> Square //wow I really have to "downcast" this to its base type? freakin lame.

@@ -145,3 +145,12 @@ and Move() =
         Range() |> Seq.forall (fun c -> CheckMoveOccupied(c))
     member this.IsConnected() = 
         Game.Instance.IsOpeningMove || Range() |> Seq.exists (fun c -> Game.Instance.PlayingBoard.HasTile(c) || Game.Instance.PlayingBoard.HasNeighboringTile(c))
+    member this.ContainsStartSquare() = 
+        letters.ContainsKey(ScrabbleConfig.StartCoordinate)
+
+//A Run is a series of connected letters in a given direction. This type takes a location and direction and constructs a map of connected tiles to letters in the given direction.
+and Run(loc:Coordinate, o:Orientation) = 
+    let letters = Map.ofList [
+        
+    ]
+    member this.Orientation with get() = o
