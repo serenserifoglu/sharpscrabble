@@ -134,9 +134,9 @@ and Move(letters:Map<Coordinate, Tile>) =
             | UnsupportedCoordinateException(msg) -> raise (InvalidMoveException(msg))
     let orientation = 
         if first.X = last.X then
-            Orientation.Horizontal
-        else
             Orientation.Vertical
+        else
+            Orientation.Horizontal
 
     //Private methods
     let CheckMoveOccupied(c:Coordinate) =
@@ -165,16 +165,21 @@ and Move(letters:Map<Coordinate, Tile>) =
         let alt = Opposite(orientation)
         let alternateRuns = sorted |> Seq.map (fun pair -> Run(pair.Key, alt, letters)) |> Seq.filter (fun r -> r.Length > 1) |> Seq.toList
         Run(first, orientation, letters) :: alternateRuns
-    let IsValid() = 
-        ValidPlacement() && ComputeRuns() |> Seq.forall (fun r -> r.IsValid())
-    let ComputeScore() =
-        ComputeRuns() |> List.sumBy (fun r -> r.Score())
+    let ValidRuns(runs: Run list) = 
+        runs |> Seq.forall (fun r -> r.IsValid())
+    let ComputeScore(runs : Run list) =
+        runs |> List.sumBy (fun r -> r.Score())
 
     let score = 
-        if IsValid() then
-            ComputeScore()
+        if ValidPlacement() then
+            //make sure every sequence of tiles with length > 1 formed by this move is a valid word
+            let runs = ComputeRuns()
+            if ValidRuns(runs) then
+                ComputeScore(runs)
+            else
+                raise (InvalidMoveException("One or more invalid words were formed by the move."))
         else
-            raise (InvalidMoveException("Move is not valid."))
+            raise (InvalidMoveException("Move does not lay out on the board properly."))
 
     member this.Orientation with get() = orientation
     member this.Letters with get() = letters

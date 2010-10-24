@@ -12,11 +12,9 @@ open Scrabble.Tests
 *)
 
 //CoordTest()
-//MoveTest()
 //BoardTest()
 //NeighborTest()
-//ValidConnectedMoves()
-//DisjointMoves()
 //DictionaryTest()
-//ExtendMove()
-ValidWordTest()
+//ValidWordTest()
+
+MoveTest()
