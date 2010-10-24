@@ -178,9 +178,9 @@ and Move(letters:Map<Coordinate, Tile>) =
             if ValidRuns(runs) then
                 ComputeScore(runs)
             else
-                raise (InvalidMoveException("One or more invalid words were formed by the move."))
+                raise (InvalidMoveException("One or more invalid words were formed by this move."))
         else
-            raise (InvalidMoveException("Move does not lay out on the board properly."))
+            raise (InvalidMoveException("Move violates positioning rules (i.e. not connected to other tiles)."))
 
     member this.Orientation with get() = orientation
     member this.Letters with get() = letters

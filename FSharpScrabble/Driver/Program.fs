@@ -17,4 +17,4 @@ open Scrabble.Tests
 //DictionaryTest()
 //ValidWordTest()
 
-MoveTest()
+MoveTest2()
