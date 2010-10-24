@@ -1,5 +1,6 @@
 ﻿module Scrabble.Tests
 
+open Scrabble.Core
 open Scrabble.Core.Squares
 open Scrabble.Core.Types
 open Scrabble.Core.Config
@@ -51,6 +52,16 @@ let MoveTest2() =
     Game.Instance.PlayingBoard.Put(m2)
     Game.Instance.PlayingBoard.PrettyPrint()
 
+let InvalidMove() = 
+    let m = Move(Map.ofList [ (Coordinate(5, 7), Tile('S')); (Coordinate(6, 7), Tile('T')); (Coordinate(7, 7), Tile('A')); (Coordinate(8, 7), Tile('N')); (Coordinate(9, 7), Tile('D')) ])
+    printfn "first move score = %i" m.Score
+    Game.Instance.PlayingBoard.Put(m)
+    Game.Instance.NextMove()
+    try
+        let m2 = Move(Map.ofList [ (Coordinate(8, 8), Tile('O')); (Coordinate(9, 8), Tile('V')); (Coordinate(10, 8), Tile('E')); (Coordinate(11, 8), Tile('N')); ])
+        Game.Instance.PlayingBoard.Put(m2)
+    with
+        | InvalidMoveException(msg) -> printfn "Invalid move: %s" msg
 let ValidWordTest() =
     let valid1 = Game.Instance.Dictionary.IsValidWord("banana")
     let valid2 = Game.Instance.Dictionary.IsValidWord("piss")
