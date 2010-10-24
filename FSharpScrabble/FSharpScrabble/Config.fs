@@ -1,6 +1,7 @@
-﻿module Scrabble.Core.Config
+﻿namespace Scrabble.Core.Config
 
 open System
+open Scrabble.Core
 open Scrabble.Core.Squares
 
 type Orientation =

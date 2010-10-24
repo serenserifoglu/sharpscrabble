@@ -1,6 +1,7 @@
-﻿module Scrabble.Core.Types
+﻿namespace Scrabble.Core.Types
 
 open System
+open Scrabble.Core
 open Scrabble.Core.Config
 open Scrabble.Core.Squares
 open Scrabble.Core.Helper

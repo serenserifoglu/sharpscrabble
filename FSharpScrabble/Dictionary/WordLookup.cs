@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 
 using Scrabble.Core;
+using Scrabble.Core.Types;
 
 namespace Scrabble.Dictionary
 {
@@ -52,7 +53,7 @@ namespace Scrabble.Dictionary
         /// <param name="minLength">Length of the shortest possible words that should be returned (default 2).</param>
         /// <param name="maxLength">Length of the longest possible words that should be returned (default 15, or the number of tiles input)</param>
         /// <returns></returns>
-        public List<string> FindAllWords (IEnumerable<Types.Tile> letters, int minLength = 2, int maxLength = 15)
+        public List<string> FindAllWords (IEnumerable<Tile> letters, int minLength = 2, int maxLength = 15)
         {
             var length = letters.Count();
             if(length < maxLength)

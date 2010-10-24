@@ -36,7 +36,7 @@ let BagTest() =
     //bag.Take()
 
 let MoveTest() = 
-    let m = Move(Map.ofList [(Coordinate(7, 6), Tile('S')); (Coordinate(7, 7), Tile('H')); (Coordinate(7, 8), Tile('I')); (Coordinate(7, 9), Tile('T'))])    
+    let m = Move(Map.ofList [(Coordinate(7, 7), Tile('S')); (Coordinate(7, 8), Tile('H')); (Coordinate(7, 9), Tile('I')); (Coordinate(7, 10), Tile('T'))])    
     printfn "Move score: %i" m.Score  
     Game.Instance.PlayingBoard.Put(m)
     Game.Instance.PlayingBoard.PrettyPrint()
