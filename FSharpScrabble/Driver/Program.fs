@@ -19,8 +19,4 @@ open Scrabble.Tests
 //DisjointMoves()
 //DictionaryTest()
 //ExtendMove()
-
-RunTest()
 ValidWordTest()
-
-let x = "wtf"

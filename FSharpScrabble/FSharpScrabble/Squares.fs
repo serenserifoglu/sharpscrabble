@@ -2,11 +2,9 @@
 
 [<AbstractClass>]
 type Square(letterMult:int, wordMult:int) = 
-    let mutable used = false // Indicates whether or not the multipliers have been applied before. Might remove this in favor of a better way of representing this. Not sure yet.
     let mutable tile = null
-    member this.LetterMultiplier with get() = letterMult
-    member this.WordMultiplier with get() = wordMult
-    member this.Used with get() = used and set v = used <- v
+    member this.LetterMultiplier with get() = if tile <> null then letterMult else 1
+    member this.WordMultiplier with get() = if tile <> null then wordMult else 1
     member this.Tile with get() = tile and set t = tile <- t
     member this.IsEmpty with get() = tile = null
 

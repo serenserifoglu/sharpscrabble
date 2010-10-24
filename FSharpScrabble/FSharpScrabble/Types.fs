@@ -120,7 +120,9 @@ and Game() =
     static let instance = lazy(GameState([ HumanPlayer("Will") :> Player; ComputerPlayer("Com") :> Player ])) //Pretty sweet, huh? Hard coding stuff...
     static member Instance with get() = instance.Value
 
-/// A player's move is a set of coordinates and tiles. This will then validate whether or not the tiles form a valid move
+/// A player's move is a set of coordinates and tiles. This will throw if the move isn't valid.
+/// That is, if the tiles aren't layed out properly (not all connected, the word formed doesn't "touch" any other tiles - with the exception of the first word)
+/// and if there is a "run" of connected tiles that doesn't form a valid word
 and Move(letters:Map<Coordinate, Tile>) = 
     let sorted = letters |> Seq.sortBy ToKey |> Seq.toList
     let first = sorted |> Seq.head |> ToKey
@@ -136,12 +138,14 @@ and Move(letters:Map<Coordinate, Tile>) =
         else
             Orientation.Vertical
 
+    //Private methods
     let CheckMoveOccupied(c:Coordinate) =
             letters.ContainsKey(c) || Game.Instance.PlayingBoard.HasTile(c)
-
-    member this.Orientation with get() = orientation
-    member this.Letters with get() = letters
-    member this.IsAligned() = 
+    let Opposite(o:Orientation) =
+        match o with
+        | Orientation.Horizontal -> Orientation.Vertical
+        | _ -> Orientation.Horizontal
+    let IsAligned() = 
         if letters.Count <= 1 then
             true
         else
@@ -149,32 +153,64 @@ and Move(letters:Map<Coordinate, Tile>) =
             let v = letters |> Seq.map (fun pair -> pair.Key.X) |> Seq.forall (fun x -> c0.X = x)
             let h = letters |> Seq.map (fun pair -> pair.Key.Y) |> Seq.forall (fun y -> c0.Y = y)
             v || h
-    
-    member this.IsConsecutive() =
+    let IsConsecutive() =
         range |> Seq.forall (fun c -> CheckMoveOccupied(c))
-    member this.IsConnected() = 
-        Game.Instance.IsOpeningMove || range |> Seq.exists (fun c -> Game.Instance.PlayingBoard.HasTile(c) || Game.Instance.PlayingBoard.HasNeighboringTile(c))
-    member this.ContainsStartSquare() = 
+    let IsConnected() = 
+        range |> Seq.exists (fun c -> Game.Instance.PlayingBoard.HasTile(c) || Game.Instance.PlayingBoard.HasNeighboringTile(c))
+    let ContainsStartSquare() = 
         letters.ContainsKey(ScrabbleConfig.StartCoordinate)
+    let ValidPlacement() = 
+        IsAligned() && IsConsecutive() && ((Game.Instance.IsOpeningMove && ContainsStartSquare()) || (not Game.Instance.IsOpeningMove && IsConnected()))
+    let ComputeRuns() : Run list = 
+        let alt = Opposite(orientation)
+        let alternateRuns = sorted |> Seq.map (fun pair -> Run(pair.Key, alt, letters)) |> Seq.filter (fun r -> r.Length > 1) |> Seq.toList
+        Run(first, orientation, letters) :: alternateRuns
+    let IsValid() = 
+        ValidPlacement() && ComputeRuns() |> Seq.forall (fun r -> r.IsValid())
+    let ComputeScore() =
+        ComputeRuns() |> List.sumBy (fun r -> r.Score())
+
+    let score = 
+        if IsValid() then
+            ComputeScore()
+        else
+            raise (InvalidMoveException("Move is not valid."))
+
+    member this.Orientation with get() = orientation
+    member this.Letters with get() = letters
+    member this.Score with get() = score
+    
 
 /// A Run is a series of connected letters in a given direction. This type takes a location and direction and constructs a map of connected tiles to letters in the given direction.
-and Run(c:Coordinate, o:Orientation) = 
+and Run(c:Coordinate, o:Orientation, moveLetters:Map<Coordinate, Tile>) = 
+    let GetTileFromMove(c:Coordinate) = 
+        match moveLetters.TryFind c with
+        | Some t -> t :> obj
+        | None -> Game.Instance.PlayingBoard.Get(c).Tile
     let rec Check(c:Coordinate, o:Orientation, increment) =
         if not (c.IsValid()) then
             []
         else 
             let s = Game.Instance.PlayingBoard.Get(c)
-            if s.Tile <> null then
+            let t = GetTileFromMove(c)
+            if t <> null then
                 let next = increment(c, o)
-                s :: Check(next, o, increment)
+                (s, t) :: Check(next, o, increment)
             else
                 []
             
     let prevSquares = Check(c, o, (fun (c:Coordinate, o:Orientation) -> c.Prev(o)))
     let nextSquares = Check(c.Next(o), o, (fun (c:Coordinate, o:Orientation) -> c.Next(o)))
     let squares = (List.rev prevSquares) @ nextSquares 
+
     member this.Orientation with get() = o
     member this.Squares with get() = squares
     member this.Length with get() = squares.Length
     member this.ToWord() =
-        squares |> List.map (fun s -> s.Tile :?> Tile) |> List.map (fun t -> t.Letter.ToString()) |> List.reduce (fun s0 s1 -> s0 + s1)
+        squares |> List.map (fun (s, t) -> t :?> Tile) |> List.map (fun t -> t.Letter.ToString()) |> List.reduce (fun s0 s1 -> s0 + s1)
+    member this.IsValid() = 
+        Game.Instance.Dictionary.IsValidWord(this.ToWord())
+    member this.Score() =
+        let wordMult = squares |> List.map (fun (s, t) -> s.WordMultiplier) |> List.reduce (fun a b -> a * b)
+        let letterScore = squares |> List.map (fun (s, t) -> (s, t :?> Tile)) |> List.map (fun (s, t) ->  s.LetterMultiplier * t.Score ) |> List.sum
+        wordMult * letterScore

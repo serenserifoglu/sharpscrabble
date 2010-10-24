@@ -18,10 +18,10 @@ let TileTest() =
 let BagTest() = 
     let bag = Bag()
     bag.PrintAll()
-    bag.Take(90)
+    let whoCares = bag.Take(90)
     printfn "I took 90 tiles from the bag."
     bag.PrintRemaining()
-    bag.Take(6)
+    let whoCares = bag.Take(6)
     printfn "I took 6 tiles from the bag."
     bag.PrintRemaining()
     //let's make sure we only get two and don't get an out of range ex ;)
@@ -37,8 +37,8 @@ let BagTest() =
 
 let MoveTest() = 
     let m = Move(Map.ofList [(Coordinate(10, 6), Tile('S')); (Coordinate(10, 7), Tile('H')); (Coordinate(10, 8), Tile('I')); (Coordinate(10, 9), Tile('T'))])    
-    let aligned = m.IsAligned()
-    let consecutive = m.IsConsecutive()
+//    let aligned = m.IsAligned()
+//    let consecutive = m.IsConsecutive()
     
     Game.Instance.PlayingBoard.Put(m)
     Game.Instance.PlayingBoard.PrettyPrint()
@@ -47,18 +47,18 @@ let MoveTest() =
 let ValidConnectedMoves() = 
     let m0 = Move(Map.ofList [ (Coordinate(10, 6), Tile('H')); (Coordinate(10, 7), Tile('E')); (Coordinate(10, 8), Tile('L')); (Coordinate(10, 9), Tile('L')); (Coordinate(10, 10), Tile('O'))])
 
-    let aligned = m0.IsAligned()
-    let consecutive = m0.IsConsecutive()
-    let connected = m0.IsConnected()
+//    let aligned = m0.IsAligned()
+//    let consecutive = m0.IsConsecutive()
+//    let connected = m0.IsConnected()
     
     Game.Instance.PlayingBoard.Put(m0)
     Game.Instance.NextMove()
 
     let m1 = Move(Map.ofList [ (Coordinate(9, 10), Tile('W')); (Coordinate(11, 10), Tile('R')); (Coordinate(12, 10), Tile('L')); (Coordinate(13, 10), Tile('D'))])
 
-    let aligned = m1.IsAligned()
-    let consecutive = m1.IsConsecutive()
-    let connected = m1.IsConnected()
+//    let aligned = m1.IsAligned()
+//    let consecutive = m1.IsConsecutive()
+//    let connected = m1.IsConnected()
 
     Game.Instance.PlayingBoard.Put(m1)
 
@@ -67,18 +67,18 @@ let ValidConnectedMoves() =
 let DisjointMoves() = 
     let m0 = Move(Map.ofList [ (Coordinate(10, 6), Tile('H')); (Coordinate(10, 7), Tile('E')); (Coordinate(10, 8), Tile('L')); (Coordinate(10, 9), Tile('L')); (Coordinate(10, 10), Tile('O'))])
 
-    let aligned = m0.IsAligned()
-    let consecutive = m0.IsConsecutive()
-    let connected = m0.IsConnected()
+//    let aligned = m0.IsAligned()
+//    let consecutive = m0.IsConsecutive()
+//    let connected = m0.IsConnected()
     
     Game.Instance.PlayingBoard.Put(m0)
     Game.Instance.NextMove()
 
     let m1 = Move(Map.ofList[ (Coordinate(5, 12), Tile('P')); (Coordinate(6, 12), Tile('O')); (Coordinate(7, 12), Tile('O')); (Coordinate(8, 12), Tile('P'))])
 
-    let aligned = m1.IsAligned()
-    let consecutive = m1.IsConsecutive()
-    let connected = m1.IsConnected()
+//    let aligned = m1.IsAligned()
+//    let consecutive = m1.IsConsecutive()
+//    let connected = m1.IsConnected()
 
     Game.Instance.PlayingBoard.Put(m1)
 
@@ -87,31 +87,21 @@ let DisjointMoves() =
 let ExtendMove() = 
     let m0 = Move(Map.ofList [ (Coordinate(10, 6), Tile('H')); (Coordinate(10, 7), Tile('E')); (Coordinate(10, 8), Tile('L')); (Coordinate(10, 9), Tile('L')); ])
 
-    let aligned = m0.IsAligned()
-    let consecutive = m0.IsConsecutive()
-    let connected = m0.IsConnected()
+//    let aligned = m0.IsAligned()
+//    let consecutive = m0.IsConsecutive()
+//    let connected = m0.IsConnected()
     
     Game.Instance.PlayingBoard.Put(m0)
     Game.Instance.NextMove()
 
     let m1 = Move(Map.ofList[ (Coordinate(9, 10), Tile('P')); (Coordinate(10, 10), Tile('O')); (Coordinate(11, 10), Tile('O')); (Coordinate(12, 10), Tile('P')) ])
-
-    let aligned = m1.IsAligned()
-    let consecutive = m1.IsConsecutive()
-    let connected = m1.IsConnected()
+    
+//    let aligned = m1.IsAligned()
+//    let consecutive = m1.IsConsecutive()
+//    let connected = m1.IsConnected()
 
     Game.Instance.PlayingBoard.Put(m1)
 
-    Game.Instance.PlayingBoard.PrettyPrint()
-
-let RunTest() = 
-    let m = Move(Map.ofList [ (Coordinate(10, 6), Tile('B')); (Coordinate(10, 7), Tile('A')); (Coordinate(10, 8), Tile('N')); (Coordinate(10, 9), Tile('A')); (Coordinate(10, 10), Tile('N')); (Coordinate(10, 11), Tile('A'));])
-    Game.Instance.PlayingBoard.Put(m)
-    let m2 = Move(Map.ofList [ (Coordinate(10, 12), Tile('S')); (Coordinate(11, 12), Tile('H')); (Coordinate(12, 12), Tile('I')); (Coordinate(13, 12), Tile('T')) ] )
-    Game.Instance.PlayingBoard.Put(m2)
-
-    let r = Run(Coordinate(10, 8), Orientation.Vertical)
-    let banana = r.ToWord()
     Game.Instance.PlayingBoard.PrettyPrint()
 
 let ValidWordTest() =
