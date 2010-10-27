@@ -37,6 +37,29 @@ namespace Scrabble.UI
             DisplayLetter.Text = Letter;
             DisplayScore.Text = Score.ToString();
         }
+
+        //drag/drop code
+        private Point ddMouseStart;
+        protected override void OnMouseDown(MouseButtonEventArgs e)
+        {
+            ddMouseStart = e.GetPosition(null);
+        }
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            // Get the current position
+            Point mousePos = e.GetPosition(null);
+            Vector diff = ddMouseStart - mousePos;
+
+            if (e.LeftButton == MouseButtonState.Pressed &&
+                Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance &&
+                Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)
+            {
+                DataObject thisTileData = new DataObject("scTile", this);
+                DragDrop.DoDragDrop(this, thisTileData, DragDropEffects.Move);
+            }
+        }
+
+
         public string Letter { get; set; }
         public int Score { get; set; }
     }
