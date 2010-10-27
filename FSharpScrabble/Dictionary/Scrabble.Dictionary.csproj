@@ -46,12 +46,6 @@
     <Compile Include="WordLookup.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\FSharpScrabble\Scrabble.Core.fsproj">
-      <Project>{82EDB7D2-782C-4985-84F8-EC61D8AF52C8}</Project>
-      <Name>Scrabble.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="OfficialDictionary\twl.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

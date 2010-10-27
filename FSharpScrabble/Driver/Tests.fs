@@ -96,7 +96,7 @@ let DictionaryTest() =
     //this will take a few seconds to initialize the dictionary's data structure
     let lookup = WordLookup() 
 
-    let tiles = seq [| Tile('E'); Tile('A'); Tile('T'); Tile('S'); Tile('T');  |]
+    let tiles = seq [| 'E'; 'A'; 'T'; 'S'; 'T';  |]
 
     let watch = System.Diagnostics.Stopwatch()
     watch.Start()
