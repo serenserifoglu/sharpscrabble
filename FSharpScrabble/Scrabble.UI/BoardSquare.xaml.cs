@@ -11,7 +11,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Scrabble.Core;
 
 namespace Scrabble.UI
 {
@@ -23,6 +22,18 @@ namespace Scrabble.UI
         public BoardSquare()
         {
             InitializeComponent();
+
+            this.AllowDrop = true;
+            this.Drop += new DragEventHandler(BoardSquare_Drop);
+        }
+
+        //drag/drop code - no idea wtf i'm doing
+        void BoardSquare_Drop(object sender, DragEventArgs e)
+        {
+
+            Tile t = (Tile)e.Data.GetData("scTile");
+            Put(t);
+                        
         }
 
         public void Put(Tile sqToPlace)
