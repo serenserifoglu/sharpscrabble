@@ -6,5 +6,7 @@
         <ImageBrush x:Key="CenterSquare" ImageSource="images\CenterSquare.jpg">
             
         </ImageBrush>        
+        <ImageBrush x:Key="Desk" ImageSource="images\Desk_Texture.jpg"></ImageBrush>
+        <ImageBrush x:Key="BoardEdge" ImageSource="images\vinyl.jpg"></ImageBrush>
     </Application.Resources>
 </Application>
