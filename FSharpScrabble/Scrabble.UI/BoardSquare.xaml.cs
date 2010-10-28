@@ -36,17 +36,27 @@ namespace Scrabble.UI
             Tiles these = (Tiles)layout.Parent;
             these.PlayerTiles.Remove(t);
             letterTray.Children.Remove(t);
-            Put(t);
+            if (!Put(t))
+            {
+                //put stuff back noob
+                these.PlayerTiles.Add(t);
+                letterTray.Children.Add(t);
+            }
             Redraw();
-            
         }
 
-        public void Put(Tile sqToPlace)
+        public bool Put(Tile sqToPlace)
         {
             if (PlacedTile == null)
+            {
                 PlacedTile = sqToPlace;
+                return true;
+            }
             else
-                throw new Exception("There's already a tile there.  Wrong game, dude.");
+            {
+                MessageBox.Show("There's already a tile there.  Wrong game, dude.");
+                return false;
+            }
         }
 
         public void Redraw()
