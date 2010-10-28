@@ -30,10 +30,15 @@ namespace Scrabble.UI
         //drag/drop code - no idea wtf i'm doing
         void BoardSquare_Drop(object sender, DragEventArgs e)
         {
-
             Tile t = (Tile)e.Data.GetData("scTile");
+            StackPanel letterTray = (StackPanel)t.Parent;
+            Grid layout = (Grid)letterTray.Parent;
+            Tiles these = (Tiles)layout.Parent;
+            these.PlayerTiles.Remove(t);
+            letterTray.Children.Remove(t);
             Put(t);
-                        
+            Redraw();
+            
         }
 
         public void Put(Tile sqToPlace)
