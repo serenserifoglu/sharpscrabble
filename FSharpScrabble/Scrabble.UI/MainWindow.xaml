@@ -10,7 +10,7 @@
         <RowDefinition Height="50"></RowDefinition>
       </Grid.RowDefinitions>
       <ui:Board x:Name="GameBoard" Grid.Row="0"></ui:Board>
-      <ui:Tiles x:Name="Player1Tiles" Grid.Row="1" PlayerName="POne"></ui:Tiles>
-      <ui:Tiles x:Name="Player2Tiles" Grid.Row="2" PlayerName="PTwo"></ui:Tiles>
+      <ui:Tiles x:Name="Player0Tiles" Grid.Row="1" PlayerName="Billy"></ui:Tiles>
+      <ui:Tiles x:Name="Player1Tiles" Grid.Row="2" PlayerName="Jimmy"></ui:Tiles>
     </Grid>
 </Window>

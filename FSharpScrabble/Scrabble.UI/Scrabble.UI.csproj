@@ -68,6 +68,7 @@
     <Compile Include="Tiles.xaml.cs">
       <DependentUpon>Tiles.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UtilityFunctions.cs" />
     <Page Include="Board.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
