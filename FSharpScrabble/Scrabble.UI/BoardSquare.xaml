@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
              d:DesignHeight="40" d:DesignWidth="40" BorderBrush="Black" BorderThickness="1" Background="White">
-    <Canvas Height="40" Width="40" x:Name="SquareContainer">
+    <Canvas Height="40" Width="40" x:Name="SquareContainer" Background="{StaticResource InterestingSquare}">
             
     </Canvas>
 </UserControl>
