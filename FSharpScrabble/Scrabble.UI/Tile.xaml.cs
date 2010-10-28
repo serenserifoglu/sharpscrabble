@@ -53,7 +53,8 @@ namespace Scrabble.UI
 
             if (e.LeftButton == MouseButtonState.Pressed &&
                 Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance &&
-                Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance)
+                Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance && 
+                !(this.Parent is BoardSquare) )  //can only move from a tile "rack", not a board square
             {
                 DataObject thisTileData = new DataObject("scTile", this);
                 DragDrop.DoDragDrop(this, thisTileData, DragDropEffects.Move);
