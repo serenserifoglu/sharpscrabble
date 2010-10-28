@@ -44,6 +44,7 @@ namespace Scrabble.UI
         {
             ddMouseStart = e.GetPosition(null);
         }
+
         protected override void OnMouseMove(MouseEventArgs e)
         {
             // Get the current position
