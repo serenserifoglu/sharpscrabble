@@ -27,7 +27,7 @@ namespace Scrabble.UI
 
         public void NextTurn()
         {
-            WhoseTurn = WhoseTurn++ % NumPlayers;
+            WhoseTurn = ++WhoseTurn % NumPlayers;
         }
         
         public int NumPlayers = 2;
