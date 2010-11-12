@@ -48,15 +48,52 @@ type Bag() =
         this.Take(1).[0]
 
 [<AbstractClass>]
+type Turn() =
+    abstract member Perform : ITurnImplementor -> unit
+
+and Pass() = 
+    inherit Turn()
+    override this.Perform(implementor) = 
+        implementor.PerformPass()
+
+and DumpLetters() = 
+    inherit Turn()
+    override this.Perform(implementor) = 
+        implementor.PerformDumpLetters()
+
+and PlaceMove(letters:Map<Coordinate, Tile>) =
+    inherit Turn()
+    override this.Perform(implementor) =
+        implementor.PerformMove(this)
+    member this.Letters with get() = letters
+
+and ITurnImplementor =
+    abstract member PerformPass : unit -> unit
+    abstract member PerformDumpLetters : unit -> unit
+    abstract member PerformMove : PlaceMove -> unit
+    abstract member TakeTurn : Turn -> unit
+
+[<AbstractClass>]
 type Player(name:string) =
     let mutable tiles : Tile array = Array.zeroCreate ScrabbleConfig.MaxTiles
+    let mutable score = 0
+    abstract member NotifyTurn : ITurnImplementor -> unit
     member this.Name with get() = name
+    member this.Score with get() = score
+    member this.AddScore(s) = 
+        score <- score + s
 
 type HumanPlayer(name:string) =
     inherit Player(name)
+    override this.NotifyTurn(implementor) = 
+        ()
+    member this.TakeTurn(implementor:ITurnImplementor, t:Turn) = 
+            implementor.TakeTurn(t)
 
 type ComputerPlayer(name:string) = 
     inherit Player(name)
+    override this.NotifyTurn(implementor) =
+        ()
 
 type Board() = 
     let grid : Square[,] = Array2D.init ScrabbleConfig.BoardLength ScrabbleConfig.BoardLength (fun x y -> ScrabbleConfig.BoardLayout (Coordinate(x, y))) 
@@ -104,7 +141,30 @@ and GameState(players:Player list) =
     let bag = Bag()
     let board = Board()
     let mutable moveCount = 0
+    let mutable currentPlayer = 0
     let wordLookup = lazy(WordLookup())
+    //Private Methods
+    let IsGameComplete() = 
+        //TODO
+        false
+    let FinishGame() =
+        //TODO
+        ()
+    //Interface implementation
+    interface ITurnImplementor with
+        member this.PerformPass() = 
+            ()
+        member this.PerformDumpLetters() = 
+            ()
+        member this.PerformMove(turn) = 
+            let move = Move(turn.Letters)
+            ()
+        member this.TakeTurn(t:Turn) =
+            t.Perform(this)
+            if IsGameComplete() = false then
+                this.NextMove()
+            else
+                FinishGame()
     //Properties
     member this.TileBag with get() = bag
     member this.PlayingBoard with get() = board
@@ -112,13 +172,17 @@ and GameState(players:Player list) =
     member this.IsOpeningMove with get() = moveCount = 0
     member this.Players with get() = players
     member this.Dictionary with get() = wordLookup.Value
+    member this.CurrentPlayer with get() = List.nth players currentPlayer
     //Public Methods
     member this.NextMove() =
         moveCount <- moveCount + 1
+        currentPlayer <- currentPlayer + 1
+        if currentPlayer >= players.Length then
+            currentPlayer <- 0
 
 /// A singleton that will represent the game board, bag of tiles, players, move count, etc.
 and Game() = 
-    static let instance = lazy(GameState([ HumanPlayer("Will") :> Player; ComputerPlayer("Com") :> Player ])) //Pretty sweet, huh? Hard coding stuff...
+    static let instance = lazy(GameState([ HumanPlayer("Apprentice") :> Player; ComputerPlayer("Master") :> Player ])) //Pretty sweet, huh? Hard coding stuff...
     static member Instance with get() = instance.Value
 
 /// A player's move is a set of coordinates and tiles. This will throw if the move isn't valid.
