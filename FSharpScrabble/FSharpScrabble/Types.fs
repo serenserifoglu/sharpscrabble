@@ -243,7 +243,9 @@ and GameState(players:Player list) =
             this.GiveTiles(this.CurrentPlayer, dl.Letters.Count())
         member this.PerformMove(turn) =
             passCount <- 0 
-            board.Put(Move(turn.Letters))
+            let move = Move(turn.Letters)
+            board.Put(move)
+            this.CurrentPlayer.AddScore(move.Score)
             this.GiveTiles(this.CurrentPlayer, turn.Letters.Count)
         member this.TakeTurn(t:Turn) =
             t.Perform(this)
