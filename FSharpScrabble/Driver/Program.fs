@@ -25,4 +25,6 @@ open System.Windows.Controls
 //MoveTest2()
 
 //TileListTest()
-AllTileTest()
+//AllTileTest()
+
+//BagTest()

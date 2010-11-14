@@ -38,11 +38,11 @@ type TileList =
     new (capacity:int) = { inherit List<Tile>(capacity) }
 
     member this.RemoveMany(l:seq<Tile>) = 
-        l |> Seq.iter (fun i -> 
+        let remove i = 
             match this.Remove(i) with
             | true -> ()
             | false -> raise (Exception(String.Format("Cannot remove tile '{0}', it is not in the collection.", i.Letter)))
-        )
+        l |> Seq.iter remove
     member this.Shuffle() = 
         let rng = Random();  
         let mutable n = this.Count  
@@ -61,26 +61,24 @@ type TileList =
 
 type Bag() = 
     let mutable pointer = 0;
-    let inventory = 
-        ScrabbleConfig.LetterQuantity
-        |> Seq.map (fun kv -> Array.create kv.Value (Tile(kv.Key)))
-        |> Seq.reduce (fun a0 a1 -> Array.append a0 a1)
-        |> Seq.sortBy (fun t -> System.Guid.NewGuid()) //according to Stackoverflow, this is a totally cool way to shuffle
-        |> Seq.toArray
-    member this.IsEmpty with get() = inventory.Length = pointer
-    member this.PrintAll() = inventory |> Seq.iter (fun t -> t.Print())
-    member this.PrintRemaining() = 
-        for i = pointer to inventory.Length - 1 do
-            inventory.[i].Print()
+    let inventory = TileList()
+    //populate the bag
+    do
+        ScrabbleConfig.LetterQuantity |> Seq.iter (fun kv -> Helper.nTimes kv.Value (fun () -> inventory.Add(Tile(kv.Key))))
+        inventory.Shuffle()
+
+    member this.IsEmpty with get() = inventory.Count = 0
+    member this.Print() = inventory |> Seq.iter (fun t -> t.Print())
     member this.Take(n:int) = 
         if this.IsEmpty then
             raise (Exception("The bag is empty, you can not take any tiles."))
-        let canTake = System.Math.Min(inventory.Length - pointer, n)
-        let old = pointer
-        pointer <- pointer + canTake
-        Array.sub inventory old canTake
+        let canTake = System.Math.Min(inventory.Count, n)
+        inventory.Draw canTake
     member this.Take() = 
         this.Take(1).[0]
+    member this.Put(tiles:seq<Tile>) = 
+        inventory.AddRange(tiles)
+        inventory.Shuffle()
 
 [<AbstractClass>]
 type Turn() =

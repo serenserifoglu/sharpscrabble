@@ -1,5 +1,6 @@
 ﻿module Scrabble.Tests
 
+open System
 open Scrabble.Core
 open Scrabble.Core.Squares
 open Scrabble.Core.Types
@@ -29,23 +30,26 @@ let AllTileTest() =
 
 let BagTest() = 
     let bag = Bag()
-    bag.PrintAll()
-    let whoCares = bag.Take(90)
+    bag.Print()
+    let lotsOfTiles = bag.Take(90)
     printfn "I took 90 tiles from the bag."
-    bag.PrintRemaining()
+    bag.Print()
     let whoCares = bag.Take(6)
     printfn "I took 6 tiles from the bag."
-    bag.PrintRemaining()
+    bag.Print()
     //let's make sure we only get two and don't get an out of range ex ;)
     let lastTiles = bag.Take(7)
-    printfn "I wanted to take 7 tiles from the bag, but I only got %i." lastTiles.Length
+    printfn "I wanted to take 7 tiles from the bag, but I only got %i." lastTiles.Count
     printfn "The last tiles I took were:"
     lastTiles |> Seq.iter (fun t -> t.Print())
     printfn "I want to make sure the bag is really empty. This next line should print nothing."
-    bag.PrintRemaining()
+    bag.Print()
 
-    //this line will throw
-    //bag.Take()
+    try
+        let whatever = bag.Take()
+        ()
+    with
+        | ex -> printfn "Taking from an empty bag yielded the following exception: %s" (ex.Message)
 
 let MoveTest() = 
     let m = Move(Map.ofList [(Coordinate(7, 7), Tile('S')); (Coordinate(7, 8), Tile('H')); (Coordinate(7, 9), Tile('I')); (Coordinate(7, 10), Tile('T'))])    
@@ -53,6 +57,7 @@ let MoveTest() =
     Game.Instance.PlayingBoard.Put(m)
     Game.Instance.PlayingBoard.PrettyPrint()
 
+(* - These next two tests don't compile
 let MoveTest2() = 
     let m = Move(Map.ofList [ (Coordinate(5, 7), Tile('S')); (Coordinate(6, 7), Tile('T')); (Coordinate(7, 7), Tile('A')); (Coordinate(8, 7), Tile('N')); (Coordinate(9, 7), Tile('D')) ])
     printfn "first move score = %i" m.Score
@@ -73,6 +78,8 @@ let InvalidMove() =
         Game.Instance.PlayingBoard.Put(m2)
     with
         | InvalidMoveException(msg) -> printfn "Invalid move: %s" msg
+*)
+
 let ValidWordTest() =
     let valid1 = Game.Instance.Dictionary.IsValidWord("banana")
     let valid2 = Game.Instance.Dictionary.IsValidWord("piss")
