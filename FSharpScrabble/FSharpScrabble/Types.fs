@@ -237,8 +237,10 @@ and GameState(players:Player list) =
         member this.PerformPass() = 
             passCount <- passCount + 1
         member this.PerformDumpLetters(dl) =
-            //TODO
-            ()
+            this.CurrentPlayer.Tiles.RemoveMany(dl.Letters)
+            bag.Put(dl.Letters)
+            let newTiles = bag.Take(dl.Letters.Count())
+            this.CurrentPlayer.Tiles.AddRange(newTiles)
         member this.PerformMove(turn) = 
             board.Put(Move(turn.Letters))
         member this.TakeTurn(t:Turn) =

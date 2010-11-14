@@ -57,7 +57,7 @@ let MoveTest() =
     Game.Instance.PlayingBoard.Put(m)
     Game.Instance.PlayingBoard.PrettyPrint()
 
-(* - These next two tests don't compile
+(* - These next two tests don't compile anymore
 let MoveTest2() = 
     let m = Move(Map.ofList [ (Coordinate(5, 7), Tile('S')); (Coordinate(6, 7), Tile('T')); (Coordinate(7, 7), Tile('A')); (Coordinate(8, 7), Tile('N')); (Coordinate(9, 7), Tile('D')) ])
     printfn "first move score = %i" m.Score
