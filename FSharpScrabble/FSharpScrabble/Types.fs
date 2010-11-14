@@ -113,7 +113,7 @@ type Player(name:string) =
     let mutable score = 0
     abstract member NotifyTurn : ITurnImplementor -> unit
     abstract member NotifyGameOver : GameOutcome -> unit
-    abstract member DrawTurn : Turn -> unit
+    abstract member DrawTurn : Turn * Player -> unit
     member this.Name with get() = name
     member this.Score with get() = score
     member this.Tiles with get() = tiles
@@ -125,7 +125,7 @@ type Player(name:string) =
     member this.TakeTurn(implementor:ITurnImplementor, t:Turn) = 
         implementor.TakeTurn(t)
 
-and GameOutcome(winners:Player list) =
+and GameOutcome(winners:seq<Player>) =
     member this.Winners with get() = winners
 
 type ComputerPlayer(name:string) = 
@@ -135,9 +135,9 @@ type ComputerPlayer(name:string) =
         raise (NotImplementedException())
     override this.NotifyTurn(implementor) =
         this.TakeTurn(implementor, Think())
-    override this.NotifyGameOver(o:GameOutcome) = 
+    override this.NotifyGameOver(_) = 
         () //intentionally left blank
-    override this.DrawTurn(t:Turn) = 
+    override this.DrawTurn(_, _) = 
         () //intentionally left blank
 
 type HumanPlayer(name:string) =
@@ -149,15 +149,15 @@ type HumanPlayer(name:string) =
         this.window.NotifyTurn()
     override this.NotifyGameOver(o:GameOutcome) = 
         this.window.GameOver(o)
-    override this.DrawTurn(t:Turn) = 
-        this.window.DrawTurn(t)
+    override this.DrawTurn(t:Turn, p:Player) = 
+        this.window.DrawTurn(t, p)
     member this.Window with get() = this.window and set w = this.window <- w
     member this.TakeTurn(t:Turn) = 
         base.TakeTurn(this.game, t)
 
 and IGameWindow =
     abstract member NotifyTurn : unit -> unit
-    abstract member DrawTurn : Turn -> unit
+    abstract member DrawTurn : Turn * Player -> unit
     abstract member Player : HumanPlayer with get, set
     abstract member GameOver : GameOutcome -> unit
 
@@ -215,7 +215,7 @@ and GameState(players:Player list) =
     do
         players |> List.iter (fun p -> p.Tiles.AddRange(bag.Take ScrabbleConfig.MaxTiles))
 
-    //Private Methods
+    //Private functions
     let IsGameComplete() = 
         //a game of Scrabble is over when a player has 0 tiles, or each player has passed twice
         players |> List.exists (fun p -> not p.HasTiles) || passCount = players.Length * 2
@@ -226,7 +226,7 @@ and GameState(players:Player list) =
     let WinningPlayers() = 
         //we could have a tie, so this will return a list
         let max = players |> List.maxBy (fun p -> p.Score)
-        players |> List.filter (fun p -> p.Score = max.Score)
+        players |> List.filter (fun p -> p.Score = max.Score) |> Seq.toList
     let FinishGame() =
         FinalizeScores()
         let o = GameOutcome(WinningPlayers())
@@ -237,16 +237,18 @@ and GameState(players:Player list) =
         member this.PerformPass() = 
             passCount <- passCount + 1
         member this.PerformDumpLetters(dl) =
+            passCount <- 0
             this.CurrentPlayer.Tiles.RemoveMany(dl.Letters)
             bag.Put(dl.Letters)
-            let newTiles = bag.Take(dl.Letters.Count())
-            this.CurrentPlayer.Tiles.AddRange(newTiles)
-        member this.PerformMove(turn) = 
+            this.GiveTiles(this.CurrentPlayer, dl.Letters.Count())
+        member this.PerformMove(turn) =
+            passCount <- 0 
             board.Put(Move(turn.Letters))
+            this.GiveTiles(this.CurrentPlayer, turn.Letters.Count)
         member this.TakeTurn(t:Turn) =
             t.Perform(this)
             //show this move to the other players
-            this.OtherPlayers() |> Seq.iter (fun p -> p.DrawTurn(t))
+            this.OtherPlayers() |> Seq.iter (fun p -> p.DrawTurn(t, this.CurrentPlayer))
             if IsGameComplete() = false then
                 this.NextMove()
             else
@@ -274,6 +276,14 @@ and GameState(players:Player list) =
         this.OtherPlayers this.CurrentPlayer
     member private this.OtherPlayers(current:Player) = 
         players |> List.filter (fun p -> p <> current)
+    member private this.GiveTiles(p:Player, n:int) = 
+        if not bag.IsEmpty then
+            let newTiles = bag.Take(n)
+            p.Tiles.AddRange(newTiles)
+
+    //Public Members
+    member this.Start() = 
+        this.CurrentPlayer.NotifyTurn(this)
 
 /// A singleton that will represent the game board, bag of tiles, players, move count, etc.
 and Game() = 
