@@ -277,9 +277,8 @@ and GameState(players:Player list) =
     member private this.OtherPlayers(current:Player) = 
         players |> List.filter (fun p -> p <> current)
     member private this.GiveTiles(p:Player, n:int) = 
-        if not bag.IsEmpty then
-            let newTiles = bag.Take(n)
-            p.Tiles.AddRange(newTiles)
+        let newTiles = bag.Take(n) //if there's less than n tiles in the bag, they get the remaining
+        p.Tiles.AddRange(newTiles)
 
     //Public Members
     member this.Start() = 
