@@ -8,3 +8,9 @@ let ToKey (pair : Collections.Generic.KeyValuePair<_, _>) =
 
 let ToValue (pair : Collections.Generic.KeyValuePair<_, _>) =
     pair.Value
+
+let nTimes n f = 
+    let mutable i = n
+    while i > 0 do
+        f()
+        i <- i - 1

@@ -1,6 +1,8 @@
 ﻿namespace Scrabble.Core.Types
 
 open System
+open System.Linq;
+open System.Collections.Generic
 open Scrabble.Core
 open Scrabble.Core.Config
 open Scrabble.Core.Squares
@@ -23,6 +25,39 @@ type Tile(letter:char) =
     member this.Letter with get() = letter
     member this.Score with get() = score
     member this.Print() = printfn "Letter: %c, Score: %i" this.Letter this.Score
+    override this.GetHashCode() =
+        this.Letter.GetHashCode()
+    override this.Equals(o) =
+        match o with
+        | :? Tile as other -> this.Letter = other.Letter
+        | _ -> false
+
+type TileList = 
+    inherit List<Tile>
+    new () = { inherit List<Tile>() }
+    new (capacity:int) = { inherit List<Tile>(capacity) }
+
+    member this.RemoveMany(l:seq<Tile>) = 
+        l |> Seq.iter (fun i -> 
+            match this.Remove(i) with
+            | true -> ()
+            | false -> raise (Exception(String.Format("Cannot remove tile '{0}', it is not in the collection.", i.Letter)))
+        )
+    member this.Shuffle() = 
+        let rng = Random();  
+        let mutable n = this.Count  
+        while n > 1 do 
+            n <- n - 1 
+            let k = rng.Next(n + 1)
+            let value = this.[k] 
+            this.[k] <- this.[n]
+            this.[n] <- value
+    member this.Score() = 
+        this |> Seq.sumBy (fun t -> t.Score)
+    member this.Draw(n:int) = 
+        let ret = this.Take(n).ToList()
+        this.RemoveRange(0, n)
+        ret
 
 type Bag() = 
     let mutable pointer = 0;
@@ -56,10 +91,11 @@ and Pass() =
     override this.Perform(implementor) = 
         implementor.PerformPass()
 
-and DumpLetters() = 
+and DumpLetters(letters:seq<Tile>) = 
     inherit Turn()
     override this.Perform(implementor) = 
-        implementor.PerformDumpLetters()
+        implementor.PerformDumpLetters(this)
+    member this.Letters with get() = letters
 
 and PlaceMove(letters:Map<Coordinate, Tile>) =
     inherit Turn()
@@ -69,31 +105,53 @@ and PlaceMove(letters:Map<Coordinate, Tile>) =
 
 and ITurnImplementor =
     abstract member PerformPass : unit -> unit
-    abstract member PerformDumpLetters : unit -> unit
+    abstract member PerformDumpLetters : DumpLetters -> unit
     abstract member PerformMove : PlaceMove -> unit
     abstract member TakeTurn : Turn -> unit
 
 [<AbstractClass>]
 type Player(name:string) =
-    let mutable tiles : Tile array = Array.zeroCreate ScrabbleConfig.MaxTiles
+    let tiles = TileList()
     let mutable score = 0
     abstract member NotifyTurn : ITurnImplementor -> unit
+    abstract member NotifyGameOver : GameOutcome -> unit
     member this.Name with get() = name
     member this.Score with get() = score
+    member this.Tiles with get() = tiles
+    member this.HasTiles with get() = tiles.Count > 0
     member this.AddScore(s) = 
         score <- score + s
-
-type HumanPlayer(name:string) =
-    inherit Player(name)
-    override this.NotifyTurn(implementor) = 
-        ()
+    member this.FinalizeScore() =
+        score <- score - this.Tiles.Score()
     member this.TakeTurn(implementor:ITurnImplementor, t:Turn) = 
-            implementor.TakeTurn(t)
+        implementor.TakeTurn(t)
+
+and GameOutcome(winners:Player list) =
+    member this.Winners with get() = winners
 
 type ComputerPlayer(name:string) = 
     inherit Player(name)
+    let Think() : Turn = 
+        //TODO - AI goes here ;)
+        raise (NotImplementedException())
     override this.NotifyTurn(implementor) =
+        this.TakeTurn(implementor, Think())
+    override this.NotifyGameOver(o:GameOutcome) = 
+        () //intentionally left blank
+
+type HumanPlayer(name:string) =
+    inherit Player(name)
+    [<DefaultValue>] val mutable Window : IGameWindow
+    override this.NotifyTurn(implementor) = 
         ()
+    override this.NotifyGameOver(o:GameOutcome) = 
+        this.Window.GameOver(o)
+
+and IGameWindow =
+    abstract member NotifyTurn : unit -> unit
+    abstract member DrawTurn : Turn -> unit
+    abstract member Player : HumanPlayer with get, set
+    abstract member GameOver : GameOutcome -> unit
 
 type Board() = 
     let grid : Square[,] = Array2D.init ScrabbleConfig.BoardLength ScrabbleConfig.BoardLength (fun x y -> ScrabbleConfig.BoardLayout (Coordinate(x, y))) 
@@ -141,44 +199,66 @@ and GameState(players:Player list) =
     let bag = Bag()
     let board = Board()
     let mutable moveCount = 0
-    let mutable currentPlayer = 0
+    let rng = Random()
+    let mutable currentPlayer = rng.Next(players.Length)
+    let mutable passCount = 0
     let wordLookup = lazy(WordLookup())
+    //draw tiles for each player
+    do
+        players |> List.iter (fun p -> p.Tiles.AddRange(bag.Take ScrabbleConfig.MaxTiles))
+
     //Private Methods
     let IsGameComplete() = 
-        //TODO
-        false
+        //a game of Scrabble is over when a player has 0 tiles, or each player has passed twice
+        players |> List.exists (fun p -> not p.HasTiles) || passCount = players.Length * 2
+    let OtherHumanPlayers(current:Player) = 
+        players |> List.filter (fun p -> p <> current)
+    let FinalizeScores() = 
+        players |> List.iter (fun p -> p.FinalizeScore())
+        let bonus = players |> List.map (fun p -> p.Tiles.Score()) |> List.sum
+        players |> List.filter (fun p -> not p.HasTiles) |> List.iter (fun p -> p.AddScore(bonus))
+    let WinningPlayers() = 
+        //we could have a tie, so this will return a list
+        let max = players |> List.maxBy (fun p -> p.Score)
+        players |> List.filter (fun p -> p.Score = max.Score)
     let FinishGame() =
-        //TODO
-        ()
+        FinalizeScores()
+        let o = GameOutcome(WinningPlayers())
+        players |> List.iter (fun p -> p.NotifyGameOver(o))
+
     //Interface implementation
     interface ITurnImplementor with
         member this.PerformPass() = 
-            ()
-        member this.PerformDumpLetters() = 
+            passCount <- passCount + 1
+        member this.PerformDumpLetters(dl) =
+            //TODO
             ()
         member this.PerformMove(turn) = 
-            let move = Move(turn.Letters)
-            ()
+            board.Put(Move(turn.Letters))
         member this.TakeTurn(t:Turn) =
             t.Perform(this)
             if IsGameComplete() = false then
                 this.NextMove()
             else
                 FinishGame()
+
     //Properties
     member this.TileBag with get() = bag
     member this.PlayingBoard with get() = board
     member this.MoveCount with get() = moveCount
     member this.IsOpeningMove with get() = moveCount = 0
-    member this.Players with get() = players
+    member this.Players with get() =  List.toSeq players
+    member this.HumanPlayers with get() = this.Players.OfType<HumanPlayer>()
     member this.Dictionary with get() = wordLookup.Value
     member this.CurrentPlayer with get() = List.nth players currentPlayer
     //Public Methods
     member this.NextMove() =
         moveCount <- moveCount + 1
+        //increment player
         currentPlayer <- currentPlayer + 1
         if currentPlayer >= players.Length then
             currentPlayer <- 0
+        this.CurrentPlayer.NotifyTurn(this)
 
 /// A singleton that will represent the game board, bag of tiles, players, move count, etc.
 and Game() = 
@@ -233,8 +313,11 @@ and Move(letters:Map<Coordinate, Tile>) =
     let ValidRuns(runs: Run list) = 
         runs |> Seq.forall (fun r -> r.IsValid())
     let ComputeScore(runs : Run list) =
-        runs |> List.sumBy (fun r -> r.Score())
-
+        let score = runs |> List.sumBy (fun r -> r.Score())
+        if letters.Count = ScrabbleConfig.MaxTiles then
+            score + ScrabbleConfig.AllTilesBonus
+        else
+            score
     let score = 
         if ValidPlacement() then
             //make sure every sequence of tiles with length > 1 formed by this move is a valid word

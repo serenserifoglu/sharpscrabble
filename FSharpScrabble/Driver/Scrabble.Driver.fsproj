@@ -37,9 +37,13 @@
   <ItemGroup>
     <Reference Include="mscorlib" />
     <Reference Include="FSharp.Core" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Tests.fs" />
@@ -54,6 +58,11 @@
     <ProjectReference Include="..\FSharpScrabble\Scrabble.Core.fsproj">
       <Name>Scrabble.Core</Name>
       <Project>{82edb7d2-782c-4985-84f8-ec61d8af52c8}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Scrabble.UI\Scrabble.UI.csproj">
+      <Name>Scrabble.UI</Name>
+      <Project>{59f243fc-5be9-4a98-87bd-aa053205c89c}</Project>
       <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
