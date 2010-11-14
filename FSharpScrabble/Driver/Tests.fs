@@ -16,6 +16,17 @@ let TileTest() =
     let w = Tile('W')
     printfn "The letter is %c with a score of %i" w.Letter w.Score
 
+let TileListTest() = 
+    let t = TileList()
+    printfn "The score of an empty list is %i" (t.Score())
+    
+let AllTileTest() = 
+    printfn "Randomized tiles:"
+    let t = TileList()
+    ScrabbleConfig.LetterQuantity |> Seq.iter (fun kv -> Helper.nTimes kv.Value (fun () -> t.Add(Tile(kv.Key))))
+    t.Shuffle()
+    t |> Seq.iter (fun t -> t.Print())
+
 let BagTest() = 
     let bag = Bag()
     bag.PrintAll()

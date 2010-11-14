@@ -24,4 +24,5 @@ open System.Windows.Controls
 
 //MoveTest2()
 
-TileListTest()
+//TileListTest()
+AllTileTest()
