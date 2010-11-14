@@ -115,6 +115,7 @@ type Player(name:string) =
     let mutable score = 0
     abstract member NotifyTurn : ITurnImplementor -> unit
     abstract member NotifyGameOver : GameOutcome -> unit
+    abstract member DrawTurn : Turn -> unit
     member this.Name with get() = name
     member this.Score with get() = score
     member this.Tiles with get() = tiles
@@ -138,14 +139,22 @@ type ComputerPlayer(name:string) =
         this.TakeTurn(implementor, Think())
     override this.NotifyGameOver(o:GameOutcome) = 
         () //intentionally left blank
+    override this.DrawTurn(t:Turn) = 
+        () //intentionally left blank
 
 type HumanPlayer(name:string) =
     inherit Player(name)
     [<DefaultValue>] val mutable Window : IGameWindow
+    [<DefaultValue>] val mutable private game : ITurnImplementor
     override this.NotifyTurn(implementor) = 
-        ()
+        this.game <- implementor
+        this.Window.NotifyTurn()
     override this.NotifyGameOver(o:GameOutcome) = 
         this.Window.GameOver(o)
+    override this.DrawTurn(t:Turn) = 
+        this.Window.DrawTurn(t)
+    member this.TakeTurn(t:Turn) = 
+        base.TakeTurn(this.game, t)
 
 and IGameWindow =
     abstract member NotifyTurn : unit -> unit
@@ -211,8 +220,6 @@ and GameState(players:Player list) =
     let IsGameComplete() = 
         //a game of Scrabble is over when a player has 0 tiles, or each player has passed twice
         players |> List.exists (fun p -> not p.HasTiles) || passCount = players.Length * 2
-    let OtherHumanPlayers(current:Player) = 
-        players |> List.filter (fun p -> p <> current)
     let FinalizeScores() = 
         players |> List.iter (fun p -> p.FinalizeScore())
         let bonus = players |> List.map (fun p -> p.Tiles.Score()) |> List.sum
@@ -237,6 +244,8 @@ and GameState(players:Player list) =
             board.Put(Move(turn.Letters))
         member this.TakeTurn(t:Turn) =
             t.Perform(this)
+            //show this move to the other players
+            this.OtherPlayers() |> Seq.iter (fun p -> p.DrawTurn(t))
             if IsGameComplete() = false then
                 this.NextMove()
             else
@@ -251,14 +260,18 @@ and GameState(players:Player list) =
     member this.HumanPlayers with get() = this.Players.OfType<HumanPlayer>()
     member this.Dictionary with get() = wordLookup.Value
     member this.CurrentPlayer with get() = List.nth players currentPlayer
-    //Public Methods
-    member this.NextMove() =
+    //Private Members
+    member private this.NextMove() =
         moveCount <- moveCount + 1
         //increment player
         currentPlayer <- currentPlayer + 1
         if currentPlayer >= players.Length then
             currentPlayer <- 0
         this.CurrentPlayer.NotifyTurn(this)
+    member private this.OtherPlayers() = 
+        this.OtherPlayers this.CurrentPlayer
+    member private this.OtherPlayers(current:Player) = 
+        players |> List.filter (fun p -> p <> current)
 
 /// A singleton that will represent the game board, bag of tiles, players, move count, etc.
 and Game() = 
