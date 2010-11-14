@@ -144,15 +144,16 @@ type ComputerPlayer(name:string) =
 
 type HumanPlayer(name:string) =
     inherit Player(name)
-    [<DefaultValue>] val mutable Window : IGameWindow
+    [<DefaultValue>] val mutable private window : IGameWindow
     [<DefaultValue>] val mutable private game : ITurnImplementor
     override this.NotifyTurn(implementor) = 
         this.game <- implementor
-        this.Window.NotifyTurn()
+        this.window.NotifyTurn()
     override this.NotifyGameOver(o:GameOutcome) = 
-        this.Window.GameOver(o)
+        this.window.GameOver(o)
     override this.DrawTurn(t:Turn) = 
-        this.Window.DrawTurn(t)
+        this.window.DrawTurn(t)
+    member this.Window with get() = this.window and set w = this.window <- w
     member this.TakeTurn(t:Turn) = 
         base.TakeTurn(this.game, t)
 
@@ -260,6 +261,7 @@ and GameState(players:Player list) =
     member this.HumanPlayers with get() = this.Players.OfType<HumanPlayer>()
     member this.Dictionary with get() = wordLookup.Value
     member this.CurrentPlayer with get() = List.nth players currentPlayer
+
     //Private Members
     member private this.NextMove() =
         moveCount <- moveCount + 1
