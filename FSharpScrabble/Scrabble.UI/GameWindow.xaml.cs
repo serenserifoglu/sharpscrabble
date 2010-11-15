@@ -40,9 +40,9 @@ namespace Scrabble.UI
         /// <param name="p"></param>
         private void DrawOpponentTurn(PlaceMove t, Player p)
         {
-            //How do you map from tile to coordinate? - only seems to work the other way, which doesn't help
-            //I can't get a coordinate out of t.Letters, going to have to do the whole board approach.
-            throw new NotImplementedException();
+            //redraw everything?
+            RedrawBoard();
+            ButtonsOn(true);
         }
 
         /// <summary>
@@ -54,6 +54,7 @@ namespace Scrabble.UI
         private void DrawOpponentTurn(DumpLetters t, Player p)
         {
             StatusBar.Text = string.Format("Player {0} dumped some letters...", p.Name);
+            ButtonsOn(true);
         }
 
         /// <summary>
@@ -64,6 +65,7 @@ namespace Scrabble.UI
         private void DrawOpponentTurn(Pass t, Player p)
         {
             StatusBar.Text = string.Format("Player {0} has passed...", p.Name);
+            ButtonsOn(true);
         }
 
         #endregion
@@ -89,12 +91,13 @@ namespace Scrabble.UI
         {
             //turn should be taken in the Done, Dump, or Pass handlers
 
-            //redraw UI based on current state
+            //Redraw entire board
+            RedrawBoard();
 
-            
+            ButtonsOn(false);
         }
 
-        /// <summary>
+         /// <summary>
         /// The player who owns this window
         /// </summary>
         public HumanPlayer Player { get; set; }
@@ -122,5 +125,20 @@ namespace Scrabble.UI
         {
             NotifyTurn();
         }
+
+        private void RedrawBoard()
+        {
+            //redraw UI based on current state
+            GameBoard.UpdateSquares(Game.Instance.PlayingBoard);
+        }
+
+        
+
+        private void ButtonsOn(bool on)
+        {
+            Done.IsEnabled = Dump.IsEnabled = Pass.IsEnabled = on;
+
+        }
+
     }
 }
