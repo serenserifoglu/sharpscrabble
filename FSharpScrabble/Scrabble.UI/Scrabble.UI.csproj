@@ -59,6 +59,9 @@
       <DependentUpon>BoardSquare.xaml</DependentUpon>
     </Compile>
     <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="SampleGameWindow.xaml.cs">
+      <DependentUpon>SampleGameWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SquareView.xaml.cs">
       <DependentUpon>SquareView.xaml</DependentUpon>
     </Compile>
@@ -70,6 +73,10 @@
     </Compile>
     <Compile Include="UtilityFunctions.cs" />
     <Page Include="Board.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="SampleGameWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
