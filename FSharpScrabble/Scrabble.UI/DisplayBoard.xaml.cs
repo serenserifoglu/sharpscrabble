@@ -12,6 +12,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Scrabble.Core;
+using Scrabble.Core.Types;
+using Scrabble.Core.Squares;
 
 namespace Scrabble.UI
 {
@@ -59,6 +61,35 @@ namespace Scrabble.UI
                 }
             }
 
+        }
+
+        public void UpdateSquares(Board instanceBoard)
+        {
+            for (int i = 0; i < _allSquares.LongLength; i++)
+            {
+                int x = i%15;
+                int y = i/15;
+                Square s = instanceBoard.Get(x,y);
+                //remove tile
+                _allSquares[x,y].PlacedTile = null;
+                //add tile if exists
+                if (!s.IsEmpty)
+                {
+                    Scrabble.Core.Types.Tile t = (Scrabble.Core.Types.Tile)s.Tile;
+                    _allSquares[x, y].Put(new Tile(t.Letter.ToString(), t.Score));
+                }
+                else if (s.WordMultiplier > 0)
+                {
+                    //special square, need to display accordingly
+                }
+                else if (s.LetterMultiplier > 0)
+                {
+                    //same deal, btw i hate else-if statements
+                }
+                    
+
+            }
+                
         }
 
         public BoardSquare SquareAt(int row, int column)

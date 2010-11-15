@@ -27,6 +27,7 @@ namespace Scrabble.UI
                 GameWindow w = new GameWindow(p);
                 p.Window = w;
                 w.Show();
+                
             }
         }
                 

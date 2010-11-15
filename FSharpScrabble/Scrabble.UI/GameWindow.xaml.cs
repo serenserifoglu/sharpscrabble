@@ -87,8 +87,11 @@ namespace Scrabble.UI
         /// </summary>
         public void NotifyTurn()
         {
+            //turn should be taken in the Done, Dump, or Pass handlers
+
+            //redraw UI based on current state
+
             
-            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -114,5 +117,10 @@ namespace Scrabble.UI
         }
 
         #endregion
+
+        private void Done_Click(object sender, RoutedEventArgs e)
+        {
+            NotifyTurn();
+        }
     }
 }
