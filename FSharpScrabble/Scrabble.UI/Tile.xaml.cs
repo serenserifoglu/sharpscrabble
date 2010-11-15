@@ -38,29 +38,10 @@ namespace Scrabble.UI
             DisplayScore.Text = Score.ToString();
         }
 
-        //drag/drop code
-        //private Point ddMouseStart;
-        //protected override void OnMouseDown(MouseButtonEventArgs e)
-        //{
-        //    ddMouseStart = e.GetPosition(null);
-        //}
-
-
-        //Moved to mousedown, seems better :)  Clicking on a tile should always trigger drag anyway...
+        //drag/drop
         protected override void OnMouseDown(MouseButtonEventArgs e)
         {
-            // Get the current position
-            //Point mousePos = e.GetPosition(null);
-            //Vector diff = ddMouseStart - mousePos;
-
-            //figure out if you're touching your own tiles, if not you're cheating and being a jerk and that just won't do
-            int whosUp = ((MainWindow)App.Current.MainWindow).WhoseTurn;
-
-            if (//e.LeftButton == MouseButtonState.Pressed &&
-                //Math.Abs(diff.X) > SystemParameters.MinimumHorizontalDragDistance &&
-                //Math.Abs(diff.Y) > SystemParameters.MinimumVerticalDragDistance && 
-                !(this.Parent is BoardSquare) &&   //can only move from a tile "rack", not a board square
-                UtilityFunctions.GetAncestorOfType<Tiles>(this).Name == string.Format("Player{0}Tiles", whosUp)) //ugh... i am terrible
+            if (!(this.Parent is BoardSquare))
             {
                 DataObject thisTileData = new DataObject("scTile", this);
                 DragDrop.DoDragDrop(this, thisTileData, DragDropEffects.Move);

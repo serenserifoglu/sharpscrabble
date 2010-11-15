@@ -16,12 +16,19 @@ namespace Scrabble.UI
     {
         public App()
         {
+            //want to launch a menu and get some info about players, but for now just start
+            StartGame();            
+        }
+
+        private void StartGame()
+        {
             foreach (HumanPlayer p in Game.Instance.HumanPlayers)
             {
-                SampleGameWindow w = new SampleGameWindow(p);
+                GameWindow w = new GameWindow(p);
                 p.Window = w;
                 w.Show();
             }
         }
+                
     }
 }

@@ -1,15 +1,9 @@
 ﻿<Application x:Class="Scrabble.UI.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             >
     <Application.Resources>
-        <ImageBrush x:Key="CenterSquare" ImageSource="images\CenterSquare.jpg">
-            
-        </ImageBrush>        
-        <ImageBrush x:Key="Desk" ImageSource="images\Desk_Texture.jpg"></ImageBrush>
-        <ImageBrush x:Key="BoardEdge" ImageSource="images\vinyl.jpg"></ImageBrush>
-        <LinearGradientBrush x:Key="InterestingSquare" StartPoint="0,0" EndPoint="1,1">
-            <GradientStop Color="Gray" Offset="0"></GradientStop>
-            <GradientStop Color="Transparent" Offset="0.5"></GradientStop>            
-        </LinearGradientBrush>
+                    
+        
     </Application.Resources>
 </Application>

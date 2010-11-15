@@ -22,12 +22,8 @@ namespace Scrabble.UI
         public Tiles()
         {
             InitializeComponent();
-            
-            //Just for testing
-            PlayerTiles = new List<Tile>() { new Tile("A", 1), 
-                new Tile("B", 1), new Tile("C",5 ), new Tile("D", 4), new Tile("E", 6), new Tile("F", 4), 
-                new Tile("G", 5)};
-
+            //initialize blank
+            PlayerTiles = new List<Tile>();
             Redraw();
         }
 
@@ -39,8 +35,7 @@ namespace Scrabble.UI
             {
                 TileRack.Children.Add(tile);
             }
-
-            //PlayerDisplayName.Text = PlayerName;
+            
         }
 
         public List<Tile> PlayerTiles { get; set; }
