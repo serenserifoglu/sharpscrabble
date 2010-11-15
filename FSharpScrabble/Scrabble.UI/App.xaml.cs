@@ -27,8 +27,10 @@ namespace Scrabble.UI
                 GameWindow w = new GameWindow(p);
                 p.Window = w;
                 w.Show();
-                
             }
+
+            //Call this to give each player tiles, and ask the first player for a move.
+            //Game.Instance.Start();
         }
                 
     }
