@@ -14,7 +14,13 @@
         <RowDefinition Height="50"></RowDefinition>
       </Grid.RowDefinitions>
       <ui:DisplayBoard x:Name="GameBoard" Grid.Row="0"></ui:DisplayBoard>
-      <ui:Tiles x:Name="PlayerTiles" Grid.Row="1"></ui:Tiles>
-        <TextBlock x:Name="StatusBar" Grid.Row="2" Text="Ready."></TextBlock>
+        <ui:Tiles x:Name="PlayerTiles" Grid.Row="1"></ui:Tiles>
+        <StackPanel Orientation="Horizontal" x:Name="TurnControls" Grid.Row="2">
+            <TextBlock x:Name="StatusBar" Text="Ready." Foreground="White" Width="200" VerticalAlignment="Center"></TextBlock>
+            <Button x:Name="Done" Content="Done" Width="100" Margin="2"></Button>
+            <Button x:Name="Pass" Content="Pass" Width="100" Margin="2"></Button>
+            <Button x:Name="Dump" Content="Dump Letters" Width="100" Margin="2"></Button>
+            
+        </StackPanel>
     </Grid>
 </Window>

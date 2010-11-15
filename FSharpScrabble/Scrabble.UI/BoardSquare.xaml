@@ -10,6 +10,11 @@
             <GradientStop Color="Gray" Offset="0"></GradientStop>
             <GradientStop Color="Transparent" Offset="0.5"></GradientStop>
         </LinearGradientBrush>
+        <LinearGradientBrush x:Key="HoverSquare" StartPoint="1,1" EndPoint="1,1">
+            <GradientStop Color="DarkOliveGreen" Offset="0"></GradientStop>
+            <GradientStop Color="Transparent" Offset="0.5"></GradientStop>
+        </LinearGradientBrush>
+                           
     </UserControl.Resources>
     <Canvas Height="40" Width="40" x:Name="SquareContainer" Background="{DynamicResource InterestingSquare}">
             

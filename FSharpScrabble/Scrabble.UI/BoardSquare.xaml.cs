@@ -27,7 +27,20 @@ namespace Scrabble.UI
             this.Drop += new DragEventHandler(BoardSquare_Drop);
         }
 
-        //drag/drop code - no idea wtf i'm doing
+
+        protected override void OnDragEnter(DragEventArgs e)
+        {
+            base.OnDragEnter(e);
+            this.Background = Resources["HoverSquare"] as Brush;
+        }
+
+        protected override void OnDragLeave(DragEventArgs e)
+        {
+            base.OnDragLeave(e);
+            this.Background = Resources["InterestingSquare"] as Brush;
+        }
+
+        //drag/drop code
         void BoardSquare_Drop(object sender, DragEventArgs e)
         {
             Tile t = (Tile)e.Data.GetData("scTile");

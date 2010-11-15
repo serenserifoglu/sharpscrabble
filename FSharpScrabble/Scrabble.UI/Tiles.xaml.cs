@@ -24,6 +24,7 @@ namespace Scrabble.UI
             InitializeComponent();
             //initialize blank
             PlayerTiles = new List<Tile>();
+            
             Redraw();
         }
 
@@ -39,6 +40,14 @@ namespace Scrabble.UI
         }
 
         public List<Tile> PlayerTiles { get; set; }
-        public string PlayerName { get; set; }
+
+
+        public string PlayerName { 
+            get { return (string)GetValue(_playerName); }
+            set { SetValue(_playerName, value); }
+        }
+
+        public static readonly DependencyProperty _playerName =
+            DependencyProperty.Register("PlayerName", typeof(string), typeof(Tiles));
     }
 }

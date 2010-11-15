@@ -20,13 +20,13 @@ namespace Scrabble.UI
     /// </summary>
     public partial class GameWindow : Window, IGameWindow
     {
-        //changed the name of this window and now it won't run...  can't find StaticResources
-        //has an issue with the renamed "DisplayBoard" class too.  WTF?
+        //Each player gets one of these, they "own" it
         public GameWindow(HumanPlayer p)
         {
             InitializeComponent();
 
             Player = p;
+            PlayerTiles.PlayerName = p.Name;
             this.Title = String.Concat("SharpScrabble - Player: ", p.Name);
         }
 
