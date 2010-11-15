@@ -110,7 +110,7 @@ namespace Scrabble.UI
         {
             if (o.Winners.Contains(Player))
             {
-                StatusBar.Text = "You won.  Congratulations.";
+                StatusBar.Text = "You won.  Congratulations.  Banana Stickers and Beer Tickets for everyone!";
             }
             else
             {
