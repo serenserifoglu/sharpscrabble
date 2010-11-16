@@ -24,7 +24,6 @@ namespace Scrabble.UI
             InitializeComponent();
             //initialize blank
             PlayerTiles = new List<Tile>();
-            
             Redraw();
         }
 
