@@ -28,6 +28,8 @@ namespace Scrabble.UI
             Player = p;
             PlayerTiles.PlayerName = p.Name;
             this.Title = String.Concat("SharpScrabble - Player: ", p.Name);
+
+            RedrawBoard();  //calling this again to show tiles.
         }
 
         #region Private Methods
@@ -42,7 +44,6 @@ namespace Scrabble.UI
         {
             //redraw everything?
             RedrawBoard();
-            ButtonsOn(true);
         }
 
         /// <summary>
@@ -54,7 +55,6 @@ namespace Scrabble.UI
         private void DrawOpponentTurn(DumpLetters t, Player p)
         {
             StatusBar.Text = string.Format("Player {0} dumped some letters...", p.Name);
-            ButtonsOn(true);
         }
 
         /// <summary>
@@ -65,7 +65,32 @@ namespace Scrabble.UI
         private void DrawOpponentTurn(Pass t, Player p)
         {
             StatusBar.Text = string.Format("Player {0} has passed...", p.Name);
-            ButtonsOn(true);
+        }
+
+        private void Done_Click(object sender, RoutedEventArgs e)
+        {
+            NotifyTurn();
+        }
+
+        private void RedrawBoard()
+        {
+            //redraw whole board based on current state
+            GameBoard.UpdateSquares(Game.Instance.PlayingBoard);
+            
+            //i hope you have tiles... cuz the UI is getting rebuilt           
+            //todo: maybe rename this property, it's confusing
+            PlayerTiles.PlayerTiles.Clear();
+            foreach (Scrabble.Core.Types.Tile t in this.Player.Tiles)
+            {
+                PlayerTiles.PlayerTiles.Add(new Tile(t.Letter.ToString(), t.Score));
+            }
+            PlayerTiles.Redraw();
+        }
+        
+        private void ButtonsOn(bool on)
+        {
+            Done.IsEnabled = Dump.IsEnabled = Pass.IsEnabled = on;
+
         }
 
         #endregion
@@ -81,6 +106,7 @@ namespace Scrabble.UI
         {
             dynamic dynamicTurn = t;
             DrawOpponentTurn(dynamicTurn, p);
+            ButtonsOn(true);
         }
 
         /// <summary>
@@ -93,7 +119,8 @@ namespace Scrabble.UI
 
             //Redraw entire board
             RedrawBoard();
-
+            
+            //you're done, enable buttons again
             ButtonsOn(false);
         }
 
@@ -121,24 +148,7 @@ namespace Scrabble.UI
 
         #endregion
 
-        private void Done_Click(object sender, RoutedEventArgs e)
-        {
-            NotifyTurn();
-        }
-
-        private void RedrawBoard()
-        {
-            //redraw UI based on current state
-            GameBoard.UpdateSquares(Game.Instance.PlayingBoard);
-        }
-
         
-
-        private void ButtonsOn(bool on)
-        {
-            Done.IsEnabled = Dump.IsEnabled = Pass.IsEnabled = on;
-
-        }
 
     }
 }
