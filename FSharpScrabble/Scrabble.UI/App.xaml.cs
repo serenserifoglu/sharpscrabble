@@ -22,6 +22,7 @@ namespace Scrabble.UI
 
         private void StartGame()
         {
+            //show player windows
             foreach (HumanPlayer p in Game.Instance.HumanPlayers)
             {
                 GameWindow w = new GameWindow(p);
@@ -30,7 +31,8 @@ namespace Scrabble.UI
             }
 
             //Call this to give each player tiles, and ask the first player for a move.
-            //Game.Instance.Start();
+            Game.Instance.Start();
+                        
         }
                 
     }
