@@ -288,7 +288,8 @@ and GameState(players:Player list) =
 
 /// A singleton that will represent the game board, bag of tiles, players, move count, etc.
 and Game() = 
-    static let instance = lazy(GameState([ HumanPlayer("Apprentice") :> Player; ComputerPlayer("Master") :> Player ])) //Pretty sweet, huh? Hard coding stuff...
+    //static let instance = lazy(GameState([ HumanPlayer("Apprentice") :> Player; ComputerPlayer("Master") :> Player ])) //Pretty sweet, huh? Hard coding stuff...
+    static let instance = lazy(GameState([ HumanPlayer("Apprentice") :> Player; HumanPlayer("Master") :> Player ])) //2 humans, more hard coding
     static member Instance with get() = instance.Value
 
 /// A player's move is a set of coordinates and tiles. This will throw if the move isn't valid.
