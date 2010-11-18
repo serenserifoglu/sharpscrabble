@@ -74,7 +74,6 @@ namespace Scrabble.UI
             {
                 //Can we expose constr argument as a different type?
                 //PlaceMove pm = new PlaceMove()
-                NotifyTurn();
             }
             else
             {
@@ -91,7 +90,6 @@ namespace Scrabble.UI
                         (t => { return new Scrabble.Core.Types.Tile(t.Letter[0]); })
                     );
 
-                NotifyTurn();
             }
             else
             {
@@ -102,7 +100,6 @@ namespace Scrabble.UI
         {
             Scrabble.Core.Types.Pass p = new Core.Types.Pass();
             Player.TakeTurn(p);
-            NotifyTurn();
         }
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
@@ -162,13 +159,11 @@ namespace Scrabble.UI
         /// </summary>
         public void NotifyTurn()
         {
-            //turn should be taken in the Done, Dump, or Pass handlers
-
             //Redraw entire board
             RedrawBoard();
             
-            //you're done, enable buttons again
-            ButtonsOn(false);
+            //your turn
+            ButtonsOn(true);
         }
 
          /// <summary>
@@ -195,7 +190,7 @@ namespace Scrabble.UI
 
         #endregion
 
-        #region Turn State Properties
+        #region Properties
 
         public Dictionary<Point, Tile> WordInPlay { get; set; }
 

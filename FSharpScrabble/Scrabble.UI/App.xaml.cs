@@ -16,6 +16,7 @@ namespace Scrabble.UI
     {
         public App()
         {
+            PlayerWindows = new LinkedList<GameWindow>();
             //want to launch a menu and get some info about players, but for now just start
             StartGame();            
         }
@@ -28,12 +29,19 @@ namespace Scrabble.UI
                 GameWindow w = new GameWindow(p);
                 p.Window = w;
                 w.Show();
+                if (PlayerWindows.Count > 0)
+                    PlayerWindows.AddAfter(PlayerWindows.Last, w);
+                else
+                    PlayerWindows.AddFirst(w);
             }
 
             //Call this to give each player tiles, and ask the first player for a move.
             Game.Instance.Start();
                         
         }
+
+        //To support more than 2 people - this might already be handled in the f#
+        public LinkedList<GameWindow> PlayerWindows { get; set; }
                 
     }
 }
