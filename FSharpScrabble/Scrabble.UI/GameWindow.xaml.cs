@@ -74,12 +74,13 @@ namespace Scrabble.UI
             {
                 //Can we expose constr argument as a different type?
                 //PlaceMove pm = new PlaceMove()
+                NotifyTurn();
             }
             else
             {
                 MessageBox.Show("You should probably try placing some letters first...");
             }
-            NotifyTurn();
+            
         }
         private void Dump_Click(object sender, RoutedEventArgs e)
         {
