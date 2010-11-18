@@ -31,13 +31,13 @@ namespace Scrabble.UI
         protected override void OnDragEnter(DragEventArgs e)
         {
             base.OnDragEnter(e);
-            this.Background = Resources["HoverSquare"] as Brush;
+            SquareContainer.Background = Resources["HoverSquare"] as Brush;
         }
 
         protected override void OnDragLeave(DragEventArgs e)
         {
             base.OnDragLeave(e);
-            this.Background = Resources["InterestingSquare"] as Brush;
+            SquareContainer.Background = Resources["InterestingSquare"] as Brush;
         }
 
         //drag/drop code
@@ -63,6 +63,9 @@ namespace Scrabble.UI
             if (PlacedTile == null)
             {
                 PlacedTile = sqToPlace;
+                UtilityFunctions.GetAncestorOfType<GameWindow>(this).WordInPlay.Add(
+                    this.MyCoords,
+                    sqToPlace);
                 return true;
             }
             else
@@ -70,6 +73,12 @@ namespace Scrabble.UI
                 MessageBox.Show("There's already a tile there.  Wrong game, dude.");
                 return false;
             }
+        }
+
+        public void ClearSquare()
+        {
+            this.PlacedTile = null;
+            SquareContainer.Children.Clear();
         }
 
         public void Redraw()
@@ -81,6 +90,7 @@ namespace Scrabble.UI
             }
         }
 
+        public Point MyCoords { get; set; }
         public Tile PlacedTile { get; set; }
     }
 }

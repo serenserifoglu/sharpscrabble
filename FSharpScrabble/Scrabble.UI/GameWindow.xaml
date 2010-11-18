@@ -20,6 +20,7 @@
             <Button x:Name="Done" Content="Done" Width="100" Margin="2" Click="Done_Click"></Button>
             <Button x:Name="Pass" Content="Pass" Width="100" Margin="2"></Button>
             <Button x:Name="Dump" Content="Dump Letters" Width="100" Margin="2"></Button>
+            <Button x:Name="Cancel" Content="Cancel" Width="70" Margin="2" Background="Crimson" Click="Cancel_Click"></Button>
             
         </StackPanel>
     </Grid>

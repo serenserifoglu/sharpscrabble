@@ -10,9 +10,9 @@
             <GradientStop Color="Gray" Offset="0"></GradientStop>
             <GradientStop Color="Transparent" Offset="0.5"></GradientStop>
         </LinearGradientBrush>
-        <LinearGradientBrush x:Key="HoverSquare" StartPoint="1,1" EndPoint="1,1">
-            <GradientStop Color="DarkOliveGreen" Offset="0"></GradientStop>
-            <GradientStop Color="Transparent" Offset="0.5"></GradientStop>
+        <LinearGradientBrush x:Key="HoverSquare" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="DarkOrange" Offset="0"></GradientStop>
+            <GradientStop Color="LightYellow" Offset="0.5"></GradientStop>
         </LinearGradientBrush>
                            
     </UserControl.Resources>

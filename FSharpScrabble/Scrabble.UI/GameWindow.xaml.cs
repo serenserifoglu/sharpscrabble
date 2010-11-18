@@ -28,6 +28,7 @@ namespace Scrabble.UI
             Player = p;
             PlayerTiles.PlayerName = p.Name;
             this.Title = String.Concat("SharpScrabble - Player: ", p.Name);
+            WordInPlay = new Dictionary<Point, Tile>(); //initialize
 
             RedrawBoard();  //calling this again to show tiles.
         }
@@ -148,7 +149,26 @@ namespace Scrabble.UI
 
         #endregion
 
-        
+        #region Turn State Properties
+
+        public Dictionary<Point, Tile> WordInPlay { get; set; }
+
+        #endregion
+
+        private void Cancel_Click(object sender, RoutedEventArgs e)
+        {
+            foreach(KeyValuePair<Point,Tile> playedTile in WordInPlay)
+            {
+                //remove from display board
+                GameBoard.SquareAt((int)playedTile.Key.X, (int)playedTile.Key.Y).ClearSquare();
+
+                //put back in tile rack
+                PlayerTiles.PlayerTiles.Add(playedTile.Value);
+            }
+
+            //update UI
+            RedrawBoard();
+        }
 
     }
 }

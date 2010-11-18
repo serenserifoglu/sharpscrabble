@@ -28,7 +28,7 @@ namespace Scrabble.UI
             
             //create list o' squares
             _allSquares = new BoardSquare[15, 15];
-            //initialize them to blank
+            //initialize them to blank/not null
             for (int i = 0; i < _allSquares.Length; i++) _allSquares[i/15,i%15] = new BoardSquare();
             
             Redraw();
@@ -39,10 +39,10 @@ namespace Scrabble.UI
             BoardGrid.Children.Clear();
             System.Windows.GridLength g = new GridLength(40);
             
-            for (int h = 0; h < 15; h++)
+            for (int v = 0; v < 15; v++)
             {
                 BoardGrid.RowDefinitions.Add(new RowDefinition() { Height = g });
-                for (int v = 0; v < 15; v++)
+                for (int h = 0; h < 15; h++)
                 {
                     BoardGrid.ColumnDefinitions.Add(new ColumnDefinition() { Width = g });
                     BoardSquare square = _allSquares[h, v];
@@ -54,10 +54,14 @@ namespace Scrabble.UI
                     {
                         square.Redraw();
                     }
-                        
+
+                    square.MyCoords = new Point(h, v);
+                    
                     BoardGrid.Children.Add(square);
-                    Grid.SetColumn(square, v);
-                    Grid.SetRow(square, h);
+
+                    //horiz(x), vert(y)
+                    Grid.SetColumn(square, h);
+                    Grid.SetRow(square, v);
                 }
             }
 
@@ -67,8 +71,8 @@ namespace Scrabble.UI
         {
             for (int i = 0; i < _allSquares.LongLength; i++)
             {
-                int x = i%15;
-                int y = i/15;
+                int y = i%15; //rows
+                int x = i/15; //columns
                 Square s = instanceBoard.Get(x,y);
                 //remove tile
                 _allSquares[x,y].PlacedTile = null;
@@ -92,9 +96,10 @@ namespace Scrabble.UI
                 
         }
 
-        public BoardSquare SquareAt(int row, int column)
+        public BoardSquare SquareAt(int column, int row)
         {
-            return _allSquares[row, column];    
+            //x-col, y-row
+            return _allSquares[column, row];    
         }
 
         private BoardSquare[,] _allSquares;
