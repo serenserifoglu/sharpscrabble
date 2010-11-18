@@ -90,6 +90,8 @@ namespace Scrabble.UI
                     PlayerTiles.PlayerTiles.ConvertAll<Scrabble.Core.Types.Tile>
                         (t => { return new Scrabble.Core.Types.Tile(t.Letter[0]); })
                     );
+                this.Player.TakeTurn(d);
+                RedrawBoard();
                 ButtonsOn(false);
             }
             else
@@ -100,7 +102,7 @@ namespace Scrabble.UI
         private void Pass_Click(object sender, RoutedEventArgs e)
         {
             Scrabble.Core.Types.Pass p = new Core.Types.Pass();
-            Player.TakeTurn(p);
+            this.Player.TakeTurn(p);
             ButtonsOn(false);
         }
         private void Cancel_Click(object sender, RoutedEventArgs e)
