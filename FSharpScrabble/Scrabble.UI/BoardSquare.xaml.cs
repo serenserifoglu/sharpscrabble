@@ -55,6 +55,9 @@ namespace Scrabble.UI
                 these.PlayerTiles.Add(t);
                 letterTray.Children.Add(t);
             }
+            //change bg back
+            SquareContainer.Background = Resources["InterestingSquare"] as Brush;
+
             Redraw();
         }
 

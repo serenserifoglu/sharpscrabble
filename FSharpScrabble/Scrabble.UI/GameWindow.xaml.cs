@@ -70,7 +70,52 @@ namespace Scrabble.UI
 
         private void Done_Click(object sender, RoutedEventArgs e)
         {
+            if (WordInPlay.Count > 0)
+            {
+                //Can we expose constr argument as a different type?
+                //PlaceMove pm = new PlaceMove()
+            }
+            else
+            {
+                MessageBox.Show("You should probably try placing some letters first...");
+            }
             NotifyTurn();
+        }
+        private void Dump_Click(object sender, RoutedEventArgs e)
+        {
+            if (PlayerTiles.PlayerTiles.Count > 0)
+            {
+                Scrabble.Core.Types.DumpLetters d = new DumpLetters(
+                    PlayerTiles.PlayerTiles.ConvertAll<Scrabble.Core.Types.Tile>
+                        (t => { return new Scrabble.Core.Types.Tile(t.Letter[0]); })
+                    );
+
+                NotifyTurn();
+            }
+            else
+            {
+                MessageBox.Show("You have no letters in your tray.");
+            }
+        }
+        private void Pass_Click(object sender, RoutedEventArgs e)
+        {
+            Scrabble.Core.Types.Pass p = new Core.Types.Pass();
+            Player.TakeTurn(p);
+            NotifyTurn();
+        }
+        private void Cancel_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (KeyValuePair<Point, Tile> playedTile in WordInPlay)
+            {
+                //remove from display board
+                GameBoard.SquareAt((int)playedTile.Key.X, (int)playedTile.Key.Y).ClearSquare();
+
+                //put back in tile rack
+                PlayerTiles.PlayerTiles.Add(playedTile.Value);
+            }
+
+            //update UI
+            RedrawBoard();
         }
 
         private void RedrawBoard()
@@ -90,7 +135,7 @@ namespace Scrabble.UI
         
         private void ButtonsOn(bool on)
         {
-            Done.IsEnabled = Dump.IsEnabled = Pass.IsEnabled = on;
+            Done.IsEnabled = Dump.IsEnabled = Pass.IsEnabled = Cancel.IsEnabled = on;
 
         }
 
@@ -155,20 +200,6 @@ namespace Scrabble.UI
 
         #endregion
 
-        private void Cancel_Click(object sender, RoutedEventArgs e)
-        {
-            foreach(KeyValuePair<Point,Tile> playedTile in WordInPlay)
-            {
-                //remove from display board
-                GameBoard.SquareAt((int)playedTile.Key.X, (int)playedTile.Key.Y).ClearSquare();
-
-                //put back in tile rack
-                PlayerTiles.PlayerTiles.Add(playedTile.Value);
-            }
-
-            //update UI
-            RedrawBoard();
-        }
-
+        
     }
 }
