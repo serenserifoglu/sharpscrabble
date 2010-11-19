@@ -80,7 +80,7 @@ namespace Scrabble.UI
                 if (!s.IsEmpty)
                 {
                     Scrabble.Core.Types.Tile t = (Scrabble.Core.Types.Tile)s.Tile;
-                    _allSquares[x, y].Put(new Tile(t.Letter.ToString(), t.Score));
+                    _allSquares[x, y].PlacedTile = new Tile(t.Letter.ToString(), t.Score);
                 }
                 else if (s.WordMultiplier > 0)
                 {
@@ -93,6 +93,7 @@ namespace Scrabble.UI
                     
 
             }
+            Redraw();
                 
         }
 

@@ -17,10 +17,10 @@
         <ui:Tiles x:Name="PlayerTiles" Grid.Row="1"></ui:Tiles>
         <StackPanel Orientation="Horizontal" x:Name="TurnControls" Grid.Row="2">
             <TextBlock x:Name="StatusBar" Text="Ready." Foreground="White" Width="200" VerticalAlignment="Center"></TextBlock>
-            <Button x:Name="Done" Content="Done" Width="100" Margin="2" Click="Done_Click"></Button>
-            <Button x:Name="Pass" Content="Pass" Width="100" Margin="2" Click="Pass_Click"></Button>
-            <Button x:Name="Dump" Content="Dump Letters" Width="100" Margin="2" Click="Dump_Click"></Button>
-            <Button x:Name="Cancel" Content="Cancel" Width="70" Margin="2" Background="Crimson" Click="Cancel_Click"></Button>
+            <Button x:Name="Done" Content="Done" Width="100" Margin="2" Click="Done_Click" IsEnabled="False"></Button>
+            <Button x:Name="Pass" Content="Pass" Width="100" Margin="2" Click="Pass_Click" IsEnabled="False"></Button>
+            <Button x:Name="Dump" Content="Dump Letters" Width="100" Margin="2" Click="Dump_Click" IsEnabled="False"></Button>
+            <Button x:Name="Cancel" Content="Cancel" Width="70" Margin="2" Background="Crimson" Click="Cancel_Click" IsEnabled="false"></Button>
             
         </StackPanel>
     </Grid>

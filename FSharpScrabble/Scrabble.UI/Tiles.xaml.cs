@@ -27,10 +27,14 @@ namespace Scrabble.UI
             Redraw();
         }
 
+        public void Clear()
+        {
+            if (TileRack.Children.Count > 0) TileRack.Children.Clear();
+        }
+
         public void Redraw()
         {
-            if(TileRack.Children.Count > 0) TileRack.Children.Clear();
-            
+            Clear();
             foreach (Tile tile in PlayerTiles)
             {
                 TileRack.Children.Add(tile);

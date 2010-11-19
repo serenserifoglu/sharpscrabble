@@ -72,8 +72,26 @@ namespace Scrabble.UI
         {
             if (WordInPlay.Count > 0)
             {
-                //Can we expose constr argument as a different type?
-                //PlaceMove pm = new PlaceMove()
+                List<Tuple<Core.Config.Coordinate, Core.Types.Tile>> tupleList =
+                    new List<Tuple<Core.Config.Coordinate, Core.Types.Tile>>();
+
+                foreach (KeyValuePair<Point, Tile> placed in WordInPlay)
+                {
+                    tupleList.Add(
+                        new Tuple<Core.Config.Coordinate, Core.Types.Tile>(
+                            new Core.Config.Coordinate((int)placed.Key.X, (int)placed.Key.Y),
+                            new Core.Types.Tile(placed.Value.Letter[0])
+                            )
+                            );
+                }
+
+                Microsoft.FSharp.Collections.FSharpMap<Core.Config.Coordinate, Core.Types.Tile> map = 
+                    new Microsoft.FSharp.Collections.FSharpMap<Core.Config.Coordinate,Core.Types.Tile>(tupleList);
+
+                PlaceMove pm = new PlaceMove(map);
+
+                this.Player.TakeTurn(pm);
+
                 ButtonsOn(false);
             }
             else
@@ -125,14 +143,20 @@ namespace Scrabble.UI
             //redraw whole board based on current state
             GameBoard.UpdateSquares(Game.Instance.PlayingBoard);
             
+        }
+
+        private void RedrawTiles()
+        {
             //i hope you have tiles... cuz the UI is getting rebuilt           
             //todo: maybe rename this property, it's confusing
             PlayerTiles.PlayerTiles.Clear();
+            //BUG:player.tiles is coming back with 10+ tiles in some cases
             foreach (Scrabble.Core.Types.Tile t in this.Player.Tiles)
             {
                 PlayerTiles.PlayerTiles.Add(new Tile(t.Letter.ToString(), t.Score));
             }
             PlayerTiles.Redraw();
+            PlayerTiles.PlayerScore.Text = this.Player.Score.ToString();
         }
         
         private void ButtonsOn(bool on)
@@ -166,8 +190,13 @@ namespace Scrabble.UI
             //Redraw entire board
             RedrawBoard();
             
+            //redraw ur tiles
+            RedrawTiles();
+
             //your turn
             ButtonsOn(true);
+
+            this.Activate();
         }
 
          /// <summary>
