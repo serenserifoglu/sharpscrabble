@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Scrabble.Core.Types;
+using Scrabble.Core;
 
 namespace Scrabble.UI
 {
@@ -90,9 +91,17 @@ namespace Scrabble.UI
 
                 PlaceMove pm = new PlaceMove(map);
 
-                this.Player.TakeTurn(pm);
-
-                ButtonsOn(false);
+                try
+                {
+                    this.Player.TakeTurn(pm);
+                    ButtonsOn(false);
+                    //should probably reset everything
+                }
+                catch (InvalidMoveException badmove)
+                {
+                    MessageBox.Show(badmove.Message);
+                }
+               
             }
             else
             {
