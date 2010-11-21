@@ -216,7 +216,7 @@ and GameState(players:Player list) =
     let rng = Random()
     let mutable currentPlayer = rng.Next(players.Length)
     let mutable passCount = 0
-    let wordLookup = lazy(WordLookup())
+    let wordLookup = WordLookup()
 
     //Private functions
     let IsGameComplete() = 
@@ -267,7 +267,7 @@ and GameState(players:Player list) =
     member this.IsOpeningMove with get() = moveCount = 0
     member this.Players with get() =  List.toSeq players
     member this.HumanPlayers with get() = this.Players.OfType<HumanPlayer>()
-    member this.Dictionary with get() = wordLookup.Value
+    member this.Dictionary with get() = wordLookup
     member this.CurrentPlayer with get() = List.nth players currentPlayer
 
     //Private Members
