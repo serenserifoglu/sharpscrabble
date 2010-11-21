@@ -96,6 +96,9 @@ namespace Scrabble.UI
                     this.Player.TakeTurn(pm);
                     ButtonsOn(false);
                     //should probably reset everything
+
+                    //WJS - need to clear out this collection
+                    WordInPlay = new Dictionary<Point, Tile>();
                 }
                 catch (InvalidMoveException badmove)
                 {
