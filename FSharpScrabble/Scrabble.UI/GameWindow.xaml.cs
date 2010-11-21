@@ -16,7 +16,7 @@ using Scrabble.Core;
 
 namespace Scrabble.UI
 {
-    /// <summary>
+    /// <summary>   
     /// Interaction logic for GameWindow.xaml
     /// </summary>
     public partial class GameWindow : Window, IGameWindow
@@ -198,9 +198,6 @@ namespace Scrabble.UI
         {
             //Redraw entire board
             RedrawBoard();
-            
-            //redraw ur tiles
-            RedrawTiles();
 
             //your turn
             ButtonsOn(true);
@@ -228,6 +225,11 @@ namespace Scrabble.UI
                 //aggregate may be incorrect...  can't test right now
                 StatusBar.Text = string.Format("{0} won.  Better luck next time.", o.Winners.Aggregate("", (x,y) => { return x + " & " + y.Name;}));
             }
+        }
+
+        public void TilesUpdated()
+        {
+            RedrawTiles();
         }
 
         #endregion

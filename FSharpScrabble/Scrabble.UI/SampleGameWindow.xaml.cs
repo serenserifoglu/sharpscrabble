@@ -100,6 +100,11 @@ namespace Scrabble.UI
             throw new NotImplementedException();
         }
 
+        public void TilesUpdated()
+        {
+
+        }
+
         #endregion
     }
 }

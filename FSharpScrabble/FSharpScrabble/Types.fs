@@ -114,6 +114,7 @@ type Player(name:string) =
     abstract member NotifyTurn : ITurnImplementor -> unit
     abstract member NotifyGameOver : GameOutcome -> unit
     abstract member DrawTurn : Turn * Player -> unit
+    abstract member TilesUpdated : unit -> unit
     member this.Name with get() = name
     member this.Score with get() = score
     member this.Tiles with get() = tiles
@@ -139,6 +140,8 @@ type ComputerPlayer(name:string) =
         () //intentionally left blank
     override this.DrawTurn(_, _) = 
         () //intentionally left blank
+    override this.TilesUpdated() = 
+        () //intentionally left blank
 
 type HumanPlayer(name:string) =
     inherit Player(name)
@@ -151,6 +154,8 @@ type HumanPlayer(name:string) =
         this.window.GameOver(o)
     override this.DrawTurn(t:Turn, p:Player) = 
         this.window.DrawTurn(t, p)
+    override this.TilesUpdated() = 
+        this.window.TilesUpdated()
     member this.Window with get() = this.window and set w = this.window <- w
     member this.TakeTurn(t:Turn) = 
         base.TakeTurn(this.game, t)
@@ -160,6 +165,7 @@ and IGameWindow =
     abstract member DrawTurn : Turn * Player -> unit
     abstract member Player : HumanPlayer with get, set
     abstract member GameOver : GameOutcome -> unit
+    abstract member TilesUpdated : unit -> unit
 
 type Board() = 
     let grid : Square[,] = Array2D.init ScrabbleConfig.BoardLength ScrabbleConfig.BoardLength (fun x y -> ScrabbleConfig.BoardLayout (Coordinate(x, y))) 
@@ -211,9 +217,6 @@ and GameState(players:Player list) =
     let mutable currentPlayer = rng.Next(players.Length)
     let mutable passCount = 0
     let wordLookup = lazy(WordLookup())
-    //draw tiles for each player
-    do
-        players |> List.iter (fun p -> p.Tiles.AddRange(bag.Take ScrabbleConfig.MaxTiles))
 
     //Private functions
     let IsGameComplete() = 
@@ -246,6 +249,7 @@ and GameState(players:Player list) =
             let move = Move(turn.Letters)
             board.Put(move)
             this.CurrentPlayer.AddScore(move.Score)
+            this.CurrentPlayer.Tiles.RemoveMany(turn.Letters |> Seq.map (fun kv -> kv.Value))
             this.GiveTiles(this.CurrentPlayer, turn.Letters.Count)
         member this.TakeTurn(t:Turn) =
             t.Perform(this)
@@ -281,9 +285,15 @@ and GameState(players:Player list) =
     member private this.GiveTiles(p:Player, n:int) = 
         let newTiles = bag.Take(n) //if there's less than n tiles in the bag, they get the remaining
         p.Tiles.AddRange(newTiles)
+        p.TilesUpdated()
 
     //Public Members
     member this.Start() = 
+        //draw tiles for each player
+        players |> List.iter (fun p -> 
+            p.Tiles.AddRange(bag.Take ScrabbleConfig.MaxTiles)
+            p.TilesUpdated()
+        )
         this.CurrentPlayer.NotifyTurn(this)
 
 /// A singleton that will represent the game board, bag of tiles, players, move count, etc.
