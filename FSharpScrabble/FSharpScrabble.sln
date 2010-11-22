@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrabble.Dictionary", "Dict
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrabble.UI", "Scrabble.UI\Scrabble.UI.csproj", "{59F243FC-5BE9-4A98-87BD-AA053205C89C}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Dict", "Dict\Dict.fsproj", "{205CB27F-7123-4D7E-AF20-DC3ECA39D04C}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

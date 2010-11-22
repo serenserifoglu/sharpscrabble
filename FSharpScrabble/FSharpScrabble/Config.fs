@@ -32,9 +32,11 @@ type Coordinate(x:int, y:int) =
     member this.IsValid() =
         Coordinate.ValidXY(this.X) && Coordinate.ValidXY(this.Y)
     member this.Next(o:Orientation) = 
+        this.Next(o,1)
+    member this.Next(o:Orientation, i:int) = 
         match o with
-        | Orientation.Horizontal -> Coordinate(this.X + 1, this.Y)
-        | _ -> Coordinate(this.X, this.Y + 1)
+        | Orientation.Horizontal -> Coordinate(this.X + i, this.Y)
+        | _ -> Coordinate(this.X, this.Y + i)
     member this.Prev(o:Orientation) = 
         match o with
         | Orientation.Horizontal -> Coordinate(this.X - 1, this.Y)

@@ -39,11 +39,13 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="WordLookup.fs" />
     <Compile Include="Exceptions.fs" />
     <Compile Include="Helper.fs" />
     <Compile Include="Squares.fs" />
     <Compile Include="Config.fs" />
     <Compile Include="Types.fs" />
+    <Compile Include="AI.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Dictionary\Scrabble.Dictionary.csproj">

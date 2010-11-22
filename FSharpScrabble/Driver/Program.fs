@@ -15,7 +15,7 @@ open Scrabble.Tests
 //CoordTest()
 //BoardTest()
 //NeighborTest()
-//DictionaryTest()
+DictionaryTest()
 //ValidWordTest()
 
 //MoveTest2()
@@ -24,7 +24,7 @@ open Scrabble.Tests
 //AllTileTest()
 
 //BagTest()
-
+(*
 let b = Bag()
 let tiles = TileList(7)
 tiles.AddRange(b.Take(7))
@@ -44,3 +44,6 @@ let l : Tile list = List.empty
 let p = permute l
 
 printfn "asdf"
+*)
+
+AIFirstMoveTest()
