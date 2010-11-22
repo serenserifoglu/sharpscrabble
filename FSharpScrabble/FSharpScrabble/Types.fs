@@ -7,7 +7,7 @@ open Scrabble.Core
 open Scrabble.Core.Config
 open Scrabble.Core.Squares
 open Scrabble.Core.Helper
-open Scrabble.Dictionary
+open Scrabble.WordLookup
 
 type Tile(letter:char) = 
     let getScore l = 
