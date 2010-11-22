@@ -14,3 +14,14 @@ let nTimes n f =
     while i > 0 do
         f()
         i <- i - 1
+
+let subsets xs = 
+    List.foldBack (fun x rest -> rest @ List.map (fun ys -> x::ys) rest) xs [[]]
+
+let rec distribute e = function
+    | [] -> [[e]]
+    | x::xs' as xs -> (e::xs)::[for xs in distribute e xs' -> x::xs]
+
+let rec permute = function
+    | [] -> [[]]
+    | e::xs -> List.collect (distribute e) (permute xs)

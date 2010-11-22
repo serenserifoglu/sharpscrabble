@@ -31,11 +31,22 @@ type Tile(letter:char) =
         match o with
         | :? Tile as other -> this.Letter = other.Letter
         | _ -> false
+    //IComparable interface
+    interface IComparable with  
+         member this.CompareTo(o) = 
+            match o with
+            | :? Tile as other -> this.Letter.CompareTo(other.Letter)
+            | _ -> -1
 
 type TileList = 
     inherit List<Tile>
     new () = { inherit List<Tile>() }
     new (capacity:int) = { inherit List<Tile>(capacity) }
+    new (items:IEnumerable<Tile>) = { inherit List<Tile>(items) }
+    new (tile:Tile) = { inherit List<Tile>( List.ofArray [| tile |] ) }
+
+    /// This is a dirty hack, but I'm OK with it.
+    [<DefaultValue>] val mutable private hash : string
 
     member this.RemoveMany(l:seq<Tile>) = 
         let remove i = 
@@ -58,13 +69,49 @@ type TileList =
         let ret = this.Take(n).ToList()
         this.RemoveRange(0, n)
         ret
+    member this.TakeChar(c:char) = 
+        let tile = Tile(c)
+        if this.Remove(tile) then
+            tile
+        else
+            raise (Exception("Tile was not found in the list."))
+    member this.HasEqualElements(other:TileList) = 
+        if this.Count = other.Count then
+            //Well, this is total shit. Sorry functional purists out there, I'm on a deadline.
+            let mutable i = 0
+            let mutable finished = false
+            let mutable result = true
+            while i < this.Count && not(finished) do
+                if not(this.[i] = other.[i]) then
+                    finished <- true
+                    result <- false
+                i <- i + 1
+            result
+        else
+            false
+    member this.PrepareForCompare() = 
+        this.Sort()
+        this.hash <- this.Select((fun (t:Tile) -> t.Letter.ToString())).Aggregate((fun a b -> String.Concat(a, b))) // wow, F#/BCL interop is a total bitch
+    override this.GetHashCode() =
+        hash.ToString().GetHashCode()
+    override this.Equals(o) =
+        match o with
+        | :? TileList as other -> this.HasEqualElements(other)                                
+        | _ -> false
 
+(*
+type ListHelper = 
+    static member TilePowerSet(tiles:TileList) = 
+        let seed = List<IEnumerable<Tile>>()
+        seed.Add(Enumerable.Empty<Tile>())
+        tiles.Aggregate((seed :> IEnumerable<IEnumerable<Tile>>), (fun a b -> a.Concat(a.Select( (fun (x:IEnumerable<Tile>) -> x.Concat(TileList(b)) ) ) ) ) )
+*)  
 type Bag() = 
     let mutable pointer = 0;
     let inventory = TileList()
     //populate the bag
     do
-        ScrabbleConfig.LetterQuantity |> Seq.iter (fun kv -> Helper.nTimes kv.Value (fun () -> inventory.Add(Tile(kv.Key))))
+        ScrabbleConfig.LetterQuantity |> Seq.iter (fun kv -> nTimes kv.Value (fun () -> inventory.Add(Tile(kv.Key))))
         inventory.Shuffle()
 
     member this.IsEmpty with get() = inventory.Count = 0
@@ -107,6 +154,9 @@ and ITurnImplementor =
     abstract member PerformMove : PlaceMove -> unit
     abstract member TakeTurn : Turn -> unit
 
+type IIntelligenceProvider = 
+    abstract member Think : TileList -> Turn
+
 [<AbstractClass>]
 type Player(name:string) =
     let tiles = TileList()
@@ -129,13 +179,11 @@ type Player(name:string) =
 and GameOutcome(winners:seq<Player>) =
     member this.Winners with get() = winners
 
-type ComputerPlayer(name:string) = 
+type ComputerPlayer(name:string, provider:IIntelligenceProvider) = 
     inherit Player(name)
-    let Think() : Turn = 
-        //TODO - AI goes here ;)
-        raise (NotImplementedException())
     override this.NotifyTurn(implementor) =
-        this.TakeTurn(implementor, Think())
+        let turn = provider.Think(this.Tiles)
+        this.TakeTurn(implementor, turn)
     override this.NotifyGameOver(_) = 
         () //intentionally left blank
     override this.DrawTurn(_, _) = 
@@ -214,7 +262,7 @@ and GameState(players:Player list) =
     let board = Board()
     let mutable moveCount = 0
     let rng = Random()
-    let mutable currentPlayer = rng.Next(players.Length)
+    let mutable currentPlayer = 0 //rng.Next(players.Length)
     let mutable passCount = 0
     let wordLookup = WordLookup()
 
@@ -247,6 +295,8 @@ and GameState(players:Player list) =
         member this.PerformMove(turn) =
             passCount <- 0 
             let move = Move(turn.Letters)
+            if not move.IsValid then
+                raise (InvalidMoveException("Move violates position requirements or forms one or more invalid words."))
             board.Put(move)
             this.CurrentPlayer.AddScore(move.Score)
             this.CurrentPlayer.Tiles.RemoveMany(turn.Letters |> Seq.map (fun kv -> kv.Value))
@@ -298,8 +348,8 @@ and GameState(players:Player list) =
 
 /// A singleton that will represent the game board, bag of tiles, players, move count, etc.
 and Game() = 
-    //static let instance = lazy(GameState([ HumanPlayer("Apprentice") :> Player; ComputerPlayer("Master") :> Player ])) //Pretty sweet, huh? Hard coding stuff...
-    static let instance = lazy(GameState([ HumanPlayer("Apprentice") :> Player; HumanPlayer("Master") :> Player ])) //2 humans, more hard coding
+    static let instance = lazy(GameState([ ComputerPlayer("Master", BoardScanner()) :> Player; HumanPlayer("Apprentice") :> Player ])) //Pretty sweet, huh? Hard coding stuff...
+    //static let instance = lazy(GameState([ HumanPlayer("Apprentice") :> Player; HumanPlayer("Master") :> Player ])) //2 humans, more hard coding
     static member Instance with get() = instance.Value
 
 /// A player's move is a set of coordinates and tiles. This will throw if the move isn't valid.
@@ -309,13 +359,25 @@ and Move(letters:Map<Coordinate, Tile>) =
     let sorted = letters |> Seq.sortBy ToKey |> Seq.toList
     let first = sorted |> Seq.head |> ToKey
     let last = sorted |> Seq.skip (sorted.Length - 1) |> Seq.head |> ToKey
+    let CheckBoardPrev(c:Coordinate, o:Orientation) = 
+        let prev = c.Prev(o)
+        prev.IsValid() && Game.Instance.PlayingBoard.HasTile(c)
+    let CheckBoardNext(c:Coordinate, o:Orientation) = 
+        let next = c.Next(o)
+        next.IsValid() && Game.Instance.PlayingBoard.HasTile(c)
     let range = 
         try
             Coordinate.Between(first, last)
         with 
             | UnsupportedCoordinateException(msg) -> raise (InvalidMoveException(msg))
     let orientation = 
-        if first.X = last.X then
+        if letters.Count = 1 then
+            //need to do some special checking if the player only played a single tile
+            if CheckBoardNext(first, Orientation.Vertical) || CheckBoardPrev(first, Orientation.Vertical) then
+                Orientation.Vertical
+            else
+                Orientation.Horizontal
+        else if first.X = last.X then
             Orientation.Vertical
         else
             Orientation.Horizontal
@@ -362,13 +424,16 @@ and Move(letters:Map<Coordinate, Tile>) =
             if ValidRuns(runs) then
                 ComputeScore(runs)
             else
-                raise (InvalidMoveException("One or more invalid words were formed by this move."))
+                -1 //raise (InvalidMoveException("One or more invalid words were formed by this move."))
         else
-            raise (InvalidMoveException("Move violates positioning rules (i.e. not connected to other tiles)."))
+            -1 //raise (InvalidMoveException("Move violates positioning rules (i.e. not connected to other tiles)."))
+    
+    let valid = score >= 0
 
     member this.Orientation with get() = orientation
     member this.Letters with get() = letters
     member this.Score with get() = score
+    member this.IsValid with get() = valid
     
 
 /// A Run is a series of connected letters in a given direction. This type takes a location and direction and constructs a map of connected tiles to letters in the given direction.
@@ -404,3 +469,132 @@ and Run(c:Coordinate, o:Orientation, moveLetters:Map<Coordinate, Tile>) =
         let wordMult = squares |> List.map (fun (s, t) -> s.WordMultiplier) |> List.reduce (fun a b -> a * b)
         let letterScore = squares |> List.map (fun (s, t) -> (s, t :?> Tile)) |> List.map (fun (s, t) ->  s.LetterMultiplier * t.Score ) |> List.sum
         wordMult * letterScore
+
+and BoardScanner() = 
+    let hNext(c:Coordinate) = 
+        if c.X = ScrabbleConfig.BoardLength - 1 then
+            Coordinate(0, c.Y + 1)
+        else
+            Coordinate(c.X + 1, c.Y)
+    let vNext(c:Coordinate) =
+        if c.Y = ScrabbleConfig.BoardLength - 1 then
+            Coordinate(c.X + 1, 0)
+        else
+            Coordinate(c.X, c.Y + 1)
+    member private this.Max(c:Coordinate) = 
+        let m = ScrabbleConfig.BoardLength - 1
+        c.X = m && c.Y = m
+    member private this.LocalMax(c:Coordinate) =
+        let m = ScrabbleConfig.BoardLength - 1
+        c.X = m || c.Y = m
+    ///the time complexity of this is going to be O(terrible)
+    member private this.Scan(c:Coordinate, count:int, increment, nextIncrement) = 
+        if this.Max c || Game.Instance.PlayingBoard.HasTile c then
+            []
+        else
+            let rec localScan(finish:Coordinate, i:int) = 
+                if i = 0 || not(finish.IsValid()) then
+                    []
+                else
+                    let candidate = CandidatePosition(c, finish)
+                    let j = if Game.Instance.PlayingBoard.HasTile(finish) then i else i - 1
+                    let next = increment finish
+                    if candidate.IsValid then
+                        candidate :: localScan(next, j)
+                    else
+                        localScan(next, j)
+            let candidates = localScan(c, count)
+
+            candidates @ this.Scan(nextIncrement c, count, increment, nextIncrement)
+
+    member private this.Make(word:string, tiles:IEnumerable<Tile>, pos:CandidatePosition) = 
+        let upperWord = word.ToUpper()
+        let localTiles = TileList(tiles)
+        let length = pos.Coordinates |> Array.length
+        let layout = Map.ofList [ for i = 0 to length - 1 do
+                                    let tile = localTiles.TakeChar(upperWord.Chars(i))
+                                    let coord = pos.Coordinates.[i] :> Coordinate
+                                    yield (coord, tile) ]
+        Move(layout)
+    member private this.Make(tiles:Tile list, pos:CandidatePosition) = 
+        let letters = Map.ofList [  for i = 0 to tiles.Length - 1 do
+                                        let coord = pos.Coordinates.[i] :> Coordinate
+                                        yield (coord, tiles.[i]) ]
+        Move(letters)
+    member private this.FirstTurn(tiles:TileList) = 
+        let letters = tiles |> Seq.map (fun t -> t.Letter) |> Seq.toList
+        let choices = Game.Instance.Dictionary.FindAllWords(letters)
+        //imperitive style because I'm bad...
+        let moves = seq{
+            for word in choices do
+                for pos in this.FirstMovePositions(word.Length) do
+                    yield this.Make(word, tiles, pos)
+        }
+        let move = moves |> Seq.maxBy (fun m -> m.Score)
+        PlaceMove(move.Letters) :> Turn
+    member private this.FirstMovePositions(length:int) = 
+        //this is so sloppy, this goes on the refactor/shit list. I just need to get going with something that works...
+        seq{
+            let center = ScrabbleConfig.StartCoordinate
+            if length < 6 then
+                yield CandidatePosition(center, Coordinate(center.X, center.Y + length - 1))
+            else if length = 6 then
+                yield CandidatePosition(center, Coordinate(center.X, center.Y + length - 1))
+                yield CandidatePosition(Coordinate(center.X, center.Y - 1), Coordinate(center.X, center.Y + length - 2))
+            else
+                yield CandidatePosition(center, Coordinate(center.X, center.Y + length - 1))
+                yield CandidatePosition(Coordinate(center.X, center.Y - 1), Coordinate(center.X, center.Y + length - 2))
+                yield CandidatePosition(Coordinate(center.X, center.Y - 2), Coordinate(center.X, center.Y + length - 3))
+        }
+    member private this.MidGame(tiles:TileList) = 
+        (*
+            Ok here's the stupidest brute force way of doing this. This will totally suck and be really slow. But this is just my first attempt.
+            - Take the tiles, and compute the power set
+            - Remove the duplicates from the power set
+            - Call Scan() to get all possible valid positions
+            - For each possible position, take all the sets of tiles of equal length from the power set
+                - Then, for each of those sets, permute it and create a Move() for each permutation, and add the Move() to a list
+            - Take the max of the resulting Move list
+        *)
+        let powerset = subsets (tiles |> Seq.toList)
+        let ofLength(powerset:Tile list list, l:int) = 
+            powerset |> List.filter (fun list -> list.Length = l)
+
+        let index : Tile list list array = Array.zeroCreate tiles.Count
+
+        for i = 0 to tiles.Count - 1 do
+            index.[i] <- ofLength(powerset, i)
+        
+        let moves = List<Move>()
+
+        let candidates = this.Scan(Coordinate(0, 0), tiles.Count, hNext, vNext) @ this.Scan(Coordinate(0, 0), tiles.Count, vNext, hNext)
+        for candidate in candidates do
+            let sets = index.[candidate.EmptyCoordinates() |> Seq.length]
+            for s in sets do
+                for p in permute s do
+                    moves.Add(this.Make(p, candidate))
+        
+        if moves.Count > 0 then
+            let best = moves.OrderByDescending((fun (m:Move) -> m.Score)).First()
+            PlaceMove(best.Letters) :> Turn 
+        else
+            Pass() :> Turn
+    interface IIntelligenceProvider with
+        member this.Think(tiles) =
+            if Game.Instance.IsOpeningMove then
+                this.FirstTurn(tiles)
+            else
+                this.MidGame(tiles)
+
+and CandidatePosition(start:Coordinate, finish:Coordinate) = 
+    let coords = Coordinate.Between(start, finish)
+    let valid = coords |> Seq.exists (fun c -> Game.Instance.PlayingBoard.HasTile(c) || Game.Instance.PlayingBoard.HasNeighboringTile(c))
+    member this.Coordinates with get() = coords
+    member this.Start with get() = start
+    member this.Finish with get() = finish
+    member this.IsValid with get() = valid
+    member this.EmptyCoordinates() = 
+        coords |> Seq.filter (fun c -> not (Game.Instance.PlayingBoard.HasTile(c)))
+    member this.PermuteWith(tiles:seq<Tile>) = 
+        raise (NotImplementedException())
+    
