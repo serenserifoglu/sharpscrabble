@@ -99,13 +99,6 @@ type TileList =
         | :? TileList as other -> this.HasEqualElements(other)                                
         | _ -> false
 
-(*
-type ListHelper = 
-    static member TilePowerSet(tiles:TileList) = 
-        let seed = List<IEnumerable<Tile>>()
-        seed.Add(Enumerable.Empty<Tile>())
-        tiles.Aggregate((seed :> IEnumerable<IEnumerable<Tile>>), (fun a b -> a.Concat(a.Select( (fun (x:IEnumerable<Tile>) -> x.Concat(TileList(b)) ) ) ) ) )
-*)  
 type Bag() = 
     let mutable pointer = 0;
     let inventory = TileList()
