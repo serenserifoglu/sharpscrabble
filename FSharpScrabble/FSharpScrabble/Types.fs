@@ -465,40 +465,50 @@ and Run(c:Coordinate, o:Orientation, moveLetters:Map<Coordinate, Tile>) =
 
 and BoardScanner() = 
     let hNext(c:Coordinate) = 
-        if c.X = ScrabbleConfig.BoardLength - 1 then
-            Coordinate(0, c.Y + 1)
-        else
-            Coordinate(c.X + 1, c.Y)
+        c.Next(Orientation.Horizontal)
     let vNext(c:Coordinate) =
-        if c.Y = ScrabbleConfig.BoardLength - 1 then
-            Coordinate(c.X + 1, 0)
-        else
-            Coordinate(c.X, c.Y + 1)
-    member private this.Max(c:Coordinate) = 
-        let m = ScrabbleConfig.BoardLength - 1
-        c.X = m && c.Y = m
-    member private this.LocalMax(c:Coordinate) =
-        let m = ScrabbleConfig.BoardLength - 1
-        c.X = m || c.Y = m
+        c.Next(Orientation.Vertical)
     ///the time complexity of this is going to be O(terrible)
-    member private this.Scan(c:Coordinate, count:int, increment, nextIncrement) = 
-        if this.Max c || Game.Instance.PlayingBoard.HasTile c then
-            []
-        else
-            let rec localScan(finish:Coordinate, i:int) = 
-                if i = 0 || not(finish.IsValid()) then
-                    []
-                else
-                    let candidate = CandidatePosition(c, finish)
-                    let j = if Game.Instance.PlayingBoard.HasTile(finish) then i else i - 1
-                    let next = increment finish
-                    if candidate.IsValid then
-                        candidate :: localScan(next, j)
+    member private this.Scan(tileCount:int, minorIncrement, majorIncrement) = 
+        let coordScan(start:Coordinate, tileCount:int, nextFn) = 
+            if Game.Instance.PlayingBoard.HasTile(start) then
+                []
+            else
+                let mutable i = tileCount - 1
+                let mutable finish = start
+                let mutable stop = false
+                while i > 0 && not(stop) do
+                    if not(Game.Instance.PlayingBoard.HasTile(finish)) then
+                        i <- i - 1
+                    let next : Coordinate = nextFn finish
+                    if next.IsValid() then
+                        finish <- nextFn finish
                     else
-                        localScan(next, j)
-            let candidates = localScan(c, count)
+                        stop <- true
 
-            candidates @ this.Scan(nextIncrement c, count, increment, nextIncrement)
+                let last = finish
+                let positions = [ for c in Coordinate.Between(start, last) do
+                                    if not(Game.Instance.PlayingBoard.HasTile(c)) then
+                                        let pos = CandidatePosition(start, c)
+                                        if pos.IsValid then
+                                            yield pos ]
+                positions
+            
+        let rec localScan(start:Coordinate, tileCount:int, nextFn) =
+            if not(start.IsValid()) then
+                []
+            else
+                let next = nextFn start
+                coordScan(start, tileCount, nextFn) @ localScan(next, tileCount, nextFn)
+
+        let rec fullScan(start:Coordinate, tileCount:int, minorIncrement, majorIncrement) =
+            if not(start.IsValid()) then
+                []
+            else
+                let next = majorIncrement start
+                localScan(start, tileCount, minorIncrement) @ fullScan(next, tileCount, minorIncrement, majorIncrement)
+
+        fullScan(Coordinate(0, 0), tileCount, minorIncrement, majorIncrement)
 
     member private this.Make(word:string, tiles:IEnumerable<Tile>, pos:CandidatePosition) = 
         let upperWord = word.ToUpper()
@@ -510,19 +520,20 @@ and BoardScanner() =
                                     yield (coord, tile) ]
         Move(layout)
     member private this.Make(tiles:Tile list, pos:CandidatePosition) = 
+        let emptyCoords = pos.EmptyCoordinates() |> Seq.toArray;
         let letters = Map.ofList [  for i = 0 to tiles.Length - 1 do
-                                        let coord = pos.Coordinates.[i] :> Coordinate
+                                        let coord = emptyCoords.[i] :> Coordinate
                                         yield (coord, tiles.[i]) ]
         Move(letters)
     member private this.FirstTurn(tiles:TileList) = 
         let letters = tiles |> Seq.map (fun t -> t.Letter) |> Seq.toList
         let choices = Game.Instance.Dictionary.FindAllWords(letters)
         //imperitive style because I'm bad...
-        let moves = seq{
+        let moves = [
             for word in choices do
                 for pos in this.FirstMovePositions(word.Length) do
                     yield this.Make(word, tiles, pos)
-        }
+        ]
         let move = moves |> Seq.maxBy (fun m -> m.Score)
         PlaceMove(move.Letters) :> Turn
     member private this.FirstMovePositions(length:int) = 
@@ -553,19 +564,23 @@ and BoardScanner() =
         let ofLength(powerset:Tile list list, l:int) = 
             powerset |> List.filter (fun list -> list.Length = l)
 
-        let index : Tile list list array = Array.zeroCreate tiles.Count
+        let rows = tiles.Count + 1
+        let index : Tile list list array = Array.zeroCreate rows
 
-        for i = 0 to tiles.Count - 1 do
+        for i = 0 to tiles.Count do
             index.[i] <- ofLength(powerset, i)
         
         let moves = List<Move>()
 
-        let candidates = this.Scan(Coordinate(0, 0), tiles.Count, hNext, vNext) @ this.Scan(Coordinate(0, 0), tiles.Count, vNext, hNext)
+        let candidates = this.Scan(tiles.Count, hNext, vNext) @ this.Scan(tiles.Count, vNext, hNext)
         for candidate in candidates do
-            let sets = index.[candidate.EmptyCoordinates() |> Seq.length]
+            let length = candidate.EmptyCoordinates() |> Seq.length
+            let sets = index.[length]
             for s in sets do
                 for p in permute s do
-                    moves.Add(this.Make(p, candidate))
+                    let move = this.Make(p, candidate)
+                    if move.IsValid then
+                        moves.Add(move)
         
         if moves.Count > 0 then
             let best = moves.OrderByDescending((fun (m:Move) -> m.Score)).First()
