@@ -6,7 +6,6 @@ open Scrabble.Core
 open Scrabble.Core.Squares
 open Scrabble.Core.Types
 open Scrabble.Core.Config
-open Scrabble.Dictionary
 open Scrabble.WordLookup
 
 let CoordTest() = 
@@ -114,9 +113,9 @@ let NeighborTest() =
 
 let DictionaryTest() =
     //this will take a few seconds to initialize the dictionary's data structure
-    let lookup = new Scrabble.WordLookup.WordLookup() 
+    let lookup = new WordLookup() 
 
-    let tiles = seq [| 'C';'R';'N';'O';'E';'R';  |] |> Seq.toList
+    let tiles = seq [| 'C';'R';'N';'O';'E';'R';'L';  |] |> Seq.toList
 
     let watch = System.Diagnostics.Stopwatch()
     watch.Start()
@@ -128,8 +127,26 @@ let DictionaryTest() =
 
 
 let AIFirstMoveTest() = 
-    let gen = new MoveGenerator(new Scrabble.WordLookup.WordLookup())
-    let move = gen.DetermineBestMove(seq [| new Tile('A'); new Tile('E'); new Tile('T'); new Tile('S'); |], Game.Instance.PlayingBoard)
+    let gen = new MoveGenerator(new WordLookup())
+    let move = gen.DetermineBestMove(seq [| new Tile('R'); new Tile('E'); new Tile('I'); new Tile('F'); new Tile('T'); new Tile('C'); new Tile('A'); |], Game.Instance.PlayingBoard)
+    printf "word: "
+    move.Letters |> Seq.iter (fun w -> printf "%c" w.Value.Letter) 
+    printfn " "
+    printfn "score: %i" move.Score
+
+
+let AIMultiMoveTest() = 
+    let gen = new MoveGenerator(new WordLookup())
+    let move = gen.DetermineBestMove(seq [| new Tile('R'); new Tile('E'); new Tile('I'); new Tile('F'); new Tile('T'); new Tile('C'); new Tile('A'); |], Game.Instance.PlayingBoard)
+    printf "word: "
+    move.Letters |> Seq.iter (fun w -> printf "%c" w.Value.Letter) 
+    printfn " "
+    printfn "score: %i" move.Score
+
+    Game.Instance.PlayingBoard.Put(move)
+    Game.Instance.PlayingBoard.PrettyPrint() |> ignore
+
+    let move = gen.DetermineBestMove(seq [| new Tile('C'); new Tile('R'); new Tile('N'); new Tile('O'); new Tile('E'); new Tile('R'); new Tile('J'); |], Game.Instance.PlayingBoard)
     printf "word: "
     move.Letters |> Seq.iter (fun w -> printf "%c" w.Value.Letter) 
     printfn " "

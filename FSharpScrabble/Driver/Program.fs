@@ -46,4 +46,5 @@ let p = permute l
 printfn "asdf"
 *)
 
-AIFirstMoveTest()
+//AIFirstMoveTest()
+AIMultiMoveTest()

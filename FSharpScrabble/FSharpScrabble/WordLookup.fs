@@ -4,14 +4,14 @@ open System
 open System.IO
 open System.Text
 open System.Collections.Generic
-open Scrabble.Dictionary
+open Combinatorics
 
 type WordLookup() = 
     static let ValidWords = new HashSet<string>()
     static let mutable OfficialWords:Map<string, string list> = Map.empty
 
     static do 
-        File.ReadAllLines(@"..\..\..\Dictionary\OfficialDictionary\twl.txt")
+        File.ReadAllLines(@"..\..\..\twl.txt")
             |> Seq.map(fun w -> w.ToLower())
             |> Seq.iter(fun w -> 
                             ValidWords.Add w |> ignore
@@ -26,32 +26,34 @@ type WordLookup() =
                         )
 
     
-    member this.IsValidWord word = if String.IsNullOrEmpty word then false else ValidWords.Contains (word.ToLower())
+    member this.IsValidWord (word: string): bool = 
+        if String.IsNullOrEmpty word then false else ValidWords.Contains (word.ToLower())
 
-    member this.FindAllWords (letters, ?minLength, ?maxLength) = 
-        let minLen = defaultArg minLength 2
-        let maxLen = defaultArg maxLength 15
+    member this.FindAllWords (letters: char list, ?minLength: int, ?maxLength: int): string list = 
+        this.Find(letters, defaultArg minLength 2, defaultArg maxLength 15)
 
-        this.Find(letters, minLen, maxLen)
+    member this.FindWordsUsing (letters: char list, useCharAt: int, ?minLength: int, ?maxLength: int): string list = 
+        this.Find(letters, defaultArg minLength 2, defaultArg maxLength 15, useCharAt)
 
-    member this.FindWordsUsing (letters, useCharAt, ?minLength, ?maxLength) = 
-        let minLen = defaultArg minLength 2
-        let maxLen = defaultArg maxLength 15
-
-        this.Find(letters, minLen, maxLen, useCharAt)
-
-    member this.Find (letters:char list, minLength:int, maxLength:int, ?useCharAt:int) = 
+    /// shouldn't really be a member, but you can't have optional parameters on private methods
+    /// call into FindAllWords or FindwordsUsing instead - both call this
+    member this.Find (letters: char list, minLength: int, maxLength: int, ?useCharAt: int): string list = 
         let useChar = defaultArg useCharAt -1
         let length = Seq.length letters
-        let max = min length maxLength
-
+        let charAdjustedLength = match useChar with | -1 -> length | _ -> length - 1
+        let max = min charAdjustedLength maxLength
+        
         let chars = match useChar with
                         | -1 -> letters |> Seq.toArray
-                        | _ -> letters |> Seq.filter(fun l -> l <> letters.[useChar]) |> Seq.toArray
+                        | _ -> letters // a lot of code to remove an item from a list...
+                                |> List.mapi (fun index element -> (index <> useChar, element)) 
+                                |> List.filter fst 
+                                |> List.map snd 
+                                |> Seq.toArray
 
         let validWords =
             seq{ for i in minLength .. max do
-                     let generator = new CombinationGenerator(length, i)
+                     let generator = new CombinationGenerator(charAdjustedLength, i)
                      while generator.HasNext do
                          let indices = generator.GetNext()
                          let word = new string([| for j in 0 .. indices.Length - 1 do 
