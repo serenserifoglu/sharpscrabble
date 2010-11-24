@@ -52,8 +52,8 @@ type MoveGenerator(lookup:WordLookup) =
             [| for i in 0 .. word.Length - 1 do
                 if word.ToUpper().[i] = letter then
                     match o with
-                        | Orientation.Horizontal -> if (c.X - i + 1) >= 0 then yield Coordinate(c.X - i + 1, c.Y)
-                        | _ -> if (c.Y - i + 1) >= 0 then yield Coordinate(c.X, c.Y - i + 1) |]
+                        | Orientation.Horizontal -> if (c.X - i) >= 0 then yield Coordinate(c.X - i, c.Y)
+                        | _ -> if (c.Y - i) >= 0 then yield Coordinate(c.X, c.Y - i) |]
         
         [for start in uncheckedStarts do
             let move = Move(Map.ofSeq 
@@ -80,8 +80,10 @@ type MoveGenerator(lookup:WordLookup) =
                             yield move
             |]  
         
-        moves |> Seq.maxBy (fun t -> t.Score)
-
+        match moves.Length with
+            | 0 -> Move(Map.empty)
+            | _ -> moves |> Seq.maxBy (fun t -> t.Score)
+            
 
 
     /// doesn't care if this is the first move or any subsequent move
@@ -90,5 +92,5 @@ type MoveGenerator(lookup:WordLookup) =
     /// to eval against in the future to change strategies
     member this.DetermineBestMove (tilesInHand:seq<Tile>, b:Board): Move = 
         match b.OccupiedSquares().IsEmpty with
-                true -> CalculateFirstMove(tilesInHand)
-                | false -> CalculateBestMove(tilesInHand, b)
+            true -> CalculateFirstMove(tilesInHand)
+            | false -> CalculateBestMove(tilesInHand, b)

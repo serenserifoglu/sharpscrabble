@@ -15,7 +15,7 @@ open Scrabble.Tests
 //CoordTest()
 //BoardTest()
 //NeighborTest()
-DictionaryTest()
+//DictionaryTest()
 //ValidWordTest()
 
 //MoveTest2()

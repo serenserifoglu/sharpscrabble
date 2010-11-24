@@ -217,10 +217,10 @@ type Board() =
     member this.HasTile(c:Coordinate) = 
         not (this.Get(c).IsEmpty)
     member this.Put(t:Tile, c:Coordinate) = 
-        if not (this.HasTile(c)) then
+        //if not (this.HasTile(c)) then
             this.Get(c).Tile <- t
-        else
-            raise (Exception("A tile already exists on the square."))
+        //else
+          //  raise (Exception("A tile already exists on the square."))
     member this.Put(m:Move) = 
         m.Letters |> Seq.toList |> Seq.iter (fun (pair:Collections.Generic.KeyValuePair<Coordinate, Tile>) -> this.Put(pair.Value, pair.Key))
 
@@ -306,7 +306,7 @@ and GameState(players:Player list) =
     //Properties
     member this.TileBag with get() = bag
     member this.PlayingBoard with get() = board
-    member this.MoveCount with get() = moveCount
+    member this.MoveCount with get() = moveCount and set(x) = moveCount <- x
     member this.IsOpeningMove with get() = moveCount = 0
     member this.Players with get() =  List.toSeq players
     member this.HumanPlayers with get() = this.Players.OfType<HumanPlayer>()
