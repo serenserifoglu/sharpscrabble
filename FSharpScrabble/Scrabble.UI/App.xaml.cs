@@ -35,6 +35,12 @@ namespace Scrabble.UI
                     PlayerWindows.AddFirst(w);
             }
 
+            //Give each ComputerPlayer an AI Provider instance
+            foreach (ComputerPlayer p in Game.Instance.Players.OfType<ComputerPlayer>())
+            {
+                p.Provider = new Core.AI.MoveGenerator(Game.Instance.Dictionary);
+            }
+
             //Call this to give each player tiles, and ask the first player for a move.
             Game.Instance.Start();
                         
