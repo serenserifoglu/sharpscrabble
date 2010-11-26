@@ -148,7 +148,7 @@ and ITurnImplementor =
     abstract member TakeTurn : Turn -> unit
 
 type IIntelligenceProvider = 
-    abstract member Think : TileList -> Turn
+    abstract member Think : TileList * (int -> double) -> Turn
 
 [<AbstractClass>]
 type Player(name:string) =
@@ -172,10 +172,13 @@ type Player(name:string) =
 and GameOutcome(winners:seq<Player>) =
     member this.Winners with get() = winners
 
-type ComputerPlayer(name:string, provider:IIntelligenceProvider) = 
+type ComputerPlayer(name:string) = 
+    [<DefaultValue>] val mutable private provider : IIntelligenceProvider
+    member this.Provider with get() = this.provider and set x = this.provider <- x
+
     inherit Player(name)
     override this.NotifyTurn(implementor) =
-        let turn = provider.Think(this.Tiles)
+        let turn = this.provider.Think(this.Tiles, (fun t -> Convert.ToDouble(t)))
         this.TakeTurn(implementor, turn)
     override this.NotifyGameOver(_) = 
         () //intentionally left blank
@@ -341,7 +344,7 @@ and GameState(players:Player list) =
 
 /// A singleton that will represent the game board, bag of tiles, players, move count, etc.
 and Game() = 
-    static let instance = lazy(GameState([ ComputerPlayer("Master", BoardScanner()) :> Player; HumanPlayer("Apprentice") :> Player ])) //Pretty sweet, huh? Hard coding stuff...
+    static let instance = lazy(GameState([ ComputerPlayer("Master") :> Player; HumanPlayer("Apprentice") :> Player ])) //Pretty sweet, huh? Hard coding stuff...
     //static let instance = lazy(GameState([ HumanPlayer("Apprentice") :> Player; HumanPlayer("Master") :> Player ])) //2 humans, more hard coding
     static member Instance with get() = instance.Value
 
@@ -471,146 +474,3 @@ and Run(c:Coordinate, o:Orientation, moveLetters:Map<Coordinate, Tile>) =
         let letterScore = squares |> List.map (fun (s, t) -> (s, t :?> Tile)) |> List.map (fun (s, t) ->  s.LetterMultiplier * t.Score ) |> List.sum
         wordMult * letterScore
 
-and BoardScanner() = 
-    let hNext(c:Coordinate) = 
-        c.Next(Orientation.Horizontal)
-    let vNext(c:Coordinate) =
-        c.Next(Orientation.Vertical)
-    ///the time complexity of this is going to be O(terrible)
-    member private this.Scan(tileCount:int, minorIncrement, majorIncrement) = 
-        let coordScan(start:Coordinate, tileCount:int, nextFn) = 
-            if Game.Instance.PlayingBoard.HasTile(start) then
-                []
-            else
-                let mutable i = tileCount - 1
-                let mutable finish = start
-                let mutable stop = false
-                while i > 0 && not(stop) do
-                    if not(Game.Instance.PlayingBoard.HasTile(finish)) then
-                        i <- i - 1
-                    let next : Coordinate = nextFn finish
-                    if next.IsValid() then
-                        finish <- nextFn finish
-                    else
-                        stop <- true
-
-                let last = finish
-                let positions = [ for c in Coordinate.Between(start, last) do
-                                    if not(Game.Instance.PlayingBoard.HasTile(c)) then
-                                        let pos = CandidatePosition(start, c)
-                                        if pos.IsValid then
-                                            yield pos ]
-                positions
-            
-        let rec localScan(start:Coordinate, tileCount:int, nextFn) =
-            if not(start.IsValid()) then
-                []
-            else
-                let next = nextFn start
-                coordScan(start, tileCount, nextFn) @ localScan(next, tileCount, nextFn)
-
-        let rec fullScan(start:Coordinate, tileCount:int, minorIncrement, majorIncrement) =
-            if not(start.IsValid()) then
-                []
-            else
-                let next = majorIncrement start
-                localScan(start, tileCount, minorIncrement) @ fullScan(next, tileCount, minorIncrement, majorIncrement)
-
-        fullScan(Coordinate(0, 0), tileCount, minorIncrement, majorIncrement)
-
-    member private this.Make(word:string, tiles:IEnumerable<Tile>, pos:CandidatePosition) = 
-        let upperWord = word.ToUpper()
-        let localTiles = TileList(tiles)
-        let length = pos.Coordinates |> Array.length
-        let layout = Map.ofList [ for i = 0 to length - 1 do
-                                    let tile = localTiles.TakeChar(upperWord.Chars(i))
-                                    let coord = pos.Coordinates.[i] :> Coordinate
-                                    yield (coord, tile) ]
-        Move(layout)
-    member private this.Make(tiles:Tile list, pos:CandidatePosition) = 
-        let emptyCoords = pos.EmptyCoordinates() |> Seq.toArray;
-        let letters = Map.ofList [  for i = 0 to tiles.Length - 1 do
-                                        let coord = emptyCoords.[i] :> Coordinate
-                                        yield (coord, tiles.[i]) ]
-        Move(letters)
-    member private this.FirstTurn(tiles:TileList) = 
-        let letters = tiles |> Seq.map (fun t -> t.Letter) |> Seq.toList
-        let choices = Game.Instance.Dictionary.FindAllWords(letters)
-        //imperitive style because I'm bad...
-        let moves = [
-            for word in choices do
-                for pos in this.FirstMovePositions(word.Length) do
-                    yield this.Make(word, tiles, pos)
-        ]
-        let move = moves |> Seq.maxBy (fun m -> m.Score)
-        PlaceMove(move.Letters) :> Turn
-    member private this.FirstMovePositions(length:int) = 
-        //this is so sloppy, this goes on the refactor/shit list. I just need to get going with something that works...
-        seq{
-            let center = ScrabbleConfig.StartCoordinate
-            if length < 6 then
-                yield CandidatePosition(center, Coordinate(center.X, center.Y + length - 1))
-            else if length = 6 then
-                yield CandidatePosition(center, Coordinate(center.X, center.Y + length - 1))
-                yield CandidatePosition(Coordinate(center.X, center.Y - 1), Coordinate(center.X, center.Y + length - 2))
-            else
-                yield CandidatePosition(center, Coordinate(center.X, center.Y + length - 1))
-                yield CandidatePosition(Coordinate(center.X, center.Y - 1), Coordinate(center.X, center.Y + length - 2))
-                yield CandidatePosition(Coordinate(center.X, center.Y - 2), Coordinate(center.X, center.Y + length - 3))
-        }
-    member private this.MidGame(tiles:TileList) = 
-        (*
-            Ok here's the stupidest brute force way of doing this. This will totally suck and be really slow. But this is just my first attempt.
-            - Take the tiles, and compute the power set
-            - Remove the duplicates from the power set
-            - Call Scan() to get all possible valid positions
-            - For each possible position, take all the sets of tiles of equal length from the power set
-                - Then, for each of those sets, permute it and create a Move() for each permutation, and add the Move() to a list
-            - Take the max of the resulting Move list
-        *)
-        let powerset = subsets (tiles |> Seq.toList)
-        let ofLength(powerset:Tile list list, l:int) = 
-            powerset |> List.filter (fun list -> list.Length = l)
-
-        let rows = tiles.Count + 1
-        let index : Tile list list array = Array.zeroCreate rows
-
-        for i = 0 to tiles.Count do
-            index.[i] <- ofLength(powerset, i)
-        
-        let moves = List<Move>()
-
-        let candidates = this.Scan(tiles.Count, hNext, vNext) @ this.Scan(tiles.Count, vNext, hNext)
-        for candidate in candidates do
-            let length = candidate.EmptyCoordinates() |> Seq.length
-            let sets = index.[length]
-            for s in sets do
-                for p in permute s do
-                    let move = this.Make(p, candidate)
-                    if move.IsValid then
-                        moves.Add(move)
-        
-        if moves.Count > 0 then
-            let best = moves.OrderByDescending((fun (m:Move) -> m.Score)).First()
-            PlaceMove(best.Letters) :> Turn 
-        else
-            Pass() :> Turn
-    interface IIntelligenceProvider with
-        member this.Think(tiles) =
-            if Game.Instance.IsOpeningMove then
-                this.FirstTurn(tiles)
-            else
-                this.MidGame(tiles)
-
-and CandidatePosition(start:Coordinate, finish:Coordinate) = 
-    let coords = Coordinate.Between(start, finish)
-    let valid = coords |> Seq.exists (fun c -> Game.Instance.PlayingBoard.HasTile(c) || Game.Instance.PlayingBoard.HasNeighboringTile(c))
-    member this.Coordinates with get() = coords
-    member this.Start with get() = start
-    member this.Finish with get() = finish
-    member this.IsValid with get() = valid
-    member this.EmptyCoordinates() = 
-        coords |> Seq.filter (fun c -> not (Game.Instance.PlayingBoard.HasTile(c)))
-    member this.PermuteWith(tiles:seq<Tile>) = 
-        raise (NotImplementedException())
-    

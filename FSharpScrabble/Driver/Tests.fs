@@ -157,7 +157,7 @@ let DictionaryTest() =
 
 let AIFirstMoveTest() = 
     let gen = new MoveGenerator(new WordLookup())
-    let move = gen.Think(TileList [ new Tile('R'); new Tile('E'); new Tile('I'); new Tile('F'); new Tile('T'); new Tile('C'); new Tile('A'); ])
+    let move = gen.Think(TileList [ new Tile('R'); new Tile('E'); new Tile('I'); new Tile('F'); new Tile('T'); new Tile('C'); new Tile('A'); ], (fun t -> Convert.ToDouble(t)))
     printf "word: "
     (move :?> PlaceMove).Letters |> Seq.iter (fun w -> printf "%c" w.Value.Letter) 
     //printfn " "
@@ -169,9 +169,9 @@ let AIMultiMoveTest() =
 
     let watch = System.Diagnostics.Stopwatch()
     watch.Start()
-    
+
     for i in 0 .. 10 do
-        let move = gen.Think(TileList(Game.Instance.TileBag.Take(7)))
+        let move = gen.Think(TileList(Game.Instance.TileBag.Take(7)), (fun t -> Convert.ToDouble(t)))
         
         match move.GetType().ToString() with
             | "Scrabble.Core.Types.Pass" -> printfn "Pass"
