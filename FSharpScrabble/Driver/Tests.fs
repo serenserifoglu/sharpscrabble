@@ -87,6 +87,34 @@ let ValidWordTest() =
     let valid3 = Game.Instance.Dictionary.IsValidWord("noob")
     ()
 
+let OverwriteWordTest() = 
+    let firstLetters = Map.ofList [ (Coordinate(5, 7), Tile('S')); (Coordinate(6, 7), Tile('T')); (Coordinate(7, 7), Tile('A')); (Coordinate(8, 7), Tile('N')); (Coordinate(9, 7), Tile('D')) ]
+    let secondLetters = Map.ofList [ (Coordinate(5, 7), Tile('S')); (Coordinate(5, 8), Tile('T')); (Coordinate(5, 9), Tile('A')); (Coordinate(5, 10), Tile('R')); ]
+    let thirdLetters = Map.ofList [ (Coordinate(5, 8), Tile('T')); (Coordinate(5, 9), Tile('A')); (Coordinate(5, 10), Tile('R')); ]
+    
+    let openingMove = Move(firstLetters)
+    Game.Instance.PlayingBoard.Put(openingMove)
+    printfn "First move score: %i" openingMove.Score
+    Game.Instance.PlayingBoard.PrettyPrint()
+    Game.Instance.MoveCount <- Game.Instance.MoveCount + 1
+    let invalidMove = Move(secondLetters)
+    printfn "Is second move valid? %b" invalidMove.IsValid
+    let validMove = Move(thirdLetters)
+    printfn "Is third move valid? %b" validMove.IsValid
+    if validMove.IsValid then
+        Game.Instance.PlayingBoard.Put(validMove)
+        printfn "Third move score: %i" validMove.Score
+    Game.Instance.PlayingBoard.PrettyPrint()
+    //play STANDING
+    let fourthLetters = Map.ofList [ (Coordinate(10, 7), Tile('I')); (Coordinate(11, 7), Tile('N')); (Coordinate(12, 7), Tile('G')); ]
+    let anotherValidWord = Move(fourthLetters)
+    printfn "Is fourth move valid? %b" anotherValidWord.IsValid
+    if anotherValidWord.IsValid then
+        Game.Instance.PlayingBoard.Put(anotherValidWord)
+        printfn "Fourth move score: %i" anotherValidWord.Score
+    Game.Instance.PlayingBoard.PrettyPrint()
+    ()
+
 let BoardTest() = 
     Game.Instance.PlayingBoard.Put(Tile('W'), Coordinate(0, 0))
     Game.Instance.PlayingBoard.Put(Tile('I'), Coordinate(1, 0))
