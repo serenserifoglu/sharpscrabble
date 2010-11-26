@@ -4,18 +4,27 @@
         Title="Sharp Scrabble" Height="740" Width="624"
         xmlns:ui="clr-namespace:Scrabble.UI">
     <Window.Resources>
+        <LinearGradientBrush x:Key="BoardEdge" StartPoint="0.5,0" EndPoint="0.5,1">
+            <GradientStop Color="White" Offset="0" ></GradientStop>
+            <GradientStop Color="Black" Offset="0.5"></GradientStop>
+        </LinearGradientBrush>
         
-        <ImageBrush x:Key="BoardEdge" ImageSource="images\vinyl.jpg"></ImageBrush>
     </Window.Resources>
-    <Grid x:Name="Layout" Background="{StaticResource BoardEdge}">
+    <Grid x:Name="Layout" Background="{StaticResource BoardEdge}" HorizontalAlignment="Center" Width="800">
       <Grid.RowDefinitions>
         <RowDefinition Height="600"></RowDefinition>
         <RowDefinition Height="50"></RowDefinition>
         <RowDefinition Height="50"></RowDefinition>
       </Grid.RowDefinitions>
-      <ui:DisplayBoard x:Name="GameBoard" Grid.Row="0"></ui:DisplayBoard>
-        <ui:Tiles x:Name="PlayerTiles" Grid.Row="1"></ui:Tiles>
-        <StackPanel Orientation="Horizontal" x:Name="TurnControls" Grid.Row="2">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"></ColumnDefinition>
+            <ColumnDefinition Width="700"></ColumnDefinition>
+            <ColumnDefinition Width="100"></ColumnDefinition>
+            
+        </Grid.ColumnDefinitions>
+      <ui:DisplayBoard x:Name="GameBoard" Grid.Row="0" Grid.Column="1"></ui:DisplayBoard>
+        <ui:Tiles x:Name="PlayerTiles" Grid.Row="1" Grid.Column="1"></ui:Tiles>
+        <StackPanel Orientation="Horizontal" x:Name="TurnControls" Grid.Row="2" Grid.Column="1">
             <TextBlock x:Name="StatusBar" Text="Ready." Foreground="White" Width="200" VerticalAlignment="Center"></TextBlock>
             <Button x:Name="Done" Content="Done" Width="100" Margin="2" Click="Done_Click" IsEnabled="False"></Button>
             <Button x:Name="Pass" Content="Pass" Width="100" Margin="2" Click="Pass_Click" IsEnabled="False"></Button>

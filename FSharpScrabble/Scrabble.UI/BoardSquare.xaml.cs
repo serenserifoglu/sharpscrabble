@@ -70,6 +70,8 @@ namespace Scrabble.UI
                     other.PlacedTile = t;
                     other.SquareContainer.Children.Add(t);
                 }
+
+                UtilityFunctions.GetAncestorOfType<GameWindow>(this).WordInPlay.Remove(other.MyCoords);
             }
 
             //change bg back
