@@ -429,7 +429,13 @@ and Move(letters:Map<Coordinate, Tile>) =
     member this.Letters with get() = letters
     member this.Score with get() = score
     member this.IsValid with get() = valid
-    
+    override this.ToString() = 
+        let formatter(kv:KeyValuePair<Coordinate, Tile>) = 
+            String.Format("{2} : ({0}, {1})\n", kv.Key.X, kv.Key.Y, kv.Value.Letter)
+        if this.Letters.Count > 1 then
+            letters |> Seq.map (fun kv -> formatter kv) |> Seq.reduce (fun a b -> a + b)
+        else
+            formatter (letters |> Seq.head)
 
 /// A Run is a series of connected letters in a given direction. This type takes a location and direction and constructs a map of connected tiles to letters in the given direction.
 and Run(c:Coordinate, o:Orientation, moveLetters:Map<Coordinate, Tile>) = 

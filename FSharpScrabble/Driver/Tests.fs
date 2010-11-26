@@ -93,6 +93,7 @@ let OverwriteWordTest() =
     let thirdLetters = Map.ofList [ (Coordinate(5, 8), Tile('T')); (Coordinate(5, 9), Tile('A')); (Coordinate(5, 10), Tile('R')); ]
     
     let openingMove = Move(firstLetters)
+    printfn "Move.ToString() = %s" (openingMove.ToString())
     Game.Instance.PlayingBoard.Put(openingMove)
     printfn "First move score: %i" openingMove.Score
     Game.Instance.PlayingBoard.PrettyPrint()
