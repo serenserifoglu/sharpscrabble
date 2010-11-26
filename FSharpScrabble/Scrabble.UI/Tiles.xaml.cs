@@ -31,14 +31,20 @@ namespace Scrabble.UI
         void Tiles_Drop(object sender, DragEventArgs e)
         {
             Tile t = (Tile)e.Data.GetData("scTile");
-            Canvas squareCnt = (Canvas)t.Parent;
+            if(UtilityFunctions.GetAncestorOfType<Canvas>(t) != null)
+            {
+                Canvas squareCnt = (Canvas)t.Parent;
 
-            squareCnt.Children.Clear();
-            ((BoardSquare)squareCnt.Parent).PlacedTile = null;
+                squareCnt.Children.Clear();
+                BoardSquare thisSquare = (BoardSquare)squareCnt.Parent;
+                thisSquare.PlacedTile = null;
 
-            PlayerTiles.Add(t);
+                UtilityFunctions.GetAncestorOfType<GameWindow>(thisSquare).WordInPlay.Remove(thisSquare.MyCoords);
+
+                PlayerTiles.Add(t);
             
-            Redraw();
+                Redraw();
+            }
         }
 
         public void Clear()

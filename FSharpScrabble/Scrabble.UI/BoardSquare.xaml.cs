@@ -37,26 +37,43 @@ namespace Scrabble.UI
         protected override void OnDragLeave(DragEventArgs e)
         {
             base.OnDragLeave(e);
-            SquareContainer.Background = Resources["InterestingSquare"] as Brush;
+            SquareContainer.Background = ("#" + MySquare.Gradient).ToBrush();
         }
 
         //drag/drop code
         void BoardSquare_Drop(object sender, DragEventArgs e)
         {
             Tile t = (Tile)e.Data.GetData("scTile");
-            StackPanel letterTray = (StackPanel)t.Parent;
-            Grid layout = (Grid)letterTray.Parent;
-            Tiles these = (Tiles)layout.Parent;
-            these.PlayerTiles.Remove(t);
-            letterTray.Children.Remove(t);
-            if (!Put(t))
+            if (UtilityFunctions.GetAncestorOfType<Tiles>(t) != null)
             {
-                //put stuff back noob
-                these.PlayerTiles.Add(t);
-                letterTray.Children.Add(t);
+                StackPanel letterTray = (StackPanel)t.Parent;
+                Grid layout = (Grid)letterTray.Parent;
+                Tiles these = (Tiles)layout.Parent;
+                these.PlayerTiles.Remove(t);
+                letterTray.Children.Remove(t);
+
+                if (!Put(t))
+                {
+                    //put stuff back noob
+                    these.PlayerTiles.Add(t);
+                    letterTray.Children.Add(t);
+                }
             }
+            else if (UtilityFunctions.GetAncestorOfType<BoardSquare>(t) != null)
+            {
+                BoardSquare other = UtilityFunctions.GetAncestorOfType<BoardSquare>(t);
+                other.PlacedTile = null;
+                other.SquareContainer.Children.Clear();
+
+                if (!Put(t))
+                {
+                    other.PlacedTile = t;
+                    other.SquareContainer.Children.Add(t);
+                }
+            }
+
             //change bg back
-            SquareContainer.Background = Resources["InterestingSquare"] as Brush;
+            SquareContainer.Background = ("#" + MySquare.Gradient).ToBrush();
 
             Redraw();
         }
@@ -95,5 +112,6 @@ namespace Scrabble.UI
 
         public Point MyCoords { get; set; }
         public Tile PlacedTile { get; set; }
+        public Scrabble.Core.Squares.Square MySquare { get; set; }
     }
 }

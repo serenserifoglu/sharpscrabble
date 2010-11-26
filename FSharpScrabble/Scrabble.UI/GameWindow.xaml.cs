@@ -13,7 +13,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Scrabble.Core.Types;
 using Scrabble.Core;
-
+using System.Threading;
 namespace Scrabble.UI
 {
     /// <summary>   
@@ -93,8 +93,7 @@ namespace Scrabble.UI
 
                 try
                 {
-                    this.Player.TakeTurn(pm);
-                    ButtonsOn(false);
+                    CompleteTurn(pm);
                     //should probably reset everything
 
                     //WJS - need to clear out this collection
@@ -120,20 +119,19 @@ namespace Scrabble.UI
                     PlayerTiles.PlayerTiles.ConvertAll<Scrabble.Core.Types.Tile>
                         (t => { return new Scrabble.Core.Types.Tile(t.Letter[0]); })
                     );
-                this.Player.TakeTurn(d);
+                CompleteTurn(d);
                 RedrawBoard();
-                ButtonsOn(false);
             }
             else
             {
                 MessageBox.Show("You have no letters in your tray.");
             }
         }
+
         private void Pass_Click(object sender, RoutedEventArgs e)
         {
             Scrabble.Core.Types.Pass p = new Core.Types.Pass();
-            this.Player.TakeTurn(p);
-            ButtonsOn(false);
+            CompleteTurn(p);
         }
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
@@ -180,6 +178,19 @@ namespace Scrabble.UI
             Done.IsEnabled = Dump.IsEnabled = Pass.IsEnabled = Cancel.IsEnabled = on;
 
         }
+
+        //Async thread
+        private void CompleteTurn(Turn t)
+        {
+            //ThreadStart start = new ThreadStart(() => this.Player.TakeTurn(t));
+            //Thread thrd = new Thread(start);
+            //thrd.Start();
+
+            //or not... runtime is bitching about STAThread
+            this.Player.TakeTurn(t);
+            //ButtonsOn(false)5
+        }
+
 
         #endregion
 

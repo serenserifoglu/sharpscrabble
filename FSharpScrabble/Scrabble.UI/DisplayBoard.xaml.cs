@@ -76,6 +76,7 @@ namespace Scrabble.UI
                 Square s = instanceBoard.Get(x,y);
                 //remove tile
                 BoardSquare thisGuy = _allSquares[x,y];
+                thisGuy.MySquare = s;
                 thisGuy.PlacedTile = null;
                 //add tile if exists
                 if (!s.IsEmpty)
