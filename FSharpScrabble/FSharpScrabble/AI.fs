@@ -17,7 +17,7 @@ type MoveGenerator(lookup:WordLookup) =
                 | _ -> yield new Coordinate(i, 7)]
 
     // simple case - this is the first move, so there is nothing on the board.
-    // we just choose the highest scoring word and find the best place to play it
+    // we just choose the best move based on the score given in the utility function
     // as long as the center tile is included
     let CalculateFirstMove(tilesInHand: TileList, utilityMapper): PlaceMove = 
         let possibleWords = lookup.FindAllWords(tilesInHand |> Seq.map (fun w -> w.Letter) |> Seq.toList)
@@ -40,8 +40,6 @@ type MoveGenerator(lookup:WordLookup) =
 
     // returns a list of starting coordinates that would result in a valid play of the given
     // word at the given tile for the given orientation.
-    // By getting here, there must be at least one way to play the word at the tile, but it
-    // may not be valid given the current tiles on the board
     let ValidMoves(c:Coordinate, word:string, o:Orientation, b:Board): Move list = 
         //first generate all possible
         let letter = (b.Get(c).Tile :?> Tile).Letter
@@ -52,17 +50,21 @@ type MoveGenerator(lookup:WordLookup) =
             [| for i in 0 .. word.Length - 1 do
                 if word.ToUpper().[i] = letter then
                     match o with
-                        | Orientation.Horizontal -> if (c.X - i) >= 0 && (c.X + word.Length - i) <= 15 then yield Coordinate(c.X - i, c.Y)
-                        | _ -> if (c.Y - i) >= 0 && (c.Y + word.Length - i) <= 15 then yield Coordinate(c.X, c.Y - i) |]
+                        | Orientation.Horizontal -> if (c.X - i) >= 0 && (c.X + word.Length - i) <= 15 then 
+                                                        yield Coordinate(c.X - i, c.Y)
+                        | _ -> if (c.Y - i) >= 0 && (c.Y + word.Length - i) <= 15 then 
+                                    yield Coordinate(c.X, c.Y - i) |]
         
         [for start in uncheckedStarts do
-            let move = Move(Map.ofSeq 
-                                [| for i in 0 .. word.Length-1 do
-                                        let coord = start.Next(o, i)
-                                        if coord <> c then //don't include the tile already on the board
-                                            yield (start.Next(o, i), new Tile(word.ToUpper().[i]))
-                                |])
-            if move.IsValid then yield move]
+            let map = Map.ofSeq 
+                        [| for i in 0 .. word.Length-1 do
+                                let coord = start.Next(o, i)
+                                if not(b.HasTile(coord)) then //don't include tiles already on the board in the move
+                                    yield (start.Next(o, i), new Tile(word.ToUpper().[i]))
+                        |]
+            if map.Count > 0 then
+                let move = Move(map)
+                if move.IsValid then yield move]
 
     //for each occupied square, find all possible words using that tile and the letters in hand.
     // then find all ways to play on that tile, and check if each is valid.
@@ -90,9 +92,8 @@ type MoveGenerator(lookup:WordLookup) =
 
 
     /// doesn't care if this is the first move or any subsequent move
-    /// returns the 'best' move as defined by the move wit the highest score based on the 
-    /// Move type's Score method.  We can pass in a Score method (takes Move, returns score) 
-    /// to eval against in the future to change strategies
+    /// Returns the best move as defined by the move with the highest score based on 
+    /// the passed in utility mapper 
     member this.Think(tilesInHand, utilityMapper) = 
             (this :> IIntelligenceProvider).Think(tilesInHand, utilityMapper)
 
