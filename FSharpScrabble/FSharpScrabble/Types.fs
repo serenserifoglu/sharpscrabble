@@ -376,6 +376,8 @@ and Move(letters:Map<Coordinate, Tile>) =
             Orientation.Horizontal
 
     //Private methods
+    let NotOverwritingTiles() = 
+        not(letters |> Seq.map (fun kv -> kv.Key) |> Seq.exists (fun key -> Game.Instance.PlayingBoard.HasTile(key)))
     let CheckMoveOccupied(c:Coordinate) =
             letters.ContainsKey(c) || Game.Instance.PlayingBoard.HasTile(c)
     let Opposite(o:Orientation) =
@@ -397,7 +399,7 @@ and Move(letters:Map<Coordinate, Tile>) =
     let ContainsStartSquare() = 
         letters.ContainsKey(ScrabbleConfig.StartCoordinate)
     let ValidPlacement() = 
-        IsAligned() && IsConsecutive() && ((Game.Instance.IsOpeningMove && ContainsStartSquare()) || (not Game.Instance.IsOpeningMove && IsConnected()))
+        NotOverwritingTiles() && IsAligned() && IsConsecutive() && ((Game.Instance.IsOpeningMove && ContainsStartSquare()) || (not Game.Instance.IsOpeningMove && IsConnected()))
     let ComputeRuns() : Run list = 
         let alt = Opposite(orientation)
         let alternateRuns = sorted |> Seq.map (fun pair -> Run(pair.Key, alt, letters)) |> Seq.filter (fun r -> r.Length > 1) |> Seq.toList
