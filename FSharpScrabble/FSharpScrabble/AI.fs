@@ -58,7 +58,9 @@ type MoveGenerator(lookup:WordLookup) =
         [for start in uncheckedStarts do
             let move = Move(Map.ofSeq 
                                 [| for i in 0 .. word.Length-1 do
-                                        yield (start.Next(o, i), new Tile(word.ToUpper().[i]))
+                                        let coord = start.Next(o, i)
+                                        if coord <> c then //don't include the tile already on the board
+                                            yield (start.Next(o, i), new Tile(word.ToUpper().[i]))
                                 |])
             if move.IsValid then yield move]
 

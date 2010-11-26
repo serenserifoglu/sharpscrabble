@@ -171,10 +171,11 @@ let AIMultiMoveTest() =
     
     for i in 0 .. 10 do
         let move = gen.Think(TileList(Game.Instance.TileBag.Take(7)))
-        printf "word: "
+        
         match move.GetType().ToString() with
             | "Scrabble.Core.Types.Pass" -> printfn "Pass"
             | _ -> 
+                    printf "word: "
                     (move :?> PlaceMove).Letters |> Seq.iter (fun w -> printf "%c" w.Value.Letter) 
                     printfn " "
 
@@ -188,25 +189,4 @@ let AIMultiMoveTest() =
     printfn "AI elapsed time: %im %is %ims" watch.Elapsed.Minutes watch.Elapsed.Seconds watch.Elapsed.Milliseconds
     System.Console.Read()
 
-    (*
-    let move = gen.DetermineBestMove(seq [| new Tile('R'); new Tile('E'); new Tile('I'); new Tile('F'); new Tile('T'); new Tile('C'); new Tile('A'); |], Game.Instance.PlayingBoard)
-    printf "word: "
-    move.Letters |> Seq.iter (fun w -> printf "%c" w.Value.Letter) 
-    printfn " "
-    printfn "score: %i" move.Score
-
-    Game.Instance.PlayingBoard.Put(move)
-    Game.Instance.PlayingBoard.PrettyPrint() |> ignore
-
-    Game.Instance.MoveCount <- 1
-
-    let move = gen.DetermineBestMove(seq [| new Tile('C'); new Tile('R'); new Tile('N'); new Tile('O'); new Tile('E'); new Tile('R'); new Tile('J'); |], Game.Instance.PlayingBoard)
-    printf "word: "
-    move.Letters |> Seq.iter (fun w -> printf "%c" w.Value.Letter) 
-    printfn " "
-    printfn "score: %i" move.Score
-
-    Game.Instance.PlayingBoard.Put(move)
-    Game.Instance.PlayingBoard.PrettyPrint() |> ignore
-    *)
     
