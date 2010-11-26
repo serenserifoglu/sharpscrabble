@@ -128,11 +128,11 @@ let DictionaryTest() =
 
 let AIFirstMoveTest() = 
     let gen = new MoveGenerator(new WordLookup())
-    let move = gen.DetermineBestMove(seq [| new Tile('R'); new Tile('E'); new Tile('I'); new Tile('F'); new Tile('T'); new Tile('C'); new Tile('A'); |], Game.Instance.PlayingBoard)
+    let move = gen.Think(TileList [ new Tile('R'); new Tile('E'); new Tile('I'); new Tile('F'); new Tile('T'); new Tile('C'); new Tile('A'); ])
     printf "word: "
-    move.Letters |> Seq.iter (fun w -> printf "%c" w.Value.Letter) 
-    printfn " "
-    printfn "score: %i" move.Score
+    (move :?> PlaceMove).Letters |> Seq.iter (fun w -> printf "%c" w.Value.Letter) 
+    //printfn " "
+    //printfn "score: %i" (move :?> PlaceMove).Score
 
 
 let AIMultiMoveTest() = 
@@ -141,20 +141,24 @@ let AIMultiMoveTest() =
     let watch = System.Diagnostics.Stopwatch()
     watch.Start()
     
-    for i in 0 .. 5 do
-        let move = gen.DetermineBestMove(Game.Instance.TileBag.Take(7), Game.Instance.PlayingBoard)
+    for i in 0 .. 10 do
+        let move = gen.Think(TileList(Game.Instance.TileBag.Take(7)))
         printf "word: "
-        move.Letters |> Seq.iter (fun w -> printf "%c" w.Value.Letter) 
-        printfn " "
-        printfn "score: %i" move.Score
+        match move.GetType().ToString() with
+            | "Scrabble.Core.Types.Pass" -> printfn "Pass"
+            | _ -> 
+                    (move :?> PlaceMove).Letters |> Seq.iter (fun w -> printf "%c" w.Value.Letter) 
+                    printfn " "
 
-        Game.Instance.PlayingBoard.Put(move)
-        Game.Instance.PlayingBoard.PrettyPrint() |> ignore
+                    for i in (move :?> PlaceMove).Letters do
+                        Game.Instance.PlayingBoard.Put(i.Value, i.Key)
 
-        Game.Instance.MoveCount <- Game.Instance.MoveCount + 1
+                    Game.Instance.PlayingBoard.PrettyPrint() |> ignore
+                    Game.Instance.MoveCount <- Game.Instance.MoveCount + 1
 
     watch.Stop()
     printfn "AI elapsed time: %im %is %ims" watch.Elapsed.Minutes watch.Elapsed.Seconds watch.Elapsed.Milliseconds
+    System.Console.Read()
 
     (*
     let move = gen.DetermineBestMove(seq [| new Tile('R'); new Tile('E'); new Tile('I'); new Tile('F'); new Tile('T'); new Tile('C'); new Tile('A'); |], Game.Instance.PlayingBoard)
