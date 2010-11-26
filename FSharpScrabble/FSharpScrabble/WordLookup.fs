@@ -42,7 +42,7 @@ type WordLookup() =
         let length = Seq.length letters
         let charAdjustedLength = match useChar with | -1 -> length | _ -> length - 1
         let max = min charAdjustedLength maxLength
-        
+
         let chars = match useChar with
                         | -1 -> letters |> Seq.toArray
                         | _ -> letters // a lot of code to remove an item from a list...
@@ -52,7 +52,7 @@ type WordLookup() =
                                 |> Seq.toArray
 
         let validWords =
-            seq{ for i in minLength .. max do
+            [ for i in minLength .. max do
                      let generator = new CombinationGenerator(charAdjustedLength, i)
                      while generator.HasNext do
                          let indices = generator.GetNext()
@@ -60,13 +60,13 @@ type WordLookup() =
                                                     yield chars.[indices.[j]] 
                                                   match useChar with
                                                       | -1 -> ()
-                                                      | _ -> yield chars.[useChar] |])
+                                                      | _ -> yield letters.[useChar] |])
                          let possible = new string(word |> Seq.sort |> Seq.toArray)
 
                          match OfficialWords.TryFind(possible.ToLower()) with
                              | None -> ()
                              | Some x -> for item in x do yield item
-               }
+             ]
 
         match useChar with
             | -1 -> validWords |> Seq.distinct |> Seq.toList

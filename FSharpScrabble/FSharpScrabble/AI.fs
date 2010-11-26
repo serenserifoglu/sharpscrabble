@@ -19,12 +19,12 @@ type MoveGenerator(lookup:WordLookup) =
     // simple case - this is the first move, so there is nothing on the board.
     // we just choose the best move based on the score given in the utility function
     // as long as the center tile is included
-    let CalculateFirstMove(tilesInHand: TileList, utilityMapper): PlaceMove = 
+    let CalculateFirstMove(tilesInHand: TileList, utilityMapper): Turn = 
         let possibleWords = lookup.FindAllWords(tilesInHand |> Seq.map (fun w -> w.Letter) |> Seq.toList)
         let orientations:seq<Orientation> = Seq.cast(System.Enum.GetValues(typeof<Orientation>))
 
-        let moves = 
-            [| for o in orientations do
+        let moves:Move list = 
+            [ for o in orientations do
                    for word in possibleWords do
                        for start in PossibleStarts(word, o) do
                            yield Move(
@@ -32,9 +32,12 @@ type MoveGenerator(lookup:WordLookup) =
                                     [| for i in 0 .. word.Length-1 do
                                           yield (start.Next(o, i), new Tile(word.ToUpper().[i]))
                                     |])
-            |]
-        let move = moves |> Seq.maxBy (fun m -> utilityMapper(tilesInHand, m.Letters))
-        PlaceMove(move.Letters)
+            ]
+        if not(moves.IsEmpty) then
+            let move = moves |> Seq.maxBy (fun m -> utilityMapper(tilesInHand, m.Letters))
+            PlaceMove(move.Letters) :> Turn
+        else
+            Pass() :> Turn
 
 
 
@@ -50,9 +53,9 @@ type MoveGenerator(lookup:WordLookup) =
             [| for i in 0 .. word.Length - 1 do
                 if word.ToUpper().[i] = letter then
                     match o with
-                        | Orientation.Horizontal -> if (c.X - i) >= 0 && (c.X + word.Length - i) <= 15 then 
+                        | Orientation.Horizontal -> if (c.X - i) >= 0 && (c.X + word.Length - i) <= 14 then 
                                                         yield Coordinate(c.X - i, c.Y)
-                        | _ -> if (c.Y - i) >= 0 && (c.Y + word.Length - i) <= 15 then 
+                        | _ -> if (c.Y - i) >= 0 && (c.Y + word.Length - i) <= 14 then 
                                     yield Coordinate(c.X, c.Y - i) |]
         
         [for start in uncheckedStarts do
@@ -60,7 +63,7 @@ type MoveGenerator(lookup:WordLookup) =
                         [| for i in 0 .. word.Length-1 do
                                 let coord = start.Next(o, i)
                                 if not(b.HasTile(coord)) then //don't include tiles already on the board in the move
-                                    yield (start.Next(o, i), new Tile(word.ToUpper().[i]))
+                                    yield (coord, new Tile(word.ToUpper().[i]))
                         |]
             if map.Count > 0 then
                 let move = Move(map)
@@ -101,5 +104,5 @@ type MoveGenerator(lookup:WordLookup) =
         member this.Think (tilesInHand, utilityMapper): Turn = 
             let b = Game.Instance.PlayingBoard
             match b.OccupiedSquares().IsEmpty with
-                true -> CalculateFirstMove(tilesInHand, utilityMapper) :> Turn
+                true -> CalculateFirstMove(tilesInHand, utilityMapper)
                 | false -> CalculateBestMove(tilesInHand, b, utilityMapper)
