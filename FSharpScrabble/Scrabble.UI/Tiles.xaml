@@ -17,7 +17,7 @@
         <TextBlock x:Name="PlayerDisplayName" Grid.Column="0" Foreground="AntiqueWhite" VerticalAlignment="Center" HorizontalAlignment="Center" Text="{Binding Path=PlayerName}">
             
         </TextBlock>
-        <StackPanel x:Name="TileRack" Orientation="Horizontal" VerticalAlignment="Center" Grid.Column="1"></StackPanel>
+        <StackPanel x:Name="TileRack" Orientation="Horizontal" VerticalAlignment="Center" Grid.Column="1" AllowDrop="true"></StackPanel>
         <TextBlock x:Name="PlayerScore" Grid.Column="2" Text="0000" Foreground="AntiqueWhite" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
     </Grid>
     

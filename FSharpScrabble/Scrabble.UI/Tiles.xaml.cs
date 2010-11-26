@@ -22,8 +22,22 @@ namespace Scrabble.UI
         public Tiles()
         {
             InitializeComponent();
+            this.Drop += new DragEventHandler(Tiles_Drop);
             //initialize blank
             PlayerTiles = new List<Tile>();
+            Redraw();
+        }
+
+        void Tiles_Drop(object sender, DragEventArgs e)
+        {
+            Tile t = (Tile)e.Data.GetData("scTile");
+            Canvas squareCnt = (Canvas)t.Parent;
+
+            squareCnt.Children.Clear();
+            ((BoardSquare)squareCnt.Parent).PlacedTile = null;
+
+            PlayerTiles.Add(t);
+            
             Redraw();
         }
 
@@ -41,6 +55,8 @@ namespace Scrabble.UI
             }
             
         }
+
+        
 
         public List<Tile> PlayerTiles { get; set; }
 

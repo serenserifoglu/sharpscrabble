@@ -41,7 +41,8 @@ namespace Scrabble.UI
         //drag/drop
         protected override void OnMouseDown(MouseButtonEventArgs e)
         {
-            if (!(this.Parent is BoardSquare))
+            if (UtilityFunctions.GetAncestorOfType<Tiles>(this) != null ||
+                UtilityFunctions.GetAncestorOfType<GameWindow>(this).WordInPlay.ContainsValue(this))
             {
                 DataObject thisTileData = new DataObject("scTile", this);
                 DragDrop.DoDragDrop(this, thisTileData, DragDropEffects.Move);
