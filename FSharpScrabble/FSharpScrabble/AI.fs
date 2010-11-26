@@ -19,7 +19,7 @@ type MoveGenerator(lookup:WordLookup) =
     // simple case - this is the first move, so there is nothing on the board.
     // we just choose the highest scoring word and find the best place to play it
     // as long as the center tile is included
-    let CalculateFirstMove(tilesInHand:seq<Tile>, utilityMapper: (int -> double)): PlaceMove = 
+    let CalculateFirstMove(tilesInHand: TileList, utilityMapper): PlaceMove = 
         let possibleWords = lookup.FindAllWords(tilesInHand |> Seq.map (fun w -> w.Letter) |> Seq.toList)
         let orientations:seq<Orientation> = Seq.cast(System.Enum.GetValues(typeof<Orientation>))
 
@@ -33,7 +33,7 @@ type MoveGenerator(lookup:WordLookup) =
                                           yield (start.Next(o, i), new Tile(word.ToUpper().[i]))
                                     |])
             |]
-        let move = moves |> Seq.maxBy (fun m -> utilityMapper(m.Score))
+        let move = moves |> Seq.maxBy (fun m -> utilityMapper(tilesInHand, m.Letters))
         PlaceMove(move.Letters)
 
 
@@ -67,7 +67,7 @@ type MoveGenerator(lookup:WordLookup) =
     //for each occupied square, find all possible words using that tile and the letters in hand.
     // then find all ways to play on that tile, and check if each is valid.
     // from all valid moves, take the max score
-    let CalculateBestMove(tilesInHand:seq<Tile>, b:Board, utilityMapper: (int -> double)): Turn = 
+    let CalculateBestMove(tilesInHand: TileList, b:Board, utilityMapper): Turn = 
         let letters = tilesInHand |> Seq.map (fun w -> w.Letter) |> Seq.toList
         let orientations:seq<Orientation> = Seq.cast(System.Enum.GetValues(typeof<Orientation>))
 
@@ -84,7 +84,7 @@ type MoveGenerator(lookup:WordLookup) =
         
         match moves.Length with
             | 0 -> Pass() :> Turn
-            | _ -> let move = moves |> Seq.maxBy (fun m -> utilityMapper(m.Score))
+            | _ -> let move = moves |> Seq.maxBy (fun m -> utilityMapper(tilesInHand, m.Letters))
                    PlaceMove(move.Letters) :> Turn
             
 
@@ -93,11 +93,11 @@ type MoveGenerator(lookup:WordLookup) =
     /// returns the 'best' move as defined by the move wit the highest score based on the 
     /// Move type's Score method.  We can pass in a Score method (takes Move, returns score) 
     /// to eval against in the future to change strategies
-    member this.Think(tilesInHand: TileList, utilityMapper: (int -> double)) = 
+    member this.Think(tilesInHand, utilityMapper) = 
             (this :> IIntelligenceProvider).Think(tilesInHand, utilityMapper)
 
     interface IIntelligenceProvider with
-        member this.Think (tilesInHand: TileList, utilityMapper: (int -> double)): Turn = 
+        member this.Think (tilesInHand, utilityMapper): Turn = 
             let b = Game.Instance.PlayingBoard
             match b.OccupiedSquares().IsEmpty with
                 true -> CalculateFirstMove(tilesInHand, utilityMapper) :> Turn

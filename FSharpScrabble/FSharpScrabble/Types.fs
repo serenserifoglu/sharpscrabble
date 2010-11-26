@@ -148,7 +148,7 @@ and ITurnImplementor =
     abstract member TakeTurn : Turn -> unit
 
 type IIntelligenceProvider = 
-    abstract member Think : TileList * (int -> double) -> Turn
+    abstract member Think : TileList * (TileList * Map<Coordinate, Tile> -> double) -> Turn
 
 [<AbstractClass>]
 type Player(name:string) =
