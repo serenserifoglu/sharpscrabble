@@ -173,12 +173,15 @@ and GameOutcome(winners:seq<Player>) =
     member this.Winners with get() = winners
 
 type ComputerPlayer(name:string) = 
+    inherit Player(name)
+
     [<DefaultValue>] val mutable private provider : IIntelligenceProvider
     member this.Provider with get() = this.provider and set x = this.provider <- x
+    [<DefaultValue>] val mutable private utility : TileList * Map<Coordinate, Tile> -> double
+    member this.UtilityFunction with get() = this.utility and set x = this.utility <- x
 
-    inherit Player(name)
     override this.NotifyTurn(implementor) =
-        let turn = this.provider.Think(this.Tiles, (fun t -> Convert.ToDouble(t)))
+        let turn = this.provider.Think(this.Tiles, this.utility)
         this.TakeTurn(implementor, turn)
     override this.NotifyGameOver(_) = 
         () //intentionally left blank
@@ -313,6 +316,7 @@ and GameState(players:Player list) =
     member this.IsOpeningMove with get() = moveCount = 0
     member this.Players with get() =  List.toSeq players
     member this.HumanPlayers with get() = this.Players.OfType<HumanPlayer>()
+    member this.ComputerPlayers with get() = this.Players.OfType<ComputerPlayer>()
     member this.Dictionary with get() = wordLookup
     member this.CurrentPlayer with get() = List.nth players currentPlayer
 

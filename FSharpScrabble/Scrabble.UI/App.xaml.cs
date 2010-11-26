@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Windows;
-
+using Scrabble.Core;
 using Scrabble.Core.Types;
 
 namespace Scrabble.UI
@@ -35,11 +31,8 @@ namespace Scrabble.UI
                     PlayerWindows.AddFirst(w);
             }
 
-            //Give each ComputerPlayer an AI Provider instance
-            foreach (ComputerPlayer p in Game.Instance.Players.OfType<ComputerPlayer>())
-            {
-                p.Provider = new Core.AI.MoveGenerator(Game.Instance.Dictionary);
-            }
+            //Give each ComputerPlayer an AI Provider instance and utility functions
+            Setup.SetupComputer();
 
             //Call this to give each player tiles, and ask the first player for a move.
             Game.Instance.Start();
