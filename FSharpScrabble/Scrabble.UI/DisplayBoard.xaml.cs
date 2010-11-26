@@ -75,22 +75,19 @@ namespace Scrabble.UI
                 int x = i/15; //columns
                 Square s = instanceBoard.Get(x,y);
                 //remove tile
-                _allSquares[x,y].PlacedTile = null;
+                BoardSquare thisGuy = _allSquares[x,y];
+                thisGuy.PlacedTile = null;
                 //add tile if exists
                 if (!s.IsEmpty)
                 {
                     Scrabble.Core.Types.Tile t = (Scrabble.Core.Types.Tile)s.Tile;
                     _allSquares[x, y].PlacedTile = new Tile(t.Letter.ToString(), t.Score);
                 }
-                else if (s.WordMultiplier > 0)
+                else if (s.WordMultiplier > 0 || s.LetterMultiplier > 0)
                 {
                     //special square, need to display accordingly
-                }
-                else if (s.LetterMultiplier > 0)
-                {
-                    //same deal, btw i hate else-if statements
-                }
-                    
+                    thisGuy.SquareContainer.Background = ("#" + s.Gradient).ToBrush();
+                }                   
 
             }
             Redraw();

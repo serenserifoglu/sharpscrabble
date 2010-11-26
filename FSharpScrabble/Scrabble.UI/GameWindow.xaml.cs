@@ -146,8 +146,12 @@ namespace Scrabble.UI
                 PlayerTiles.PlayerTiles.Add(playedTile.Value);
             }
 
+            //Bad stuff happens if we leave stuff in here
+            WordInPlay.Clear();
+
             //update UI
             RedrawBoard();
+            RedrawTiles();
         }
 
         private void RedrawBoard()
