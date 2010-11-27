@@ -180,9 +180,21 @@ type ComputerPlayer(name:string) =
     [<DefaultValue>] val mutable private utility : TileList * Map<Coordinate, Tile> -> double
     member this.UtilityFunction with get() = this.utility and set x = this.utility <- x
 
+    let mutable passes = 0
+
     override this.NotifyTurn(implementor) =
         let turn = this.provider.Think(this.Tiles, this.utility)
-        this.TakeTurn(implementor, turn)
+
+        if turn.GetType().ToString() = "Scrabble.Core.Types.Pass" then
+            passes <- passes + 1
+        else
+            passes <- 0
+
+        if passes > 2 then //auto-dump after 2 passes in a row
+            this.TakeTurn(implementor, DumpLetters(this.Tiles))
+            passes <- 0
+        else
+            this.TakeTurn(implementor, turn)
     override this.NotifyGameOver(_) = 
         () //intentionally left blank
     override this.DrawTurn(_, _) = 
