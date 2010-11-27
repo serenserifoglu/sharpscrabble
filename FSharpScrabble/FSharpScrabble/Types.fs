@@ -453,7 +453,7 @@ and Move(letters:Map<Coordinate, Tile>) =
         let formatter(kv:KeyValuePair<Coordinate, Tile>) = 
             String.Format("{2} : ({0}, {1})\n", kv.Key.X, kv.Key.Y, kv.Value.Letter)
         if this.Letters.Count > 1 then
-            letters |> Seq.map (fun kv -> formatter kv) |> Seq.reduce (fun a b -> a + b)
+            letters |> Seq.map formatter |> Seq.reduce (fun a b -> a + b)
         else
             formatter (letters |> Seq.head)
 
