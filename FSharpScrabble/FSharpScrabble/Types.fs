@@ -190,7 +190,7 @@ type ComputerPlayer(name:string) =
         else
             passes <- 0
 
-        if passes > 2 then //auto-dump after 2 passes in a row
+        if passes > 3 then //auto-dump after 3 passes in a row
             this.TakeTurn(implementor, DumpLetters(this.Tiles))
             passes <- 0
         else

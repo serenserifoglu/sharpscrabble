@@ -243,6 +243,7 @@ namespace Scrabble.UI
                 //aggregate may be incorrect...  can't test right now
                 StatusBar.Text = string.Format("{0} won.  Better luck next time.", o.Winners.Aggregate("", (x,y) => { return x + " & " + y.Name;}));
             }
+            MessageBox.Show(string.Format(" Score: {0}: {1}, {2}: {3}", Player.Name, Player.Score, o.Winners.First().Name, o.Winners.First().Score));
         }
 
         public void TilesUpdated()
