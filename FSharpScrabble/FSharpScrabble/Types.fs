@@ -374,10 +374,10 @@ and Move(letters:Map<Coordinate, Tile>) =
     let last = sorted |> Seq.skip (sorted.Length - 1) |> Seq.head |> ToKey
     let CheckBoardPrev(c:Coordinate, o:Orientation) = 
         let prev = c.Prev(o)
-        prev.IsValid() && Game.Instance.PlayingBoard.HasTile(c)
+        prev.IsValid() && Game.Instance.PlayingBoard.HasTile(prev)
     let CheckBoardNext(c:Coordinate, o:Orientation) = 
         let next = c.Next(o)
-        next.IsValid() && Game.Instance.PlayingBoard.HasTile(c)
+        next.IsValid() && Game.Instance.PlayingBoard.HasTile(next)
     let range = 
         try
             Coordinate.Between(first, last)
