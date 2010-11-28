@@ -47,6 +47,7 @@
     <Compile Include="Config.fs" />
     <Compile Include="Types.fs" />
     <Compile Include="AI.fs" />
+    <Compile Include="HillClimbingAI.fs" />
     <Compile Include="UtilityFunctions.fs" />
     <Compile Include="Setup.fs" />
   </ItemGroup>
