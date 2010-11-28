@@ -20,7 +20,8 @@ let SaveCommon(tiles:TileList, move:Map<Config.Coordinate, Tile>) =
 
     for tile in list do
         match tile.Letter with
-            | 'E' | 'T' | 'A' | 'O' | 'I' | 'N' | 'S' -> scale <- scale + 5 //arbitrary
+            // per english word frequencies, these are the 7 most common letters
+            | 'E' | 'T' | 'A' | 'O' | 'I' | 'N' | 'S' -> scale <- scale + 5 //5 is arbitrary
             | _ -> ()
 
     System.Convert.ToDouble(Move(move).Score + scale)
@@ -39,9 +40,9 @@ let SmartSMoves(tiles:TileList, move: Map<Config.Coordinate, Tile>) =
                 if Game.Instance.PlayingBoard.HasTile(tile) then 
                     bordering <- bordering + 1
             if (bordering = 1 && move.Count > 1) || bordering > 1 then 
-                scale <- scale + 10
+                scale <- scale + 10 // 10 is arbitrary
             else                
-                scale <- (0 - Move(move).Score) + 1
+                scale <- (0 - Move(move).Score) + 1 //this will make the return value 1
     System.Convert.ToDouble(Move(move).Score + scale)
 
 

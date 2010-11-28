@@ -11,7 +11,8 @@ open Scrabble.Core.AI
 // A future implementation could take another parameter which would signify a number of random restarts
 // that could be used - when a local maximum is found, choose another tile at random and perform another
 // hill climb and repeat x times.  At the end, the best of the local maxima would be returned.
-type HillClimbingMoveGenerator(lookup:WordLookup) = 
+type HillClimbingMoveGenerator(lookup:WordLookup, ?restartTries:int) = 
+    let mutable restarts = defaultArg restartTries 1
 
     // first word of the game must include (7,7)
     let PossibleStarts(word:string, o:Orientation): Coordinate list =
@@ -31,22 +32,32 @@ type HillClimbingMoveGenerator(lookup:WordLookup) =
 
         let mutable bestScore = 0.0
         let mutable bestMove = Unchecked.defaultof<Move>
-        let mutable stop = false
+        let rand = System.Random()
+        
+        while restarts > 0 do
+            let mutable stop = false
+            let mutable currScore = 0.0
+            let mutable currMove = Unchecked.defaultof<Move>
+            let randomPossibilties = possibleWords |> Seq.sortBy(fun x -> rand.Next())
 
-        for o in orientations do
-            for word in possibleWords do
-                for start in PossibleStarts(word, o) do
-                    if not(stop) then
-                        let move = Move(Map.ofSeq 
-                                            [| for i in 0 .. word.Length-1 do
-                                                yield (start.Next(o, i), new Tile(word.ToUpper().[i]))
-                                            |])
-                        let score = utilityMapper(tilesInHand, move.Letters)
-                        if score > bestScore then
-                            bestScore <- score
-                            bestMove <- move
-                        else
-                            stop <- true
+            for o in orientations do
+                for word in randomPossibilties do //this will do for a random restart on first move
+                    for start in PossibleStarts(word, o) do
+                        if not(stop) then
+                            let move = Move(Map.ofSeq 
+                                                [| for i in 0 .. word.Length-1 do
+                                                    yield (start.Next(o, i), new Tile(word.ToUpper().[i]))
+                                                |])
+                            let score = utilityMapper(tilesInHand, move.Letters)
+                            if score > currScore then
+                                currScore <- score
+                                currMove <- move
+                            else
+                                stop <- true
+                                restarts <- restarts - 1
+                                if currScore > bestScore then
+                                    bestScore <- currScore
+                                    bestMove <- currMove
         
         if bestScore > 0.0 then
             PlaceMove(bestMove.Letters) :> Turn
@@ -92,31 +103,41 @@ type HillClimbingMoveGenerator(lookup:WordLookup) =
 
         let mutable bestScore = 0.0
         let mutable bestMove:Move = Unchecked.defaultof<Move> //hack?
-        let mutable stop = false
+        let rand = System.Random()
         
-        for coordinate in b.OccupiedSquares() do
-            let tile = b.Get(coordinate.Key).Tile :?> Tile
-            let possibleWords = lookup.FindWordsUsing(tile.Letter :: letters, 0)
-        // this is some really terrible code. I can't believe I wrote it.
-        // but there's no break, no goto.. so the only other option would be to perform a 
-        // bunch of unnecessary work after the local maximum is found, which defeats the whole
-        // purpose of hill climbing in the first place. 
+        while restarts > 1 do
+            let mutable stop = false
+            let mutable currScore = 0.0
+            let mutable currMove = Unchecked.defaultof<Move>
+            let randomSquares = b.OccupiedSquares() |> Seq.sortBy(fun x -> rand.Next())
+
+            for coordinate in randomSquares do
+                if not(stop) then 
+                    let tile = b.Get(coordinate.Key).Tile :?> Tile
+                    let possibleWords = lookup.FindWordsUsing(tile.Letter :: letters, 0)
+                    // this is some really terrible code. I can't believe I wrote it.
+                    // but there's no break, no goto.. so the only other option would be to perform a 
+                    // bunch of unnecessary work after the local maximum is found, which defeats the whole
+                    // purpose of hill climbing in the first place. 
         
-        // That is being done in the first move, just to keep that code cleaner and since the number
-        // of possiblities is insignificantly small
-            if not(stop) then 
-                for orient in orientations do
-                    if not(stop) then 
-                        for word in possibleWords do
-                            if not(stop) then 
-                                for move in ValidMoves(coordinate.Key, word, orient, b) do
-                                    if not(stop) then
-                                        let score = utilityMapper(tilesInHand, move.Letters)
-                                        if score > bestScore then
-                                            bestScore <- score
-                                            bestMove <- move
-                                        else
-                                            stop <- true
+                    // That is being done in the first move, just to keep that code cleaner and since the number
+                    // of possiblities is insignificantly small
+                    for orient in orientations do
+                        if not(stop) then 
+                            for word in possibleWords do
+                                if not(stop) then 
+                                    for move in ValidMoves(coordinate.Key, word, orient, b) do
+                                        if not(stop) then
+                                            let score = utilityMapper(tilesInHand, move.Letters)
+                                            if score > currScore then
+                                                currScore <- score
+                                                currMove <- move
+                                            else
+                                                stop <- true
+                                                restarts <- restarts - 1
+                                                if currScore > bestScore then
+                                                    bestScore <- currScore
+                                                    bestMove <- currMove
         
         if bestScore > 0.0 then
             PlaceMove(bestMove.Letters) :> Turn
@@ -133,6 +154,7 @@ type HillClimbingMoveGenerator(lookup:WordLookup) =
 
     interface IIntelligenceProvider with
         member this.Think (tilesInHand, utilityMapper): Turn = 
+            restarts <- defaultArg restartTries 1
             let b = Game.Instance.PlayingBoard
             match b.OccupiedSquares().IsEmpty with
                 true -> CalculateFirstMove(tilesInHand, utilityMapper)
