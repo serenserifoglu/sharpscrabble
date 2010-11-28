@@ -46,6 +46,12 @@ let SmartSMoves(tiles:TileList, move: Map<Config.Coordinate, Tile>) =
     System.Convert.ToDouble(Move(move).Score + scale)
 
 
+let OnlyPlayOver5(tiles:TileList, move: Map<Config.Coordinate, Tile>) = 
+    if move.Count <= 5 then 0.0 else System.Convert.ToDouble(Move(move).Score)
+
+let OnlyPlay7s(tiles:TileList, move: Map<Config.Coordinate, Tile>) = 
+    if move.Count < 7 then 0.0 else System.Convert.ToDouble(Move(move).Score)
+
 //combine two for the best of both worlds
 let SmartSMovesSaveCommon(tiles:TileList, move:Map<Config.Coordinate, Tile>) = 
     max(SmartSMoves(tiles, move), SaveCommon(tiles, move))

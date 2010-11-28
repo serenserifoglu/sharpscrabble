@@ -48,7 +48,7 @@ type TileList =
     /// This is a dirty hack, but I'm OK with it.
     [<DefaultValue>] val mutable private hash : string
 
-    member this.RemoveMany(l:seq<Tile>) = 
+    member this.RemoveMany(l:seq<Tile>) =
         let remove i = 
             match this.Remove(i) with
             | true -> ()
@@ -184,13 +184,12 @@ type ComputerPlayer(name:string) =
 
     override this.NotifyTurn(implementor) =
         let turn = this.provider.Think(this.Tiles, this.utility)
-
         if turn.GetType().ToString() = "Scrabble.Core.Types.Pass" then
             passes <- passes + 1
         else
             passes <- 0
 
-        if passes > 3 then //auto-dump after 3 passes in a row
+        if passes >= 3 then //auto-dump after 3 passes in a row
             this.TakeTurn(implementor, DumpLetters(this.Tiles))
             passes <- 0
         else
@@ -300,9 +299,11 @@ and GameState(players:Player list) =
             passCount <- passCount + 1
         member this.PerformDumpLetters(dl) =
             passCount <- 0
-            this.CurrentPlayer.Tiles.RemoveMany(dl.Letters)
-            bag.Put(dl.Letters)
-            this.GiveTiles(this.CurrentPlayer, dl.Letters.Count())
+            let letters = dl.Letters.OrderBy(fun t -> t).ToList()
+            let count = letters.Count;
+            this.CurrentPlayer.Tiles.RemoveMany(letters)
+            bag.Put(letters)
+            this.GiveTiles(this.CurrentPlayer, letters.Count)
         member this.PerformMove(turn) =
             passCount <- 0 
             let move = Move(turn.Letters)
@@ -317,6 +318,8 @@ and GameState(players:Player list) =
             //show this move to the other players
             this.OtherPlayers() |> Seq.iter (fun p -> p.DrawTurn(t, this.CurrentPlayer))
             if IsGameComplete() = false then
+                if this.IsOpeningMove && not(t.GetType().ToString() = "Scrabble.Core.Types.PlaceMove") then
+                    moveCount <- moveCount - 1
                 this.NextMove()
             else
                 FinishGame()
