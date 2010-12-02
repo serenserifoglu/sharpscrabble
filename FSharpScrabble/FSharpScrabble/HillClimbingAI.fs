@@ -105,7 +105,7 @@ type HillClimbingMoveGenerator(lookup:WordLookup, ?restartTries:int) =
         let mutable bestMove:Move = Unchecked.defaultof<Move> //hack?
         let rand = System.Random()
         
-        while restarts > 1 do
+        while restarts > 0 do
             let mutable stop = false
             let mutable currScore = 0.0
             let mutable currMove = Unchecked.defaultof<Move>
@@ -126,7 +126,11 @@ type HillClimbingMoveGenerator(lookup:WordLookup, ?restartTries:int) =
                         if not(stop) then 
                             for word in possibleWords do
                                 if not(stop) then 
-                                    for move in ValidMoves(coordinate.Key, word, orient, b) do
+                                    let moves = ValidMoves(coordinate.Key, word, orient, b)
+                                    if (moves |> Seq.toList).Length = 0 then
+                                        restarts <- restarts - 1
+                                        stop <- true
+                                    for move in moves do
                                         if not(stop) then
                                             let score = utilityMapper(tilesInHand, move.Letters)
                                             if score > currScore then

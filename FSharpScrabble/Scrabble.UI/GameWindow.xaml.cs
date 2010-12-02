@@ -156,7 +156,8 @@ namespace Scrabble.UI
         {
             //redraw whole board based on current state
             GameBoard.UpdateSquares(Game.Instance.PlayingBoard);
-            
+            Player1Score.Text = string.Format("{0}: {1}", this.Player.Name, this.Player.Score.ToString());
+            Player2Score.Text = string.Format("{0}: {1}", Game.Instance.ComputerPlayers.First().Name, Game.Instance.ComputerPlayers.First().Score);
         }
 
         private void RedrawTiles()
@@ -246,7 +247,9 @@ namespace Scrabble.UI
                 //aggregate may be incorrect...  can't test right now
                 StatusBar.Text = string.Format("{0} won.  Better luck next time.", o.Winners.Aggregate("", (x,y) => { return x + " & " + y.Name;}));
             }
-            MessageBox.Show(string.Format(" Score: {0}: {1}, {2}: {3}", Player.Name, Player.Score, o.Winners.First().Name, o.Winners.First().Score));
+            var winner = o.Winners.First();
+            var other = Game.Instance.Players.Except(new[]{winner}).FirstOrDefault();
+            MessageBox.Show(string.Format(" Score: {0}: {1}, {2}: {3}", winner.Name, winner.Score, other.Name, other.Score));
         }
 
         public void TilesUpdated()

@@ -10,9 +10,9 @@ let SetupComputer() =
         c.Provider <- //HillClimbingMoveGenerator(Game.Instance.Dictionary, 5) //random restart 5 times
                         HillClimbingMoveGenerator(Game.Instance.Dictionary) 
                         //MoveGenerator(Game.Instance.Dictionary)
-        c.UtilityFunction <- //MaximumScore
+        c.UtilityFunction <- MaximumScore
                             //SmartSMoves
                             //SaveCommon
-                            OnlyPlay7s
+                            //OnlyPlay7s
                             //OnlyPlayOver5
     )
