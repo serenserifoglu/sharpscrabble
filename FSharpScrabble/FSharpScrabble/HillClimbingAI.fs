@@ -110,38 +110,45 @@ type HillClimbingMoveGenerator(lookup:WordLookup, ?restartTries:int) =
             let mutable currScore = 0.0
             let mutable currMove = Unchecked.defaultof<Move>
             let randomSquares = b.OccupiedSquares() |> Seq.sortBy(fun x -> rand.Next())
+            let lastSquare = randomSquares |> Seq.toList |> List.rev |> List.head
 
             for coordinate in randomSquares do
                 if not(stop) then 
                     let tile = b.Get(coordinate.Key).Tile :?> Tile
                     let possibleWords = lookup.FindWordsUsing(tile.Letter :: letters, 0)
-                    // this is some really terrible code. I can't believe I wrote it.
-                    // but there's no break, no goto.. so the only other option would be to perform a 
-                    // bunch of unnecessary work after the local maximum is found, which defeats the whole
-                    // purpose of hill climbing in the first place. 
+                    if possibleWords.Length = 0 then
+                        if coordinate = lastSquare then
+                            stop <- true
+                            restarts <- restarts - 1
+                    else
+                        let lastWord = possibleWords |> Seq.toList |> List.rev |> List.head
+                        // this is some really terrible code. I can't believe I wrote it.
+                        // but there's no break, no goto.. so the only other option would be to perform a 
+                        // bunch of unnecessary work after the local maximum is found, which defeats the whole
+                        // purpose of hill climbing in the first place. 
         
-                    // That is being done in the first move, just to keep that code cleaner and since the number
-                    // of possiblities is insignificantly small
-                    for orient in orientations do
-                        if not(stop) then 
-                            for word in possibleWords do
-                                if not(stop) then 
-                                    let moves = ValidMoves(coordinate.Key, word, orient, b)
-                                    if (moves |> Seq.toList).Length = 0 then
-                                        restarts <- restarts - 1
-                                        stop <- true
-                                    for move in moves do
-                                        if not(stop) then
-                                            let score = utilityMapper(tilesInHand, move.Letters)
-                                            if score > currScore then
-                                                currScore <- score
-                                                currMove <- move
-                                            else
-                                                stop <- true
-                                                restarts <- restarts - 1
-                                                if currScore > bestScore then
-                                                    bestScore <- currScore
-                                                    bestMove <- currMove
+                        // That is being done in the first move, just to keep that code cleaner and since the number
+                        // of possiblities is insignificantly small
+                        for orient in orientations do
+                            if not(stop) then 
+                                for word in possibleWords do
+                                    if not(stop) then 
+                                        let moves = ValidMoves(coordinate.Key, word, orient, b)
+                                        if (moves |> Seq.toList).Length = 0 && coordinate = lastSquare && word = lastWord then
+                                            restarts <- restarts - 1
+                                            stop <- true
+                                        for move in moves do
+                                            if not(stop) then
+                                                let score = utilityMapper(tilesInHand, move.Letters)
+                                                if score > currScore then
+                                                    currScore <- score
+                                                    currMove <- move
+                                                else
+                                                    stop <- true
+                                                    restarts <- restarts - 1
+                                                    if currScore > bestScore then
+                                                        bestScore <- currScore
+                                                        bestMove <- currMove
         
         if bestScore > 0.0 then
             PlaceMove(bestMove.Letters) :> Turn
