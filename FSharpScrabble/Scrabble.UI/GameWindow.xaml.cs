@@ -171,6 +171,9 @@ namespace Scrabble.UI
             }
             PlayerTiles.Redraw();
             PlayerTiles.PlayerScore.Text = this.Player.Score.ToString();
+
+            Player1Score.Text = string.Format("{0}: {1}", this.Player.Name, this.Player.Score.ToString());
+            Player2Score.Text = string.Format("{0}: {1}", Game.Instance.ComputerPlayers.First().Name, Game.Instance.ComputerPlayers.First().Score);
         }
         
         private void ButtonsOn(bool on)

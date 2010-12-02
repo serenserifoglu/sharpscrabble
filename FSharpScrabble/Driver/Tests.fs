@@ -171,7 +171,7 @@ let AIMultiMoveTest() =
     watch.Start()
 
     for i in 0 .. 10 do
-        let move = gen.Think(TileList(Game.Instance.TileBag.Take(7)), (fun t -> Convert.ToDouble(t)))
+        let move = gen.Think(TileList(Game.Instance.TileBag.Take(7)), UtilityFunctions.MaximumScore)
         
         match move.GetType().ToString() with
             | "Scrabble.Core.Types.Pass" -> printfn "Pass"

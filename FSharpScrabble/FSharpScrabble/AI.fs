@@ -33,7 +33,7 @@ type MoveGenerator(lookup:WordLookup) =
                                           yield (start.Next(o, i), new Tile(word.ToUpper().[i]))
                                     |])
             ]
-        if not(moves.IsEmpty) then
+        if (moves |> Seq.filter(fun x -> utilityMapper(tilesInHand, x.Letters) > 0.0) |> Seq.toList).Length  > 0 then
             let move = moves |> Seq.maxBy (fun m -> utilityMapper(tilesInHand, m.Letters))
             PlaceMove(move.Letters) :> Turn
         else
@@ -87,7 +87,7 @@ type MoveGenerator(lookup:WordLookup) =
                             yield move
             |]  
         
-        match moves.Length with
+        match (moves |> Seq.filter(fun x -> utilityMapper(tilesInHand, x.Letters) > 0.0) |> Seq.toList).Length with
             | 0 -> Pass() :> Turn
             | _ -> let move = moves |> Seq.maxBy (fun m -> utilityMapper(tilesInHand, m.Letters))
                    PlaceMove(move.Letters) :> Turn
