@@ -158,9 +158,13 @@ namespace Scrabble.UI
                 //aggregate may be incorrect...  can't test right now
                 StatusBar.Text = string.Format("{0} won.  Better luck next time.", o.Winners.Aggregate("", (x,y) => { return x + " & " + y.Name;}));
             }
-            var winner = o.Winners.First();
-            var other = Game.Instance.Players.Except(new[]{winner}).FirstOrDefault();
-            MessageBox.Show(string.Format(" Score: {0}: {1}, {2}: {3}", winner.Name, winner.Score, other.Name, other.Score));
+
+            string scores = Game.Instance.Players
+                .Select(p => String.Format("{0}: {1}{2}", p.Name, p.Score, Environment.NewLine))
+                .Aggregate((a, b) => String.Concat(a, b));
+
+            if (this.Player == Game.Instance.Players.Last())
+                MessageBox.Show(String.Format("Final Scores:{0}{1}", Environment.NewLine, scores));
         }
 
         public void TilesUpdated()

@@ -386,7 +386,7 @@ and GameState(players:Player list) =
         this.CurrentPlayer.NotifyTurn(this)
 /// A singleton that will represent the game board, bag of tiles, players, move count, etc.
 and Game() = 
-    static let mutable instance = GameState([ ComputerPlayer("PlayerOne") :> Player; ComputerPlayer("PlayerTwo") :> Player ]) //Pretty sweet, huh? Hard coding stuff...
+    static let mutable instance = GameState([ ComputerPlayer("PlayerOne") :> Player; ComputerPlayer("PlayerTwo") :> Player ; ComputerPlayer("PlayerThree") :> Player ])
     //static let instance = lazy(GameState([ HumanPlayer("Apprentice") :> Player; HumanPlayer("Master") :> Player ])) //2 humans, more hard coding
     static member Instance with get() = instance and set(x) = instance <- x
 
