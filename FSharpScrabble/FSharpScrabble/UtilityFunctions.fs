@@ -47,7 +47,7 @@ let SmartSMoves(tiles:TileList, letters: Map<Config.Coordinate, Tile>) =
         if connectors = 0 then
             -5
         else
-            1
+            0
     )
     let scale = modifiers |> Seq.sum
     System.Convert.ToDouble(move.Score - scale)
