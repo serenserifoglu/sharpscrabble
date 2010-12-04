@@ -106,6 +106,21 @@ namespace Scrabble.UI
         public void DrawTurn(Turn t, Player p)
         {
             dynamic dynamicTurn = t;
+            
+            //System.Threading.ThreadStart st = new System.Threading.ThreadStart(
+            //    delegate {
+            //        this.Dispatcher.Invoke(
+            //            System.Windows.Threading.DispatcherPriority.Normal,
+            //            new Action(
+            //                delegate {
+            //                    DrawOpponentTurn(dynamicTurn, p);
+            //                }));
+            //    });
+
+            //System.Threading.Thread th = new System.Threading.Thread(st);
+
+            //th.Start();
+            
             DrawOpponentTurn(dynamicTurn, p);
         }
 
