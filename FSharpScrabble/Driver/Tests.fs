@@ -191,3 +191,19 @@ let AIMultiMoveTest() =
     System.Console.Read()
 
     
+let AIvAI() = 
+    let watch = System.Diagnostics.Stopwatch()
+    
+    for i in 0 .. 300 do
+        watch.Reset()
+        watch.Start()
+        Game.Instance <- GameState([ ComputerPlayer("PlayerOne") :> Player; ComputerPlayer("PlayerTwo") :> Player ])
+        Setup.SetupFirstComputer()
+        Setup.SetupSecondComputer()
+    
+        Game.Instance.Start()
+        let one = Game.Instance.Players |> Seq.toList |> List.head
+        let two = Game.Instance.Players |> Seq.toList |> List.tail |> List.head
+        watch.Stop()
+        printfn "%i, %i, %i, %i, %i, %i" one.Score two.Score Game.Instance.MoveCount watch.Elapsed.Minutes watch.Elapsed.Seconds watch.Elapsed.Milliseconds
+    //Console.ReadLine()

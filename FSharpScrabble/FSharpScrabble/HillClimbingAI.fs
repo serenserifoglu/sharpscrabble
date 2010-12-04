@@ -38,10 +38,13 @@ type HillClimbingMoveGenerator(lookup:WordLookup, ?restartTries:int) =
             let mutable stop = false
             let mutable currScore = 0.0
             let mutable currMove = Unchecked.defaultof<Move>
-            let randomPossibilties = possibleWords |> Seq.sortBy(fun x -> rand.Next())
+            let randomPossibilities = (possibleWords |> Seq.sortBy(fun x -> rand.Next())) |> Seq.toList
+            if randomPossibilities.Length = 0 then
+                stop <- true
+                restarts <- restarts - 1
 
             for o in orientations do
-                for word in randomPossibilties do //this will do for a random restart on first move
+                for word in randomPossibilities do
                     for start in PossibleStarts(word, o) do
                         if not(stop) then
                             let move = Move(Map.ofSeq 
@@ -109,8 +112,8 @@ type HillClimbingMoveGenerator(lookup:WordLookup, ?restartTries:int) =
             let mutable stop = false
             let mutable currScore = 0.0
             let mutable currMove = Unchecked.defaultof<Move>
-            let randomSquares = b.OccupiedSquares() |> Seq.sortBy(fun x -> rand.Next())
-            let lastSquare = randomSquares |> Seq.toList |> List.rev |> List.head
+            let randomSquares = (b.OccupiedSquares() |> Seq.sortBy(fun x -> rand.Next())) |> Seq.toList
+            let lastSquare = randomSquares |> List.rev |> List.head
 
             for coordinate in randomSquares do
                 if not(stop) then 
@@ -121,7 +124,7 @@ type HillClimbingMoveGenerator(lookup:WordLookup, ?restartTries:int) =
                             stop <- true
                             restarts <- restarts - 1
                     else
-                        let lastWord = possibleWords |> Seq.toList |> List.rev |> List.head
+                        let lastWord = possibleWords |> List.rev |> List.head
                         // this is some really terrible code. I can't believe I wrote it.
                         // but there's no break, no goto.. so the only other option would be to perform a 
                         // bunch of unnecessary work after the local maximum is found, which defeats the whole
@@ -134,7 +137,7 @@ type HillClimbingMoveGenerator(lookup:WordLookup, ?restartTries:int) =
                                 for word in possibleWords do
                                     if not(stop) then 
                                         let moves = ValidMoves(coordinate.Key, word, orient, b)
-                                        if (moves |> Seq.toList).Length = 0 && coordinate = lastSquare && word = lastWord then
+                                        if (moves |> Seq.toList).Length = 0 && coordinate = lastSquare && word = lastWord && orient = Orientation.Horizontal then
                                             restarts <- restarts - 1
                                             stop <- true
                                         for move in moves do
