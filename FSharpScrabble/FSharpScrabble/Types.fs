@@ -175,6 +175,7 @@ and GameOutcome(winners:seq<Player>) =
 type ComputerPlayer(name:string) = 
     inherit Player(name)
 
+    [<DefaultValue>] val mutable private window : IDispWindow
     [<DefaultValue>] val mutable private provider : IIntelligenceProvider
     member this.Provider with get() = this.provider and set x = this.provider <- x
     [<DefaultValue>] val mutable private utility : TileList * Map<Coordinate, Tile> -> double
@@ -194,12 +195,33 @@ type ComputerPlayer(name:string) =
             this.TakeTurn(implementor, DumpLetters(this.Tiles))
         else
             this.TakeTurn(implementor, turn)
-    override this.NotifyGameOver(_) = 
-        () //intentionally left blank
-    override this.DrawTurn(_, _) = 
-        () //intentionally left blank
+
+    member this.Window with get() = this.window and set w = this.window <- w
+
+    override this.NotifyGameOver(o:GameOutcome) = 
+        //() //intentionally left blank
+        try
+            this.window.GameOver(o)
+        with
+            | _ -> ()
+    override this.DrawTurn(t:Turn, p:Player) = 
+        //() //intentionally left blank
+        try
+            this.window.DrawTurn(t, p)
+        with
+            | _ -> ()
     override this.TilesUpdated() = 
-        () //intentionally left blank
+        //() //intentionally left blank
+        try
+            this.window.TilesUpdated()
+        with
+            | _ -> ()
+and IDispWindow = 
+    abstract member NotifyTurn : unit -> unit
+    abstract member DrawTurn : Turn * Player -> unit
+    abstract member Player : ComputerPlayer with get, set
+    abstract member GameOver : GameOutcome -> unit
+    abstract member TilesUpdated : unit -> unit
 
 type HumanPlayer(name:string) =
     inherit Player(name)
