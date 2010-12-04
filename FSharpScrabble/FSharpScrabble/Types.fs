@@ -355,7 +355,17 @@ and GameState(players:Player list) =
         currentPlayer <- currentPlayer + 1
         if currentPlayer >= players.Length then
             currentPlayer <- 0
-        this.CurrentPlayer.NotifyTurn(this)
+        if this.CurrentPlayer.GetType().ToString() = "Scrabble.Core.Types.ComputerPlayer" then
+            let cp = this.CurrentPlayer :?> ComputerPlayer
+            let win = cp.Window :?> System.Windows.Threading.DispatcherObject
+            
+            let f : del1 = new del1( fun () -> this.CurrentPlayer.NotifyTurn(this) )
+            let st = System.Threading.ThreadStart(fun () -> win.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Normal, f) |> ignore)
+            let t = System.Threading.Thread(st)
+            t.Start()
+            ()
+        else
+            this.CurrentPlayer.NotifyTurn(this)
     member private this.OtherPlayers() = 
         this.OtherPlayers this.CurrentPlayer
     member private this.OtherPlayers(current:Player) = 
@@ -374,7 +384,7 @@ and GameState(players:Player list) =
             p.TilesUpdated()
         )
         this.CurrentPlayer.NotifyTurn(this)
-
+and del1 = delegate of unit -> unit
 /// A singleton that will represent the game board, bag of tiles, players, move count, etc.
 and Game() = 
     static let mutable instance = GameState([ ComputerPlayer("PlayerOne") :> Player; ComputerPlayer("PlayerTwo") :> Player ]) //Pretty sweet, huh? Hard coding stuff...
