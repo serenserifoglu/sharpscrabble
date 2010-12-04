@@ -2,6 +2,7 @@
 using System.Windows;
 using Scrabble.Core;
 using Scrabble.Core.Types;
+using System.Linq;
 
 namespace Scrabble.UI
 {
@@ -29,6 +30,16 @@ namespace Scrabble.UI
                     PlayerWindows.AddAfter(PlayerWindows.Last, w);
                 else
                     PlayerWindows.AddFirst(w);
+            }
+            
+            if (Game.Instance.HumanPlayers.Count() < 1)
+            {
+                foreach (ComputerPlayer cp in Game.Instance.ComputerPlayers)
+                {
+                    AIWindow w = new AIWindow(cp);
+                    cp.Window = w;
+                    w.Show();
+                }
             }
 
             //Give each ComputerPlayer an AI Provider instance and utility functions
