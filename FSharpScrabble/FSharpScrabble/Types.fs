@@ -184,6 +184,15 @@ type ComputerPlayer(name:string) =
     let mutable passes = 0
 
     override this.NotifyTurn(implementor) =
+        if not(this.window = Unchecked.defaultof<IDispWindow>) then
+            let win = this.window :?> System.Windows.Threading.DispatcherObject
+            let f : del1 = new del1( fun () -> this.InvokeTurn(implementor) )
+            let st = System.Threading.ThreadStart(fun () -> win.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Normal, f) |> ignore)
+            let t = System.Threading.Thread(st)
+            t.Start()
+        else
+            this.InvokeTurn(implementor)
+    member this.InvokeTurn(implementor) =
         let turn = this.provider.Think(this.Tiles, this.utility)
         if turn.GetType().ToString() = "Scrabble.Core.Types.Pass" then
             passes <- passes + 1
@@ -213,6 +222,7 @@ and IDispWindow =
     abstract member Player : ComputerPlayer with get, set
     abstract member GameOver : GameOutcome -> unit
     abstract member TilesUpdated : unit -> unit
+and del1 = delegate of unit -> unit
 
 type HumanPlayer(name:string) =
     inherit Player(name)
@@ -355,17 +365,7 @@ and GameState(players:Player list) =
         currentPlayer <- currentPlayer + 1
         if currentPlayer >= players.Length then
             currentPlayer <- 0
-        if this.CurrentPlayer.GetType().ToString() = "Scrabble.Core.Types.ComputerPlayer" then
-            let cp = this.CurrentPlayer :?> ComputerPlayer
-            let win = cp.Window :?> System.Windows.Threading.DispatcherObject
-            
-            let f : del1 = new del1( fun () -> this.CurrentPlayer.NotifyTurn(this) )
-            let st = System.Threading.ThreadStart(fun () -> win.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Normal, f) |> ignore)
-            let t = System.Threading.Thread(st)
-            t.Start()
-            ()
-        else
-            this.CurrentPlayer.NotifyTurn(this)
+        this.CurrentPlayer.NotifyTurn(this)
     member private this.OtherPlayers() = 
         this.OtherPlayers this.CurrentPlayer
     member private this.OtherPlayers(current:Player) = 
@@ -384,7 +384,6 @@ and GameState(players:Player list) =
             p.TilesUpdated()
         )
         this.CurrentPlayer.NotifyTurn(this)
-and del1 = delegate of unit -> unit
 /// A singleton that will represent the game board, bag of tiles, players, move count, etc.
 and Game() = 
     static let mutable instance = GameState([ ComputerPlayer("PlayerOne") :> Player; ComputerPlayer("PlayerTwo") :> Player ]) //Pretty sweet, huh? Hard coding stuff...
