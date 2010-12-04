@@ -386,8 +386,7 @@ and GameState(players:Player list) =
         this.CurrentPlayer.NotifyTurn(this)
 /// A singleton that will represent the game board, bag of tiles, players, move count, etc.
 and Game() = 
-    static let mutable instance = GameState([ ComputerPlayer("PlayerOne") :> Player; ComputerPlayer("PlayerTwo") :> Player ; ComputerPlayer("PlayerThree") :> Player ])
-    //static let instance = lazy(GameState([ HumanPlayer("Apprentice") :> Player; HumanPlayer("Master") :> Player ])) //2 humans, more hard coding
+    static let mutable instance = GameState([ ComputerPlayer("PlayerOne") :> Player; HumanPlayer("PlayerTwo") :> Player ])
     static member Instance with get() = instance and set(x) = instance <- x
 
 /// A player's move is a set of coordinates and tiles. This will throw if the move isn't valid.

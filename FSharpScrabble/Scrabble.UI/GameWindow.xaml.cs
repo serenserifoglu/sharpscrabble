@@ -156,8 +156,7 @@ namespace Scrabble.UI
         {
             //redraw whole board based on current state
             GameBoard.UpdateSquares(Game.Instance.PlayingBoard);
-            Player1Score.Text = string.Format("{0}: {1}", this.Player.Name, this.Player.Score.ToString());
-            Player2Score.Text = string.Format("{0}: {1}", Game.Instance.ComputerPlayers.First().Name, Game.Instance.ComputerPlayers.First().Score);
+            UpdateScores();
         }
 
         private void RedrawTiles()
@@ -171,10 +170,17 @@ namespace Scrabble.UI
                 PlayerTiles.PlayerTiles.Add(new Tile(t.Letter.ToString(), t.Score));
             }
             PlayerTiles.Redraw();
-            PlayerTiles.PlayerScore.Text = this.Player.Score.ToString();
 
-            Player1Score.Text = string.Format("{0}: {1}", this.Player.Name, this.Player.Score.ToString());
-            Player2Score.Text = string.Format("{0}: {1}", Game.Instance.ComputerPlayers.First().Name, Game.Instance.ComputerPlayers.First().Score);
+            UpdateScores();
+        }
+
+        private void UpdateScores()
+        {
+            /* This needs to get refactored to support > 2 players. */
+            Player first = Game.Instance.Players.First();
+            Player second = Game.Instance.Players.Skip(1).First();
+            Player1Score.Text = string.Format("{0}: {1}", first.Name, first.Score);
+            Player2Score.Text = string.Format("{0}: {1}", second.Name, second.Score);
         }
         
         private void ButtonsOn(bool on)
