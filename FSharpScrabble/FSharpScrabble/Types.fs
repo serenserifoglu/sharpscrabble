@@ -189,9 +189,9 @@ type ComputerPlayer(name:string) =
         else
             passes <- 0
 
-        if passes >= 3 then //auto-dump after 3 passes in a row
-            this.TakeTurn(implementor, DumpLetters(this.Tiles))
+        if passes >= 3 && this.Tiles.Count = 7 then //auto-dump after 3 passes in a row, unless at the end of the game
             passes <- 0
+            this.TakeTurn(implementor, DumpLetters(this.Tiles))
         else
             this.TakeTurn(implementor, turn)
     override this.NotifyGameOver(_) = 
@@ -279,7 +279,7 @@ and GameState(players:Player list) =
     //Private functions
     let IsGameComplete() = 
         //a game of Scrabble is over when a player has 0 tiles, or each player has passed twice
-        players |> List.exists (fun p -> not p.HasTiles) || passCount = players.Length * 2
+        players |> List.exists (fun p -> not p.HasTiles) || passCount = players.Length * 2 || (bag.IsEmpty && passCount = players.Length)
     let FinalizeScores() = 
         players |> List.iter (fun p -> p.FinalizeScore())
         let bonus = players |> List.map (fun p -> p.Tiles.Score()) |> List.sum
@@ -364,9 +364,9 @@ and GameState(players:Player list) =
 
 /// A singleton that will represent the game board, bag of tiles, players, move count, etc.
 and Game() = 
-    static let instance = lazy(GameState([ ComputerPlayer("Master") :> Player; HumanPlayer("Apprentice") :> Player ])) //Pretty sweet, huh? Hard coding stuff...
+    static let mutable instance = GameState([ ComputerPlayer("PlayerOne") :> Player; ComputerPlayer("PlayerTwo") :> Player ]) //Pretty sweet, huh? Hard coding stuff...
     //static let instance = lazy(GameState([ HumanPlayer("Apprentice") :> Player; HumanPlayer("Master") :> Player ])) //2 humans, more hard coding
-    static member Instance with get() = instance.Value
+    static member Instance with get() = instance and set(x) = instance <- x
 
 /// A player's move is a set of coordinates and tiles. This will throw if the move isn't valid.
 /// That is, if the tiles aren't layed out properly (not all connected, the word formed doesn't "touch" any other tiles - with the exception of the first word)
