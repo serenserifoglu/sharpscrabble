@@ -258,7 +258,7 @@ namespace Scrabble.UI
                 .Select(p => String.Format("{0}: {1}{2}", p.Name, p.Score, Environment.NewLine))
                 .Aggregate((a, b) => String.Concat(a, b));
 
-            MessageBox.Show(scores);
+            MessageBox.Show(scores, "Final Scores");
         }
 
         public void TilesUpdated()

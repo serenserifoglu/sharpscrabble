@@ -171,7 +171,7 @@ namespace Scrabble.UI
                 .Aggregate((a, b) => String.Concat(a, b));
 
             if (this.Player == Game.Instance.Players.Last())
-                MessageBox.Show(String.Format("Final Scores:{0}{1}", Environment.NewLine, scores));
+                MessageBox.Show(scores, "Final Scores");
         }
 
         public void TilesUpdated()
