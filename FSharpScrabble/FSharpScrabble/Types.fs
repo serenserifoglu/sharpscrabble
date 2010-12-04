@@ -199,23 +199,14 @@ type ComputerPlayer(name:string) =
     member this.Window with get() = this.window and set w = this.window <- w
 
     override this.NotifyGameOver(o:GameOutcome) = 
-        //() //intentionally left blank
-        try
+        if not(this.window = Unchecked.defaultof<IDispWindow>) then
             this.window.GameOver(o)
-        with
-            | _ -> ()
     override this.DrawTurn(t:Turn, p:Player) = 
-        //() //intentionally left blank
-        try
+        if not(this.window = Unchecked.defaultof<IDispWindow>) then
             this.window.DrawTurn(t, p)
-        with
-            | _ -> ()
     override this.TilesUpdated() = 
-        //() //intentionally left blank
-        try
+        if not(this.window = Unchecked.defaultof<IDispWindow>) then
             this.window.TilesUpdated()
-        with
-            | _ -> ()
 and IDispWindow = 
     abstract member NotifyTurn : unit -> unit
     abstract member DrawTurn : Turn * Player -> unit
