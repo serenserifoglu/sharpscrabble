@@ -1,5 +1,6 @@
 ﻿module Scrabble.Core.UtilityFunctions
 
+open System
 open Scrabble.Core.Types
 open Scrabble.Core.Config
 
@@ -28,9 +29,9 @@ let SaveCommon(tiles:TileList, move:Map<Config.Coordinate, Tile>) =
     System.Convert.ToDouble(Move(move).Score + scale)
 
 
-// if an S is used, make sure it is bridging two words (making one plural)
-// otherwise set the score to 1. This ensures that the AI will never pass just because
-// an S isn't used in two words, but will make the use of single word S's more rare
+/// If an S is used, make the Move less desierable if we're not using it "properly"
+/// An S can be used to make two words at once, and if the computer is not making > 1 word with the S, then we
+/// subtract from the move's utility function.
 let SmartSMoves(tiles:TileList, letters: Map<Config.Coordinate, Tile>) = 
     let neighbors(c:Coordinate, o:Orientation) = 
         let n = c.Next(o)
@@ -50,7 +51,32 @@ let SmartSMoves(tiles:TileList, letters: Map<Config.Coordinate, Tile>) =
             0
     )
     let scale = modifiers |> Seq.sum
-    System.Convert.ToDouble(move.Score - scale)
+    Convert.ToDouble(move.Score - scale)
+
+/// This move adds in the fact that by using a bonus square, you're taking away potential points
+/// from your opponents. This factors in that a Double Letter Score will on average give the opponent 1.9 points,
+/// so when the computer uses a Double Letter Score, the utility function will be + 1.9.
+let UseBonusSquares(tiles:TileList, letters: Map<Config.Coordinate, Tile>) = 
+    let avgTileScore = 1.9 //The average tile in scrabble is worth ~1.9 something
+    let avgWordScore = avgTileScore * 3.5 //We assume that the average Scrabble word has 3.5 letters in it.
+
+    let b = Game.Instance.PlayingBoard
+    let squares = letters |> Seq.map (fun kv -> b.Get(kv.Key))
+    let wordMult = squares |> Seq.map (fun s -> s.WordMultiplier) |> Seq.reduce (fun a b -> a * b)
+    
+    let bonusList = letters |> Seq.map (fun kv -> 
+        let s = b.Get(kv.Key)
+        if s.LetterMultiplier > 1 then
+            avgTileScore * (Convert.ToDouble(s.LetterMultiplier) - 1.0)
+        else
+            0.0
+    )
+    let letterBonus = bonusList |> Seq.sum
+    let wordBonus = Convert.ToDouble(wordMult - 1) * avgWordScore
+
+    let move = Move(letters)
+    let baseScore = Convert.ToDouble(move.Score)
+    baseScore + letterBonus + wordBonus
 
 let OnlyPlayOver5(tiles:TileList, move: Map<Config.Coordinate, Tile>) = 
     if move.Count <= 5 then 0.0 else System.Convert.ToDouble(Move(move).Score)
