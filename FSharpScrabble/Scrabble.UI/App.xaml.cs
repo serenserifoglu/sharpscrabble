@@ -20,6 +20,8 @@ namespace Scrabble.UI
 
         private void StartGame()
         {
+            Setup.SetupGameState();
+
             //show player windows
             foreach (HumanPlayer p in Game.Instance.HumanPlayers)
             {

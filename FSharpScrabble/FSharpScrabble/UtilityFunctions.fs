@@ -86,4 +86,11 @@ let OnlyPlay7s(tiles:TileList, move: Map<Config.Coordinate, Tile>) =
 
 //combine two for the best of both worlds
 let SmartSMovesSaveCommon(tiles:TileList, move:Map<Config.Coordinate, Tile>) = 
-    max(SmartSMoves(tiles, move), SaveCommon(tiles, move))
+    let sMoves = SmartSMoves(tiles, move)
+    let common = SaveCommon(tiles, move)
+    max sMoves common
+
+let SmartSMovesSaveCommonUseBonus(tiles:TileList, move:Map<Config.Coordinate, Tile>) = 
+    let sCommon = SmartSMovesSaveCommon(tiles, move)
+    let bonus = UseBonusSquares(tiles, move)
+    max bonus sCommon

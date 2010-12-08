@@ -47,4 +47,5 @@ printfn "asdf"
 *)
 
 //AIFirstMoveTest()
-AIMultiMoveTest()
+//AIMultiMoveTest()
+AIvAI()
