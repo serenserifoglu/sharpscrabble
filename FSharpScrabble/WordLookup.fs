@@ -11,7 +11,7 @@ type WordLookup() =
     static let mutable OfficialWords:Map<string, string list> = Map.empty
 
     static do 
-        File.ReadAllLines(@"..\..\..\twl.txt")
+        File.ReadAllLines(@"..\..\..\Scrabble.Web\App_Data\twl.txt")
             |> Seq.map(fun w -> w.ToLower())
             |> Seq.iter(fun w -> 
                             ValidWords.Add w |> ignore

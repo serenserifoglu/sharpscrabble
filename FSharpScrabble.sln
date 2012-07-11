@@ -7,10 +7,7 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Scrabble.Driver", "Driver\S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrabble.UI", "Scrabble.UI\Scrabble.UI.csproj", "{59F243FC-5BE9-4A98-87BD-AA053205C89C}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OfficialDictionary", "OfficialDictionary", "{E8E12D5C-E7EC-4B13-8D9F-1544C62F9165}"
-	ProjectSection(SolutionItems) = preProject
-		twl.txt = twl.txt
-	EndProjectSection
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scrabble.Web", "Scrabble.Web\Scrabble.Web.csproj", "{3F11B8CB-BB6B-4ADA-9BD3-D5D40B66B228}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -52,6 +49,16 @@ Global
 		{59F243FC-5BE9-4A98-87BD-AA053205C89C}.Release|Mixed Platforms.Build.0 = Release|x86
 		{59F243FC-5BE9-4A98-87BD-AA053205C89C}.Release|x86.ActiveCfg = Release|x86
 		{59F243FC-5BE9-4A98-87BD-AA053205C89C}.Release|x86.Build.0 = Release|x86
+		{3F11B8CB-BB6B-4ADA-9BD3-D5D40B66B228}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F11B8CB-BB6B-4ADA-9BD3-D5D40B66B228}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F11B8CB-BB6B-4ADA-9BD3-D5D40B66B228}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{3F11B8CB-BB6B-4ADA-9BD3-D5D40B66B228}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{3F11B8CB-BB6B-4ADA-9BD3-D5D40B66B228}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3F11B8CB-BB6B-4ADA-9BD3-D5D40B66B228}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F11B8CB-BB6B-4ADA-9BD3-D5D40B66B228}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F11B8CB-BB6B-4ADA-9BD3-D5D40B66B228}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{3F11B8CB-BB6B-4ADA-9BD3-D5D40B66B228}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{3F11B8CB-BB6B-4ADA-9BD3-D5D40B66B228}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
