@@ -184,14 +184,8 @@ type ComputerPlayer(name:string) =
     let mutable passes = 0
 
     override this.NotifyTurn(implementor) =
-        if not(this.window = Unchecked.defaultof<IDispWindow>) then
-            let win = this.window :?> System.Windows.Threading.DispatcherObject
-            let f : del1 = new del1( fun () -> this.InvokeTurn(implementor) )
-            let st = System.Threading.ThreadStart(fun () -> win.Dispatcher.Invoke(System.Windows.Threading.DispatcherPriority.Normal, f) |> ignore)
-            let t = System.Threading.Thread(st)
-            t.Start()
-        else
-            this.InvokeTurn(implementor)
+        //NOTE: This is where the WPF dispatcher/threading stuff was. That's totally going to change now that this is going to be used in a web app.
+        this.InvokeTurn(implementor)
     member this.InvokeTurn(implementor) =
         let turn = this.provider.Think(this.Tiles, this.utility)
         if turn.GetType().ToString() = "Scrabble.Core.Types.Pass" then
