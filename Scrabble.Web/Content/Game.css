@@ -1,3 +1,12 @@
 ﻿body { font-size: 0.75em; font-family: Arial,sans-serif; margin: 0; padding: 1em; }
 h1 { padding-left: 0.5em; padding-bottom: 0.5em; margin: 0; border-bottom: 1px solid #eee; color: #004276; }
 h2 { }
+.container, #playerContainer > div { overflow: hidden; }
+div.radiogroup { font-size: 0.8em; }
+div.radiogroup .ui-button-text-only .ui-button-text { padding: 0.25em 1em; }
+#playerContainer div.radiogroup, #playerContainer input[type="text"], #playerContainer select { float: left; margin-right: 10px; }
+#playerContainer input[type="text"] { width: 100px; }
+#playerContainer select { width: 160px; }
+#playerContainer div.row { margin-top: 1em; margin-bottom: 1em; }
+#addPlayer { outline: none; float: left; padding: 2px 0px 2px 20px; background-image: url('/Content/Images/add.png'); background-repeat: no-repeat; background-position: left center; }
+input[type="text"].watermark { color: #c0c0c0; }

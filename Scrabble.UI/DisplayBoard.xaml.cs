@@ -87,7 +87,7 @@ namespace Scrabble.UI
                 else if (s.WordMultiplier > 0 || s.LetterMultiplier > 0)
                 {
                     //special square, need to display accordingly
-                    thisGuy.SquareContainer.Background = ("#" + s.Gradient).ToBrush();
+                    //thisGuy.SquareContainer.Background = ("#" + s.Gradient).ToBrush();
                 }                   
 
             }

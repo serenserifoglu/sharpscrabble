@@ -41,7 +41,7 @@ namespace Scrabble.UI
         {
             if (Square != null)
             {
-                gradient.Color = Square.Gradient.ToColor();
+                //gradient.Color = Square.Gradient.ToColor();
 
                 if (Square is StartSquare)
                 {

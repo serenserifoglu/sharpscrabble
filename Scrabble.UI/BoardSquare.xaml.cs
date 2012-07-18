@@ -37,7 +37,7 @@ namespace Scrabble.UI
         protected override void OnDragLeave(DragEventArgs e)
         {
             base.OnDragLeave(e);
-            SquareContainer.Background = ("#" + MySquare.Gradient).ToBrush();
+            //SquareContainer.Background = ("#" + MySquare.Gradient).ToBrush();
         }
 
         //drag/drop code
@@ -75,7 +75,7 @@ namespace Scrabble.UI
             }
 
             //change bg back
-            SquareContainer.Background = ("#" + MySquare.Gradient).ToBrush();
+            //SquareContainer.Background = ("#" + MySquare.Gradient).ToBrush();
 
             Redraw();
         }
