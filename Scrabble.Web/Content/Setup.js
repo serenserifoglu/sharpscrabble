@@ -17,6 +17,8 @@
             .append($('<input>').attr('name', nameAttr).attr('type', 'text').focus(nameFocus).blur(nameBlur).addClass('watermark').val('Player Name'))
             .append(moveGeneratorDropDown(playerCount))
             .append(utilityFunctionDropDown(playerCount));
+        if (removable)
+            row.append(removeLink());
         row.appendTo(playerContainer);
         playerCount++;
         checkEnableHuman();
@@ -50,7 +52,7 @@
     function utilityFunctionDropDown(index)
     {
         return $('<select>')
-                    .addClass('com last')
+                    .addClass('com')
                     .attr('name', 'players[{0}].UtilityFunction'.format(playerCount))
                     .append($('<option>').attr('value', '').text('Select Utility Function'))
                     .append($('<option>').attr('value', '0').text('Max Score'))
@@ -59,6 +61,16 @@
                     .append($('<option>').attr('value', '3').text('7 or More Letter Words'))
                     .append($('<option>').attr('value', '4').text('5 or More Letter Words'))
                     .append($('<option>').attr('value', '5').text('Bonus Square User'));
+    }
+
+    function removeLink()
+    {
+        return $('<a>').addClass('remove').click(function ()
+        {
+            playerCount--;
+            $(this).parent().remove();
+            checkEnableHuman();
+        });
     }
 
     function humanComputerPicker(index, isHuman)
@@ -122,7 +134,7 @@
         };
         dialog = $('#playerDialog').dialog(
         {
-            width: 'auto', modal: true, autoOpen: true, title: 'Choose Players', closeOnEscape: false, buttons: [{ text: 'Start Game', click: okClick }]
+            width: 'auto', modal: true, autoOpen: true, title: 'Choose Players', closeOnEscape: false, buttons: [{ text: 'Start Game', click: okClick}]
         });
     });
 })();
