@@ -19,6 +19,7 @@
             .append(utilityFunctionDropDown(playerCount));
         row.appendTo(playerContainer);
         playerCount++;
+        checkEnableHuman();
     }
 
     function nameFocus()
@@ -81,7 +82,25 @@
                     {
                         var cssClass = $('input:radio:checked', $(this)).val();
                         $(this).parent().removeClass('Human Computer').addClass(cssClass);
+                        checkEnableHuman();
                     });
+    }
+
+    function checkEnableHuman()
+    {
+        var selected = $('input:radio:checked[value="Human"]:first');
+        if (selected.length != 0)
+        {
+            $('input:radio[value="Human"]').each(function ()
+            {
+                if ($(this) != selected)
+                    $(this).button('disable');
+            });
+        }
+        else
+        {
+            $('.ui-buttonset input[value="Human"]').button('enable');
+        }
     }
 
     $(document).ready(function ()
