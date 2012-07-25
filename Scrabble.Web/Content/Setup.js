@@ -50,7 +50,7 @@
     function utilityFunctionDropDown(index)
     {
         return $('<select>')
-                    .addClass('com')
+                    .addClass('com last')
                     .attr('name', 'players[{0}].UtilityFunction'.format(playerCount))
                     .append($('<option>').attr('value', '').text('Select Utility Function'))
                     .append($('<option>').attr('value', '0').text('Max Score'))
@@ -116,6 +116,13 @@
             addPlayerRow(true);
         });
 
-        dialog = $('#playerDialog').dialog({ width: 'auto', modal: true, autoOpen: true, title: 'Choose Players', closeOnEscape: false });
+        var okClick = function ()
+        {
+            console.log('ok clicked');
+        };
+        dialog = $('#playerDialog').dialog(
+        {
+            width: 'auto', modal: true, autoOpen: true, title: 'Choose Players', closeOnEscape: false, buttons: [{ text: 'Start Game', click: okClick }]
+        });
     });
 })();
