@@ -11,6 +11,7 @@
         var nameAttr = 'players[{0}].Name'.format(playerCount);
         var row = $('<div>')
             .addClass('row')
+            .addClass(human ? 'Human' : '')
             .addClass(removable ? 'removable' : '')
             .append(humanComputerPicker(playerCount, human))
             .append($('<input>').attr('name', nameAttr).attr('type', 'text').focus(nameFocus).blur(nameBlur).addClass('watermark').val('Player Name'))
@@ -37,6 +38,7 @@
     function moveGeneratorDropDown(index)
     {
         return $('<select>')
+                    .addClass('com')
                     .attr('name', 'players[{0}].Provider'.format(playerCount))
                     .append($('<option>').attr('value', '').text('Select AI Type'))
                     .append($('<option>').attr('value', '0').text('Brute Force (Strong)'))
@@ -47,6 +49,7 @@
     function utilityFunctionDropDown(index)
     {
         return $('<select>')
+                    .addClass('com')
                     .attr('name', 'players[{0}].UtilityFunction'.format(playerCount))
                     .append($('<option>').attr('value', '').text('Select Utility Function'))
                     .append($('<option>').attr('value', '0').text('Max Score'))
@@ -60,11 +63,12 @@
     function humanComputerPicker(index, isHuman)
     {
         var name = 'players[{0}].Type'.format(index);
-        var humanCheck = $('<input>').attr('type', 'radio').attr('id', 'radio' + radioCount).attr('name', name);
+        var humanCheck = $('<input>').attr('type', 'radio').attr('id', 'radio' + radioCount).attr('name', name).val('Human');
         var humanLabel = $('<label>').attr('for', 'radio' + radioCount).text('Human')
         radioCount++;
-        var computerCheck = $('<input>').attr('type', 'radio').attr('id', 'radio' + radioCount).attr('name', name);
+        var computerCheck = $('<input>').attr('type', 'radio').attr('id', 'radio' + radioCount).attr('name', name).val('Computer');
         var computerLabel = $('<label>').attr('for', 'radio' + radioCount).text('Computer');
+        radioCount++;
         (isHuman ? humanCheck : computerCheck).attr('checked', 'checked');
         return $('<div>')
                     .addClass('radiogroup')
@@ -72,7 +76,12 @@
                     .append(humanLabel)
                     .append(computerCheck)
                     .append(computerLabel)
-                    .buttonset();
+                    .buttonset()
+                    .change(function ()
+                    {
+                        var cssClass = $('input:radio:checked', $(this)).val();
+                        $(this).parent().removeClass('Human Computer').addClass(cssClass);
+                    });
     }
 
     $(document).ready(function ()

@@ -8,5 +8,6 @@ div.radiogroup .ui-button-text-only .ui-button-text { padding: 0.25em 1em; }
 #playerContainer input[type="text"] { width: 100px; }
 #playerContainer select { width: 160px; }
 #playerContainer div.row { margin-top: 1em; margin-bottom: 1em; }
+#playerContainer div.row.Human .com { display: none; }
 #addPlayer { outline: none; float: left; padding: 2px 0px 2px 20px; background-image: url('/Content/Images/add.png'); background-repeat: no-repeat; background-position: left center; }
 input[type="text"].watermark { color: #c0c0c0; }
