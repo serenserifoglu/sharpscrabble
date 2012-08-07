@@ -115,6 +115,16 @@
         }
     }
 
+    function validate()
+    {
+        return true;
+    }
+
+    function showError()
+    {
+        alert('Please fill out the Name for humans, and AI type for computers.');
+    }
+
     $(document).ready(function ()
     {
         playerContainer = $('#playerContainer');
@@ -130,7 +140,14 @@
 
         var okClick = function ()
         {
-            console.log('ok clicked');
+            if (validate())
+            {
+                console.log('clicked');
+                $('#setupForm').submit();
+                $('button', dialog.parent()).button('disable');
+            }
+            else
+                showError();
         };
         dialog = $('#playerDialog').dialog(
         {

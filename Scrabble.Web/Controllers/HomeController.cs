@@ -15,7 +15,7 @@ namespace Scrabble.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult Play(ICollection<PlayerModel> players)
+        public ActionResult Setup(ICollection<PlayerModel> players)
         {
             return View();
         }
