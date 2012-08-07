@@ -1,6 +1,6 @@
 ﻿(function ()
 {
-    var dialog, playerContainer, playerCount, radioCount;
+    var dialog, playerContainer, playerCount, radioCount, playerNameWatermark = 'Player Name';
 
     function addPlayerRow(removable, human)
     {
@@ -33,7 +33,7 @@
     function nameBlur()
     {
         if ($(this).val() == '')
-            $(this).addClass('watermark').val('Player Name');
+            $(this).addClass('watermark').val(playerNameWatermark);
         else
             $(this).removeClass('watermark');
     }
@@ -117,7 +117,25 @@
 
     function validate()
     {
-        return true;
+        var result = true;
+        playerContainer.children().each(function ()
+        {
+            var fn = $(this).hasClass('Human') ? validName : validComputerRow;
+            if (!fn($(this)))
+                result = false;
+        });
+        return result;
+    }
+
+    function validName(row)
+    {
+        var name = $('input:eq(0)', row).val();
+        return name != '' && name != playerNameWatermark;
+    }
+
+    function validComputerRow(row)
+    {
+        return validName(row) && $('select:eq(0)', row).val() != '' && $('select:eq(1)', row).val() != '';
     }
 
     function showError()
@@ -142,7 +160,6 @@
         {
             if (validate())
             {
-                console.log('clicked');
                 $('#setupForm').submit();
                 $('button', dialog.parent()).button('disable');
             }
