@@ -180,7 +180,6 @@ type ComputerPlayer(name:string) =
     member this.Provider with get() = this.provider and set x = this.provider <- x
     [<DefaultValue>] val mutable private utility : TileList * Map<Coordinate, Tile> -> double
     member this.UtilityFunction with get() = this.utility and set x = this.utility <- x
-
     let mutable passes = 0
 
     override this.NotifyTurn(implementor) =
@@ -284,14 +283,14 @@ type Board() =
                     printf " _ "
             printfn ""
 
-and GameState(players:Player list) = 
+and GameState(wordLookup:WordLookup, players:Player list) = 
     let bag = Bag()
     let board = Board()
     let mutable moveCount = 0
     let rng = Random()
     let mutable currentPlayer = 0 //rng.Next(players.Length)
     let mutable passCount = 0
-    let wordLookup = WordLookup()
+    //let wordLookup = WordLookup()
 
     //Private functions
     let IsGameComplete() = 
@@ -378,10 +377,15 @@ and GameState(players:Player list) =
             p.TilesUpdated()
         )
         this.CurrentPlayer.NotifyTurn(this)
+
+and IGameLoader =
+   abstract member Load : unit -> GameState
+
 /// A singleton that will represent the game board, bag of tiles, players, move count, etc.
 and Game() = 
-    static let mutable instance = Unchecked.defaultof<GameState>
-    static member Instance with get() = instance and set(x) = instance <- x
+    static let mutable loader = Unchecked.defaultof<IGameLoader>
+    static member Loader with get() = loader and set(l) = loader <- l
+    static member Instance with get() = loader.Load()
 
 /// A player's move is a set of coordinates and tiles. This will throw if the move isn't valid.
 /// That is, if the tiles aren't layed out properly (not all connected, the word formed doesn't "touch" any other tiles - with the exception of the first word)

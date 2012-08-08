@@ -4,6 +4,8 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Scrabble.Web.Models;
+using Scrabble.Core.Types;
+using Microsoft.FSharp.Collections;
 
 namespace Scrabble.Web.Controllers
 {
@@ -17,7 +19,29 @@ namespace Scrabble.Web.Controllers
         [HttpPost]
         public ActionResult Setup(ICollection<PlayerModel> players)
         {
+            if (Validate(players))
+            {
+                GameState state = new GameState(GameVars.DictionaryInstance(), ListModule.OfSeq<Player>(MakePlayers(players)));
+                String gameId = new SessionGameLoader().Put(state);
+
+            }
             return View();
+        }
+
+        private bool Validate(ICollection<PlayerModel> players)
+        {
+            foreach (PlayerModel model in players)
+            {
+                if (!model.IsValid())
+                    return false;
+            }
+            return true;
+        }
+
+        private IEnumerable<Player> MakePlayers(ICollection<PlayerModel> players)
+        {
+            foreach (PlayerModel model in players)
+                yield return model.ToPlayer();
         }
     }
 }

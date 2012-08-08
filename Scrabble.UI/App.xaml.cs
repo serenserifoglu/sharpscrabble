@@ -20,7 +20,7 @@ namespace Scrabble.UI
 
         private void StartGame()
         {
-            Setup.SetupGameState();
+            //Setup.SetupGameState();
 
             //show player windows
             foreach (HumanPlayer p in Game.Instance.HumanPlayers)
@@ -45,7 +45,7 @@ namespace Scrabble.UI
             }
 
             //Give each ComputerPlayer an AI Provider instance and utility functions
-            Setup.SetupComputer();
+            //Setup.SetupComputer();
 
             //Call this to give each player tiles, and ask the first player for a move.
             Game.Instance.Start();

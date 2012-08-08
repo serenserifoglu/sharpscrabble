@@ -6,12 +6,12 @@ open System.Text
 open System.Collections.Generic
 open Combinatorics
 
-type WordLookup() = 
+type WordLookup(path) = 
     static let ValidWords = new HashSet<string>()
     static let mutable OfficialWords:Map<string, string list> = Map.empty
 
-    static do 
-        File.ReadAllLines(@"..\..\..\Scrabble.Web\App_Data\twl.txt")
+    do 
+        File.ReadAllLines(path)
             |> Seq.map(fun w -> w.ToLower())
             |> Seq.iter(fun w -> 
                             ValidWords.Add w |> ignore
