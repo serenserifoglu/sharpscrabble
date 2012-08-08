@@ -29,13 +29,13 @@ namespace Scrabble.Web.Models
             if (Type == PlayerType.Human)
                 return !String.IsNullOrWhiteSpace(Name);
             else
-                return !String.IsNullOrWhiteSpace(Name) && PositiveInt(Provider) && PositiveInt(UtilityFunction);
+                return !String.IsNullOrWhiteSpace(Name) && NonNegativeInt(Provider) && NonNegativeInt(UtilityFunction);
         }
 
-        private bool PositiveInt(String s)
+        private bool NonNegativeInt(String s)
         {
             int value;
-            return Int32.TryParse(s, out value) && value > 0;
+            return Int32.TryParse(s, out value) && value >= 0;
         }
 
         public Player ToPlayer()

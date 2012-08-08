@@ -23,9 +23,10 @@ namespace Scrabble.Web.Controllers
             {
                 GameState state = new GameState(GameVars.DictionaryInstance(), ListModule.OfSeq<Player>(MakePlayers(players)));
                 String gameId = new SessionGameLoader().Put(state);
-
+                return RedirectToAction("Index", "Play", new { id = gameId });
             }
-            return View();
+            else
+                return RedirectToAction("Index");
         }
 
         private bool Validate(ICollection<PlayerModel> players)
