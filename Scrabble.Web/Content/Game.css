@@ -14,3 +14,11 @@ div.radiogroup .ui-button-text-only .ui-button-text { padding: 0.25em 1em; }
 input[type="text"].watermark { color: #c0c0c0; }
 .radiogroup .ui-state-disabled[aria-pressed="true"] { opacity: 1 }
 #playerContainer a.remove { cursor: pointer; float: left; width: 20px; height: 20px; background-image: url('/Content/Images/cross.png'); background-repeat: no-repeat; background-position: center; }
+
+#board { border: 1px solid #000; }
+#board td { width: 32px; height: 32px; border: 1px solid #ccc; }
+#board .doubleLetter { background-color: #9696ff; }
+#board .tripleLeter { background-color: #0000fe; }
+#board .doubleWord { background-color: #ff3c3c; }
+#board .tripleWord { background-color: #f00; }
+#board .start { background-color: #ff3c3c; }

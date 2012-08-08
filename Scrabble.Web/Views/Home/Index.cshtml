@@ -1,4 +1,5 @@
 ﻿<p>/Home/Index</p>
+@{ Html.RenderPartial("EmptyBoard"); }
 <div id="playerDialog" style="display: none;">
     @using (Html.BeginForm("Setup", "Home", FormMethod.Post, new { id = "setupForm" }))
     {

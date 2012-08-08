@@ -1,0 +1,17 @@
+﻿@using Scrabble.Core.Config
+@using Scrabble.Core.Squares
+<table id="board">
+    <tbody>
+        @for (int y = 0; y < ScrabbleConfig.BoardLength; y++)
+        {
+            <tr>
+            @for (int x = 0; x < ScrabbleConfig.BoardLength; x++)
+            {
+                Coordinate coord = new Coordinate(x, y);
+                Square square = ScrabbleConfig.BoardLayout(coord);
+                <td class="@square.CssClass"></td>            
+            }
+            </tr>
+        }
+    </tbody>
+</table>
