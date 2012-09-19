@@ -151,7 +151,7 @@ type IIntelligenceProvider =
     abstract member Think : TileList * (TileList * Map<Coordinate, Tile> -> double) -> Turn
 
 [<AbstractClass>]
-type Player(name:string) =
+type Player(name:string, id:int) =
     let tiles = TileList()
     let mutable score = 0
     abstract member NotifyTurn : ITurnImplementor -> unit
@@ -159,6 +159,7 @@ type Player(name:string) =
     abstract member DrawTurn : Turn * Player -> unit
     abstract member TilesUpdated : unit -> unit
     member this.Name with get() = name
+    member this.Id with get() = id
     member this.Score with get() = score
     member this.Tiles with get() = tiles
     member this.HasTiles with get() = tiles.Count > 0
@@ -172,8 +173,8 @@ type Player(name:string) =
 and GameOutcome(winners:seq<Player>) =
     member this.Winners with get() = winners
 
-type ComputerPlayer(name:string) = 
-    inherit Player(name)
+type ComputerPlayer(name:string, id:int) = 
+    inherit Player(name, id)
 
     [<DefaultValue>] val mutable private window : IDispWindow
     [<DefaultValue>] val mutable private provider : IIntelligenceProvider
@@ -217,8 +218,8 @@ and IDispWindow =
     abstract member TilesUpdated : unit -> unit
 and del1 = delegate of unit -> unit
 
-type HumanPlayer(name:string) =
-    inherit Player(name)
+type HumanPlayer(name:string, id:int) =
+    inherit Player(name, id)
     [<DefaultValue>] val mutable private window : IGameWindow
     [<DefaultValue>] val mutable private game : ITurnImplementor
     override this.NotifyTurn(implementor) = 

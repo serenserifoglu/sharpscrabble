@@ -23,6 +23,7 @@ namespace Scrabble.Web.Controllers
             {
                 GameState state = new GameState(GameVars.DictionaryInstance(), ListModule.OfSeq<Player>(MakePlayers(players)));
                 String gameId = new SessionGameLoader().Put(state);
+                state.Start();
                 return RedirectToAction("Index", "Play", new { id = gameId });
             }
             else
@@ -41,8 +42,9 @@ namespace Scrabble.Web.Controllers
 
         private IEnumerable<Player> MakePlayers(ICollection<PlayerModel> players)
         {
+            int index = 0;
             foreach (PlayerModel model in players)
-                yield return model.ToPlayer();
+                yield return model.ToPlayer(index++);
         }
     }
 }

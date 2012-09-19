@@ -1,6 +1,30 @@
-﻿<div class="container">
+﻿@using Scrabble.Web.Models;
+@using Scrabble.Core.Types
+@{
+    PlayModel model = this.Model as PlayModel;
+}
+
+<div id="playingArea" class="container">
     @{ Html.RenderPartial("EmptyBoard"); }
-    <div id="players">
-            
-    </div>
+    @if (model != null)
+    {
+        <div id="players">
+            <h2>Players</h2>     
+            @foreach (Player p in model.State.Players)
+            {
+                <div class="player" id="player-@p.Id">
+                    <h3>@p.Name, Score: <span class="playerScore">0</span></h3>
+                    <div class="rack">
+                        @foreach(Tile t in p.Tiles)
+                        {
+                            <div class="tile">
+                                @t.Letter
+                                <span class="tileScore">@t.Score</span>
+                            </div>    
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
 </div>

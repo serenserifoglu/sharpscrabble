@@ -15,7 +15,7 @@ input[type="text"].watermark { color: #c0c0c0; }
 .radiogroup .ui-state-disabled[aria-pressed="true"] { opacity: 1 }
 #playerContainer a.remove { cursor: pointer; float: left; width: 20px; height: 20px; background-image: url('/Content/Images/cross.png'); background-repeat: no-repeat; background-position: center; }
 
-#board { border: 1px solid #000; margin-top: 2em; margin-left: 1em; }
+#board { border: 1px solid #000; }
 #board td { width: 32px; height: 32px; border: 1px solid #ccc; padding: 0; }
 #board .doubleLetter { background-color: #9696ff; }
 #board .tripleLeter { background-color: #0000fe; }
@@ -23,3 +23,7 @@ input[type="text"].watermark { color: #c0c0c0; }
 #board .tripleWord { background-color: #f00; }
 #board .start { background-color: #ff3c3c; }
 .tile { color: #333; background-color: #eee; text-align: center; width: 100%; height: 100%; }
+#playingArea { margin-top: 2em; margin-left: 1em; }
+#board, #players { float: left; }
+#players { margin-left: 2em; }
+#players h2 { margin-top: 0; }

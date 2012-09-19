@@ -38,13 +38,13 @@ namespace Scrabble.Web.Models
             return Int32.TryParse(s, out value) && value >= 0;
         }
 
-        public Player ToPlayer()
+        public Player ToPlayer(int index)
         {
             if (Type == PlayerType.Human)
-                return new HumanPlayer(Name);
+                return new HumanPlayer(Name, index);
             else
             {
-                ComputerPlayer com = new ComputerPlayer(Name);
+                ComputerPlayer com = new ComputerPlayer(Name, index);
                 Setup.ApplySetupValues(GameVars.DictionaryInstance(), com, Provider, UtilityFunction);
                 return com;
             }
