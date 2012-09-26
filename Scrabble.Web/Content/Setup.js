@@ -145,6 +145,12 @@
 
     $(document).ready(function ()
     {
+        if (typeof WebSocket == 'undefined')
+        {
+            alert('Your browser does not support Web Sockets. We recommend using the latest version of Firefox or Chrome.');
+            return;
+        }
+
         playerContainer = $('#playerContainer');
         playerCount = 0;
         radioCount = 0;

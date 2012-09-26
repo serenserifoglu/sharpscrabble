@@ -19,18 +19,37 @@ namespace Scrabble.Web.Sockets
         {
             lock (sessionLock)
             {
-                sessions.Add(GameIdFromSession(session), session);
+                String gameId = GameIdFromSession(session);
+                if (String.IsNullOrWhiteSpace(gameId))
+                    throw new Exception("No GameId found in cookie.");
+                sessions.Add(gameId, session);
+
+                SendMessage(gameId, "Got new session");
             }
         }
 
         public static void RemoveSession(WebSocketSession session, CloseReason reason)
         {
-            
+            lock (sessionLock)
+            {
+                String gameId = GameIdFromSession(session);
+                if (!String.IsNullOrWhiteSpace(gameId))
+                    sessions.Remove(gameId);
+            }
         }
 
         public static void HandleMessage(WebSocketSession session, String value)
         {
 
+        }
+
+        public static void SendMessage(String gameId, String value)
+        {
+            lock (sessionLock)
+            {
+                if (sessions.ContainsKey(gameId))
+                    sessions[gameId].SendResponseAsync(value);
+            }
         }
 
         private static String GameIdFromSession(WebSocketSession session)

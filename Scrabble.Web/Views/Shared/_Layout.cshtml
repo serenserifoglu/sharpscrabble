@@ -6,8 +6,36 @@
     <link href="@Html.Raw(Request.IsSecureConnection ? "https" : "http")://ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/themes/blitzer/jquery-ui.css" rel="stylesheet" type="text/css" />
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/jquery-ui.min.js" type="text/javascript"></script>
-    <script src="@Url.Content("Content/Global.js")" type="text/javascript"></script>
-    <script src="@Url.Content("Content/Setup.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Content/Global.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Content/Setup.js")" type="text/javascript"></script>
+    <script type="text/javascript">
+        var ws;
+        function beginSocket()
+        {
+            if (ws)
+                return;
+
+            ws = new WebSocket('ws://@(Request.Url.Host):@System.Configuration.ConfigurationManager.AppSettings["WebSocketPort"]'); 
+            ws.onopen = function()
+            {
+                console.log('websocket opened');
+            };
+            ws.onmessage = function (e)
+            {
+                console.log('got data: ' + e.data);
+            };
+            ws.onclose = function ()
+            {
+                console.log('websocket closed');
+            }
+        }
+
+        function sendMessage(value)
+        {
+            if (ws)
+                ws.send(value);
+        }
+    </script>
 </head>
 
 <body id="body">

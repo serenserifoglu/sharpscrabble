@@ -23,7 +23,9 @@ namespace Scrabble.Web.Controllers
             {
                 GameState state = new GameState(GameVars.DictionaryInstance(), ListModule.OfSeq<Player>(MakePlayers(players)));
                 String gameId = new SessionGameLoader().Put(state);
-                state.Start();
+                //state.Start();
+                HttpCookie cookie = new HttpCookie("GameId", gameId);
+                Response.Cookies.Add(cookie);
                 return RedirectToAction("Index", "Play", new { id = gameId });
             }
             else

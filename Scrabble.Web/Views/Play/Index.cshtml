@@ -1,1 +1,5 @@
 ﻿@{ Html.RenderPartial("PlayingArea"); }
+<script type="text/javascript">
+    console.log('Cookie: ' + readCookie('GameId'));
+    beginSocket();
+</script>

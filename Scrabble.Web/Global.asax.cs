@@ -57,6 +57,11 @@ namespace Scrabble.Web
             Scrabble.Web.Models.GameVars.Initialize();
         }
 
+        void Application_End(object sender, EventArgs e)
+        {
+            SocketServerManager.Stop();
+        }
+
         private void StartSuperWebSocketByConfig()
         {
             var serverConfig = ConfigurationManager.GetSection("socketServer") as SocketServiceConfig;
