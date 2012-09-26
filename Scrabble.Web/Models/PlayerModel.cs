@@ -41,7 +41,11 @@ namespace Scrabble.Web.Models
         public Player ToPlayer(int index)
         {
             if (Type == PlayerType.Human)
-                return new HumanPlayer(Name, index);
+            {
+                HumanPlayer human = new HumanPlayer(Name, index);
+                human.Window = new WebGameWindow(human);
+                return human;
+            }
             else
             {
                 ComputerPlayer com = new ComputerPlayer(Name, index);

@@ -10,6 +10,7 @@ namespace Scrabble.Web.Models
     public class SessionGameLoader : IGameLoader
     {
         private static string KEY = "GAME_KEY";
+        private static string ID = "GAME_ID";
 
         public GameState Load()
         {
@@ -29,8 +30,14 @@ namespace Scrabble.Web.Models
         {
             HttpContext.Current.Session[KEY] = state;
             String id = GenerateId();
+            HttpContext.Current.Session[ID] = id;
             //validate when the DB gets set up
             return id;
+        }
+
+        public String CurrentGameId()
+        {
+            return HttpContext.Current.Session[ID] as String;
         }
 
         private string GenerateId()

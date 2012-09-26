@@ -21,9 +21,14 @@ namespace Scrabble.Web.Controllers
         {
             if (Validate(players))
             {
+                //Convert the form data to actual Player instances
                 GameState state = new GameState(GameVars.DictionaryInstance(), ListModule.OfSeq<Player>(MakePlayers(players)));
+
+                //Persist the game, and let humans know about the GameId
                 String gameId = new SessionGameLoader().Put(state);
-                //state.Start();
+                state.Start();
+
+                //Also set the GameId as a cookie, so we can identify the web socket used later.
                 HttpCookie cookie = new HttpCookie("GameId", gameId);
                 Response.Cookies.Add(cookie);
                 return RedirectToAction("Index", "Play", new { id = gameId });

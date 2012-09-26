@@ -45,6 +45,11 @@ namespace Scrabble.Web.Sockets
 
         public static void SendMessage(String gameId, String value)
         {
+            if (gameId == null)
+                throw new ArgumentNullException("gameId must be non-null.");
+            if (value == null)
+                throw new ArgumentNullException("value must be non-null.");
+
             lock (sessionLock)
             {
                 if (sessions.ContainsKey(gameId))
