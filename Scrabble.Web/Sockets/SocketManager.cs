@@ -59,7 +59,7 @@ namespace Scrabble.Web.Sockets
 
         private static String GameIdFromSession(WebSocketSession session)
         {
-            return session.Cookies["GameId"];
+            return session.Cookies != null ? session.Cookies["GameId"] : null;
         }
     }
 }

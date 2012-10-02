@@ -17,7 +17,9 @@
                     <div class="rack">
                         @foreach(Tile t in p.Tiles)
                         {
-                            <div class="tile">
+                            String cssClass = "tile";
+                            if (p is HumanPlayer) { cssClass += " movable"; }
+                            <div class="@cssClass">
                                 @t.Letter
                                 <span class="tileScore">@t.Score</span>
                             </div>    
