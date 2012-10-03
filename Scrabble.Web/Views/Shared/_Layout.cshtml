@@ -24,16 +24,12 @@
             ws.onmessage = function (e)
             {
                 console.log('got data: ' + e.data);
+                invoker.handle(e.data);
             };
             ws.onclose = function ()
             {
                 console.log('websocket closed');
             }
-        }
-
-        function gameId()
-        {
-            return readCookie('GameId');
         }
 
         function continueGame()

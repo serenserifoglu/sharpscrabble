@@ -37,3 +37,62 @@ function eraseCookie(name)
 {
     createCookie(name, "", -1);
 }
+
+function gameId()
+{
+    return readCookie('GameId');
+}
+
+/* Game implementation */
+var invoker = (function ()
+{
+    var methods =
+    {
+        DrawTurn: function (message)
+        {
+
+        },
+        GameOver: function (message)
+        {
+
+        },
+        NotifyTurn: function (message)
+        {
+
+        },
+        TilesUpdated: function (message)
+        {
+            var r = playerRack(message.PlayerId);
+            r.empty();
+            $.each(message.Payload, function (i, t)
+            {
+                r.append(makeTile(t, message.PlayerId));
+            });
+        },
+        Debug: function () { }
+    };
+
+    return {
+        handle: function (raw)
+        {
+            var message = JSON.parse(raw);
+            if (message.What in methods)
+            {
+                methods[message.What](message);
+            }
+        }
+    }
+})();
+
+function playerRack(who)
+{
+    return $('#player-{0} .rack'.format(who));
+}
+
+function makeTile(t, who)
+{
+    return $('<div>')
+        .addClass(who == 0 ? 'tile movable' : 'tile')
+        .text(t.Letter)
+        .append($('<span>').addClass('tileScore').text(t.Score));
+}

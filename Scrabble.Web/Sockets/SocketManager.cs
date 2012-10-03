@@ -24,7 +24,7 @@ namespace Scrabble.Web.Sockets
                     throw new Exception("No GameId found in cookie.");
                 sessions.Add(gameId, session);
 
-                SendMessage(gameId, "New Session Acknowledged");
+                SendMessage(gameId, new SocketMessage(-1, MessageType.Debug, "New Session Acknowledged").ToJson());
             }
         }
 

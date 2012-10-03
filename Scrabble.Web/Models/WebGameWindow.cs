@@ -21,20 +21,25 @@ namespace Scrabble.Web.Models
 
         public void GameOver(GameOutcome value)
         {
-            Send("GameOver");
+            Player[] winners = value.Winners.ToArray();
+            Send(MessageType.GameOver, winners);
         }
 
         public void NotifyTurn()
         {
-            Send("NotifyTurn");
+            Send(MessageType.NotifyTurn, null);
         }
 
         public HumanPlayer Player { get; set; }
 
-
         public void TilesUpdated()
         {
-            Send("TilesUpdated");
+            Send(MessageType.TilesUpdated, Player.Tiles);
+        }
+
+        private void Send(MessageType type, Object payload)
+        {
+            Send(new SocketMessage(Player.Id, type, payload).ToJson());
         }
 
         private void Send(String value)
