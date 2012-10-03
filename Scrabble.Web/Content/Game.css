@@ -23,9 +23,10 @@ input[type="text"].watermark { color: #c0c0c0; }
 #board .doubleWord { background-color: #ff3c3c; }
 #board .tripleWord { background-color: #f00; }
 #board .start { background-color: #ff3c3c; }
-.rack { overflow: hidden; width: 100%; }
+.rack { overflow: hidden; width: 100%; position: relative; }
 .tile { color: #333; background-color: #eee; text-align: center; position: relative; font-weight: bold; font-size: 1.4em; margin: 2px; line-height: 32px; float: left; user-select: none; }
 .tile.movable { cursor: pointer; }
+#board .tile { margin: 0; }
 .tile .tileScore { position: absolute; right: 2px; bottom: 2px; font-size: 0.6em; line-height: 1em; }
 #playingArea { margin-top: 2em; margin-left: 1em; position: relative; }
 .bottomRight { position: absolute; bottom: 0px; left: 566px; }

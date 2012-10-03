@@ -120,4 +120,13 @@ $(document).ready(function ()
 {
     buttonArea = $('#buttonArea');
     $('button', buttonArea).button();
+    playerRack(0).sortable({ axis: 'x' });
+    $('#board td').droppable(
+    {
+        drop: function (event, ui)
+        {
+            console.log(event);
+            console.log(ui);
+        }
+    });
 })
