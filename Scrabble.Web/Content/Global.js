@@ -96,3 +96,20 @@ function makeTile(t, who)
         .text(t.Letter)
         .append($('<span>').addClass('tileScore').text(t.Score));
 }
+
+function enableButtons()
+{
+    $('button', buttonArea).button('enable');
+}
+
+function disableButtons()
+{
+    $('button', buttonArea).button('disable');
+}
+
+$(document).ready(function ()
+{
+    buttonArea = $('#buttonArea');
+    $('button', buttonArea).button();
+    buttonArea.show();
+})
