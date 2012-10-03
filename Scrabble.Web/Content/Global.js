@@ -58,7 +58,10 @@ var invoker = (function ()
         },
         NotifyTurn: function (message)
         {
-
+            if (isCurrentPlayer(message.PlayerId))
+                enableButtons();
+            else
+                disableButtons();
         },
         TilesUpdated: function (message)
         {
@@ -92,13 +95,19 @@ function playerRack(who)
 function makeTile(t, who)
 {
     return $('<div>')
-        .addClass(who == 0 ? 'tile movable' : 'tile')
+        .addClass(isCurrentPlayer(who) ? 'tile movable' : 'tile')
         .text(t.Letter)
         .append($('<span>').addClass('tileScore').text(t.Score));
 }
 
+function isCurrentPlayer(who)
+{
+    return who == 0;
+}
+
 function enableButtons()
 {
+    buttonArea.show();
     $('button', buttonArea).button('enable');
 }
 
@@ -111,5 +120,4 @@ $(document).ready(function ()
 {
     buttonArea = $('#buttonArea');
     $('button', buttonArea).button();
-    buttonArea.show();
 })
