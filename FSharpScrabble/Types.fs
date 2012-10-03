@@ -288,6 +288,7 @@ and GameState(wordLookup:WordLookup, players:Player list) =
     let bag = Bag()
     let board = Board()
     let mutable moveCount = 0
+    let mutable running = false
     let rng = Random()
     let mutable currentPlayer = 0 //rng.Next(players.Length)
     let mutable passCount = 0
@@ -372,12 +373,18 @@ and GameState(wordLookup:WordLookup, players:Player list) =
 
     //Public Members
     member this.Start() = 
+        running <- true
         //draw tiles for each player
         players |> List.iter (fun p -> 
             p.Tiles.AddRange(bag.Take ScrabbleConfig.MaxTiles)
             p.TilesUpdated()
         )
         this.CurrentPlayer.NotifyTurn(this)
+    member this.Continue() = 
+        if not running then
+            this.Start()
+        else
+            ()
 
 and IGameLoader =
    abstract member Load : unit -> GameState

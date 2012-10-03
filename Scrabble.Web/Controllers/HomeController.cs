@@ -26,7 +26,6 @@ namespace Scrabble.Web.Controllers
 
                 //Persist the game, and let humans know about the GameId
                 String gameId = new SessionGameLoader().Put(state);
-                state.Start();
 
                 //Also set the GameId as a cookie, so we can identify the web socket used later.
                 HttpCookie cookie = new HttpCookie("GameId", gameId);

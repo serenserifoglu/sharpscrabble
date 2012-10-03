@@ -19,6 +19,7 @@
             ws.onopen = function()
             {
                 console.log('websocket opened');
+                continueGame();
             };
             ws.onmessage = function (e)
             {
@@ -30,10 +31,28 @@
             }
         }
 
+        function gameId()
+        {
+            return readCookie('GameId');
+        }
+
+        function continueGame()
+        {
+            $.get('/play/{0}/continue'.format(gameId()), function()
+            {
+                //do nothing
+            });     
+        }
+
         function sendMessage(value)
         {
             if (ws)
                 ws.send(value);
+        }
+
+        function wtf()
+        {
+            /* some generic error handling goes here. */
         }
     </script>
 </head>

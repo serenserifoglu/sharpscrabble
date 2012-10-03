@@ -32,4 +32,4 @@ input[type="text"].watermark { color: #c0c0c0; }
 #players { margin-left: 2em; }
 #players h2 { margin-top: 0; }
 
-.tile, .noselect { -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
+.tile, .noselect { -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }

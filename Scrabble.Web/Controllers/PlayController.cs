@@ -15,11 +15,19 @@ namespace Scrabble.Web.Controllers
             Board b = Game.Instance.PlayingBoard;
             foreach (KeyValuePair<Core.Config.Coordinate, Core.Squares.Square> pair in b.OccupiedSquares())
             {
-
+                //Do something lol
             }
             GameState state =  new SessionGameLoader().Load();
             return View(new PlayModel(id, state));
         }
 
+        public ActionResult Continue(String id)
+        {
+            GameState state = new SessionGameLoader().Load();
+            if (state == null)
+                throw new HttpException(400, "Game state not found");
+            state.Continue();
+            return Content("true");
+        }
     }
 }
