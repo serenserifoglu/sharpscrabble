@@ -270,6 +270,10 @@ $(document).ready(function ()
         drop: function (event, ui)
         {
             $(this).removeClass('tile-over').addClass('occupied');
+            var oldSquare = ui.draggable.data('square');
+            if (oldSquare)
+                oldSquare.removeClass('occupied');
+            ui.draggable.data('square', $(this))
             var x = $(this).index();
             var y = $(this).parent().index();
             turnMgr.tileDown(x, y, ui.draggable);
