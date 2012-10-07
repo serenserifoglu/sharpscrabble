@@ -101,13 +101,20 @@ var turnMgr = (function ()
             if (ok && turnInput.Type)
             {
                 disableButtons();
+                //Clear out empty values in the array (we use index here to make it easy for the same tile to be placed many times).
+                var original = turnInput.Tiles;
+                turnInput.Tiles = [];
+                for (var i in original)
+                    turnInput.Tiles.push(original[i]);
                 //Post this move to the server
+                this.log();
                 $.ajax(
                 {
                     type: 'POST',
                     url: '/play/{0}/taketurn'.format(gameId()),
+                    contentType: 'application/json; charset=utf-8',
                     dataType: 'json',
-                    data: turnInput,
+                    data: JSON.stringify(turnInput),
                     success: function (response)
                     {
                         if (response.IsValid)

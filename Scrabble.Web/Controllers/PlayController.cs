@@ -30,6 +30,7 @@ namespace Scrabble.Web.Controllers
             return Content("true");
         }
 
+        [HttpPost]
         public ActionResult TakeTurn(String id, TurnInput input)
         {
             return Json(new TurnResponse(true, "not yet implemented"));
