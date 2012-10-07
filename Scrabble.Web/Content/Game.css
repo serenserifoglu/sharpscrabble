@@ -24,7 +24,7 @@ input[type="text"].watermark { color: #c0c0c0; }
 #board .tripleWord { background-color: #f00; }
 #board .start { background-color: #ff3c3c; }
 .rack { width: 252px; height: 36px; }
-.tile { color: #333; background-color: #eee; text-align: center; position: absolute; font-weight: bold; font-size: 1.4em; margin: 2px; line-height: 32px; user-select: none; }
+.tile { color: #333; background-color: #eee; text-align: center; position: absolute!important; font-weight: bold; font-size: 1.4em; margin: 2px; line-height: 32px; user-select: none; float: left; }
 .tile.movable { cursor: pointer; }
 #board .tile { margin: 0; }
 .tile .tileScore { position: absolute; right: 2px; bottom: 2px; font-size: 0.6em; line-height: 1em; }
