@@ -37,6 +37,7 @@ function wtf()
 {
     $('<div><p>An unexpected error has occured.</p><p>The page will be reloaded to attempt to continue the game.</p></div>').dialog(
     {
+        modal: true,
         title: 'Whoops',
         buttons: 
         [
@@ -49,6 +50,7 @@ function simpleDialog(message)
 {
     $('<p>').text(message).dialog(
     {
+        modal: true,
         title: 'SharpScrabble',
         buttons:
         [
@@ -61,11 +63,12 @@ function simpleConfirm(message, callback)
 {
     $('<p>').text(message).dialog(
     {
+        modal: true,
         title: 'SharpScrabble',
         buttons:
         [
-            { text: 'Ok', click: callback },
-            { text: 'Cancel', click: function () { $(this).dialog("close"); } }
+            { text: 'Ok', click: function () { callback(); $(this).dialog('close'); } },
+            { text: 'Cancel', click: function () { $(this).dialog('close'); } }
         ]
     });   
 }
@@ -151,13 +154,13 @@ var turnMgr = (function ()
         {
             turnInput.Type = TurnTypes.Pass;
             turnInput.Tiles = [];
-            commit();
+            this.commit();
         },
         dumpLetters: function ()
         {
             turnInput.Type = TurnTypes.DumpLetters;
             turnInput.Tiles = [];
-            commit();
+            this.commit();
         },
         log: function ()
         {

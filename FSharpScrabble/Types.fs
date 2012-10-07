@@ -169,6 +169,8 @@ type Player(name:string, id:int) =
         score <- score - this.Tiles.Score()
     member this.TakeTurn(implementor:ITurnImplementor, t:Turn) = 
         implementor.TakeTurn(t)
+    member this.IsHuman() = 
+        false
 
 and GameOutcome(winners:seq<Player>) =
     member this.Winners with get() = winners
@@ -234,6 +236,8 @@ type HumanPlayer(name:string, id:int) =
     member this.Window with get() = this.window and set w = this.window <- w
     member this.TakeTurn(t:Turn) = 
         base.TakeTurn(this.game, t)
+    member this.IsHuman() = 
+        true
 
 and IGameWindow =
     abstract member NotifyTurn : unit -> unit
@@ -383,8 +387,8 @@ and GameState(wordLookup:WordLookup, players:Player list) =
     member this.Continue() = 
         if not running then
             this.Start()
-        else
-            ()
+        else if this.CurrentPlayer.IsHuman() then
+            this.CurrentPlayer.NotifyTurn(this)
 
 and IGameLoader =
    abstract member Load : unit -> GameState
