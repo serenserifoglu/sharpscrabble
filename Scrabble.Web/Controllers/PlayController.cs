@@ -29,5 +29,10 @@ namespace Scrabble.Web.Controllers
             state.Continue();
             return Content("true");
         }
+
+        public ActionResult TakeTurn(String id, TurnInput input)
+        {
+            return Json(new TurnResponse(true, "not yet implemented"));
+        }
     }
 }

@@ -87,6 +87,9 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\GameVars.cs" />
+    <Compile Include="Models\TileLocation.cs" />
+    <Compile Include="Models\TurnInput.cs" />
+    <Compile Include="Models\TurnResponse.cs" />
     <Compile Include="Models\PlayerModel.cs" />
     <Compile Include="Models\PlayerType.cs" />
     <Compile Include="Models\PlayModel.cs" />

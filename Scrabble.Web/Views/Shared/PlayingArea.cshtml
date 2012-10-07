@@ -21,7 +21,7 @@
                         {
                             String cssClass = "tile";
                             if (p is HumanPlayer) { cssClass += " movable"; }
-                            <div class="@cssClass">
+                            <div class="@cssClass" data-letter="@t.Letter">
                                 @t.Letter
                                 <span class="tileScore">@t.Score</span>
                             </div>    

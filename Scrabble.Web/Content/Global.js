@@ -33,9 +33,41 @@ function readCookie(name)
     return null;
 }
 
-function eraseCookie(name)
+function wtf()
 {
-    createCookie(name, "", -1);
+    $('<div><p>An unexpected error has occured.</p><p>The page will be reloaded to attempt to continue the game.</p></div>').dialog(
+    {
+        title: 'Whoops',
+        buttons: 
+        [
+            { text: "Alright :'(", click: function () { window.location.href = window.location.href; } }
+        ]
+    });
+}
+
+function simpleDialog(message)
+{
+    $('<p>').text(message).dialog(
+    {
+        title: 'SharpScrabble',
+        buttons:
+        [
+            { text: 'Ok', click: function() { $(this).dialog("close"); } }
+        ]
+    });
+}
+
+function simpleConfirm(message, callback)
+{
+    $('<p>').text(message).dialog(
+    {
+        title: 'SharpScrabble',
+        buttons:
+        [
+            { text: 'Ok', click: callback },
+            { text: 'Cancel', click: function () { $(this).dialog("close"); } }
+        ]
+    });   
 }
 
 function gameId()
@@ -44,6 +76,90 @@ function gameId()
 }
 
 /* Game implementation */
+var TurnTypes =
+{
+    Pass: 'Pass',
+    DumpLetters: 'DumpLetters',
+    PlaceMove: 'PlaceMove'
+};
+
+var turnMgr = (function ()
+{
+    var ok = false;
+    var turnInput = { Type: null, Tiles: [] };
+
+    return {
+        setCurrentTurn: function ()
+        {
+            ok = true;
+        },
+        commit: function ()
+        {
+            if (ok && turnInput.Type)
+            {
+                disableButtons();
+                //Post this move to the server
+                $.ajax(
+                {
+                    type: 'POST',
+                    url: '/play/{0}/taketurn'.format(gameId()),
+                    dataType: 'json',
+                    data: turnInput,
+                    success: function (response)
+                    {
+                        if (response.IsValid)
+                        {
+                            ok = false;
+                            turnInput.Type = null;
+                            turnInput.Tiles = [];
+                        }
+                        else
+                        {
+                            simpleDialog('The move was not valid, please try again.');
+                            reset();
+                            enableButtons();
+                        }
+                    },
+                    error: function (xhr)
+                    {
+                        if (xhr.status != 0)
+                            wtf();
+                    }
+                });
+            }
+        },
+        reset: function ()
+        {
+            //Needs to return any placed tiles to the player's rack.
+            for (var i = 0; i < turnInput.Tiles.length; i++)
+            {
+                var t = turnInput.Tiles[i];
+                //Do something with t.
+            }
+            turnInput.Type = null;
+            turnInput.Tiles = [];
+        },
+        tileDown: function (x, y, tile)
+        {
+            turnInput.Type = TurnTypes.PlaceMove;
+            var index = $(tile).index();
+            turnInput.Tiles[index] = { X: x, Y: y, Letter: '' };
+        },
+        pass: function ()
+        {
+            turnInput.Type = TurnTypes.Pass;
+            turnInput.Tiles = [];
+            commit();
+        },
+        dumpLetters: function ()
+        {
+            turnInput.Type = TurnTypes.DumpLetters;
+            turnInput.Tiles = [];
+            commit();
+        }
+    };
+})();
+
 var invoker = (function ()
 {
     var methods =
@@ -59,7 +175,10 @@ var invoker = (function ()
         NotifyTurn: function (message)
         {
             if (isCurrentPlayer(message.PlayerId))
+            {
+                turnMgr.setCurrentTurn();
                 enableButtons();
+            }
             else
                 disableButtons();
         },
@@ -70,7 +189,7 @@ var invoker = (function ()
             r.empty();
             $.each(message.Payload, function (i, t)
             {
-                var e = makeTile(t, message.PlayerId);
+                var e = makeTile(t, isCurrentPlayer(message.PlayerId));
                 r.append(e);
                 e.css('left', baseLeft + 36 * i);
             });
@@ -95,14 +214,14 @@ function playerRack(who)
     return $('#player-{0} .rack'.format(who));
 }
 
-function makeTile(t, who)
+function makeTile(t, canMove)
 {
-    var current = isCurrentPlayer(who);
     var t = $('<div>')
-        .addClass(current ? 'tile movable' : 'tile')
+        .addClass(canMove ? 'tile movable' : 'tile')
         .text(t.Letter)
+        .attr('data-letter', t.Letter)
         .append($('<span>').addClass('tileScore').text(t.Score));
-    return current ? movable(t) : t;
+    return canMove ? movable(t) : t;
 }
 
 function positionRack(r)
@@ -116,7 +235,7 @@ function positionRack(r)
 
 function movable(what)
 {
-    return what.draggable({ containment: '#playingArea', revert: 'invalid', revertDuration: 150, /*snap: '#board td', snapMode: 'inner'*/ });
+    return what.draggable({ containment: '#playingArea', revert: 'invalid', revertDuration: 150, stack: '.tile' /*snap: '#board td', snapMode: 'inner'*/ });
 }
 
 function isCurrentPlayer(who)
@@ -137,34 +256,59 @@ function disableButtons()
 
 $(document).ready(function ()
 {
+    //Board setup
     buttonArea = $('#buttonArea');
     $('button', buttonArea).button();
-    //playerRack(0).sortable({ axis: 'x' });
     $('#board td').droppable(
     {
         drop: function (event, ui)
         {
             $(this).removeClass('tile-over').addClass('occupied');
-            console.log(event);
-            console.log(ui.draggable);
+            var x = $(this).index();
+            var y = $(this).parent().index();
+            var letter = ui.draggable.attr('data-letter');
+            console.log('{0} placed at ({1}, {2})'.format(letter, x, y));
         },
-        over: function()
+        over: function ()
         {
             if (!$(this).hasClass('occupied'))
                 $(this).addClass('tile-over');
         },
-        out: function()
+        out: function ()
         {
-            $(this).removeClass('tile-over');    
+            $(this).removeClass('tile-over');
         },
-        accept: function()
+        accept: function ()
         {
-            return !$(this).hasClass('occupied');    
+            return !$(this).hasClass('occupied');
         }
     });
     movable($('.movable'));
     $('.rack').each(function (i, r)
     {
         positionRack(r);
+    });
+    //Button clicks
+    $('#done').click(function ()
+    {
+        turnMgr.commit();
+    });
+    $('#pass').click(function ()
+    {
+        simpleConfirm('Are you sure you want to pass?', function ()
+        {
+            turnMgr.pass();
+        });
+    });
+    $('#dumpLetters').click(function ()
+    {
+        simpleConfirm('Are you sure you want to exchange your tiles?', function ()
+        {
+            turnMgr.dumpLetters();
+        });
+    });
+    $('#reset').click(function ()
+    {
+        turnMgr.reset();
     });
 })
