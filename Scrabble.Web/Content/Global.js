@@ -141,9 +141,11 @@ var turnMgr = (function ()
         },
         tileDown: function (x, y, tile)
         {
+            var letter = tile.attr('data-letter');
+            var index = tile.index();
+            console.log('{0} placed at ({1}, {2}). Tile index = {3}'.format(letter, x, y, tile.index()));
             turnInput.Type = TurnTypes.PlaceMove;
-            var index = $(tile).index();
-            turnInput.Tiles[index] = { X: x, Y: y, Letter: '' };
+            turnInput.Tiles[index] = { X: x, Y: y, Letter: letter };
         },
         pass: function ()
         {
@@ -156,6 +158,10 @@ var turnMgr = (function ()
             turnInput.Type = TurnTypes.DumpLetters;
             turnInput.Tiles = [];
             commit();
+        },
+        log: function ()
+        {
+            console.log(turnInput);
         }
     };
 })();
@@ -266,8 +272,7 @@ $(document).ready(function ()
             $(this).removeClass('tile-over').addClass('occupied');
             var x = $(this).index();
             var y = $(this).parent().index();
-            var letter = ui.draggable.attr('data-letter');
-            console.log('{0} placed at ({1}, {2})'.format(letter, x, y));
+            turnMgr.tileDown(x, y, ui.draggable);
         },
         over: function ()
         {
