@@ -66,10 +66,13 @@ var invoker = (function ()
         TilesUpdated: function (message)
         {
             var r = playerRack(message.PlayerId);
+            var baseLeft = r[0].offsetLeft;
             r.empty();
             $.each(message.Payload, function (i, t)
             {
-                r.append(makeTile(t, message.PlayerId));
+                var e = makeTile(t, message.PlayerId);
+                r.append(e);
+                e.css('left', baseLeft + 36 * i);
             });
         },
         Debug: function () { }
@@ -94,10 +97,26 @@ function playerRack(who)
 
 function makeTile(t, who)
 {
-    return $('<div>')
-        .addClass(isCurrentPlayer(who) ? 'tile movable' : 'tile')
+    var current = isCurrentPlayer(who);
+    var t = $('<div>')
+        .addClass(current ? 'tile movable' : 'tile')
         .text(t.Letter)
         .append($('<span>').addClass('tileScore').text(t.Score));
+    return current ? movable(t) : t;
+}
+
+function positionRack(r)
+{
+    var baseLeft = r.offsetLeft;
+    $('.tile', r).each(function (i, e)
+    {
+        $(e).css('left', baseLeft + 36 * i);
+    });    
+}
+
+function movable(what)
+{
+    return what.draggable({ containment: '#playingArea'/*, revert: 'invalid'*/ });
 }
 
 function isCurrentPlayer(who)
@@ -120,7 +139,7 @@ $(document).ready(function ()
 {
     buttonArea = $('#buttonArea');
     $('button', buttonArea).button();
-    playerRack(0).sortable({ axis: 'x' });
+    //playerRack(0).sortable({ axis: 'x' });
     $('#board td').droppable(
     {
         drop: function (event, ui)
@@ -128,5 +147,10 @@ $(document).ready(function ()
             console.log(event);
             console.log(ui);
         }
+    });
+    movable($('.movable'));
+    $('.rack').each(function (i, r)
+    {
+        positionRack(r);
     });
 })

@@ -23,8 +23,8 @@ input[type="text"].watermark { color: #c0c0c0; }
 #board .doubleWord { background-color: #ff3c3c; }
 #board .tripleWord { background-color: #f00; }
 #board .start { background-color: #ff3c3c; }
-.rack { overflow: hidden; width: 100%; position: relative; }
-.tile { color: #333; background-color: #eee; text-align: center; position: relative; font-weight: bold; font-size: 1.4em; margin: 2px; line-height: 32px; float: left; user-select: none; }
+.rack { width: 252px; height: 36px; }
+.tile { color: #333; background-color: #eee; text-align: center; position: absolute; font-weight: bold; font-size: 1.4em; margin: 2px; line-height: 32px; user-select: none; }
 .tile.movable { cursor: pointer; }
 #board .tile { margin: 0; }
 .tile .tileScore { position: absolute; right: 2px; bottom: 2px; font-size: 0.6em; line-height: 1em; }
