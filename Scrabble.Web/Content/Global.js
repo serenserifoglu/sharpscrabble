@@ -116,7 +116,7 @@ function positionRack(r)
 
 function movable(what)
 {
-    return what.draggable({ containment: '#playingArea'/*, revert: 'invalid'*/ });
+    return what.draggable({ containment: '#playingArea', revert: 'invalid', revertDuration: 150, /*snap: '#board td', snapMode: 'inner'*/ });
 }
 
 function isCurrentPlayer(who)
@@ -144,8 +144,22 @@ $(document).ready(function ()
     {
         drop: function (event, ui)
         {
+            $(this).removeClass('tile-over').addClass('occupied');
             console.log(event);
-            console.log(ui);
+            console.log(ui.draggable);
+        },
+        over: function()
+        {
+            if (!$(this).hasClass('occupied'))
+                $(this).addClass('tile-over');
+        },
+        out: function()
+        {
+            $(this).removeClass('tile-over');    
+        },
+        accept: function()
+        {
+            return !$(this).hasClass('occupied');    
         }
     });
     movable($('.movable'));
