@@ -24,7 +24,7 @@
             ws.onmessage = function (e)
             {
                 console.log('got data: ' + e.data);
-                invoker.handle(e.data);
+                invoker.add(e.data);
             };
             ws.onclose = function ()
             {

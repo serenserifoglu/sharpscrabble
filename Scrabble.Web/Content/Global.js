@@ -101,24 +101,33 @@ var turnMgr = (function ()
             if (ok && turnInput.Type)
             {
                 disableButtons();
-                //Clear out empty values in the array (we use index here to make it easy for the same tile to be placed many times).
-                var original = turnInput.Tiles;
-                turnInput.Tiles = [];
-                for (var i in original)
-                    turnInput.Tiles.push(original[i]);
+                //Make a condensed version of the data to serialize to JSON.
+                var toSend = { Type: turnInput.Type, Tiles: [] }
+                for (var i in turnInput.Tiles)
+                {
+                    var info = turnInput.Tiles[i];
+                    toSend.Tiles.push({ X: info.X, Y: info.Y, Letter: info.Letter });
+                }
                 //Post this move to the server
+                invoker.setQueueMode();
                 $.ajax(
                 {
                     type: 'POST',
                     url: '/play/{0}/taketurn'.format(gameId()),
                     contentType: 'application/json; charset=utf-8',
                     dataType: 'json',
-                    data: JSON.stringify(turnInput),
+                    data: JSON.stringify(toSend),
                     success: function (response)
                     {
                         if (response.IsValid)
                         {
+                            console.log('Got response from post');
                             ok = false;
+                            $.each(turnInput.Tiles, function (i, info)
+                            {
+                                if (info)
+                                    cloneTile(info.Element);
+                            });
                             turnInput.Type = null;
                             turnInput.Tiles = [];
                         }
@@ -128,6 +137,8 @@ var turnMgr = (function ()
                             reset();
                             enableButtons();
                         }
+                        invoker.setImmediateMode();
+                        invoker.runAll();
                     },
                     error: function (xhr)
                     {
@@ -154,7 +165,7 @@ var turnMgr = (function ()
             var index = tile.index();
             console.log('{0} placed at ({1}, {2}). Tile index = {3}'.format(letter, x, y, tile.index()));
             turnInput.Type = TurnTypes.PlaceMove;
-            turnInput.Tiles[index] = { X: x, Y: y, Letter: letter };
+            turnInput.Tiles[index] = { X: x, Y: y, Letter: letter, Element: tile };
         },
         pass: function ()
         {
@@ -177,6 +188,8 @@ var turnMgr = (function ()
 
 var invoker = (function ()
 {
+    var queueMode = false;
+    var queue = [];
     var methods =
     {
         DrawTurn: function (message)
@@ -213,13 +226,46 @@ var invoker = (function ()
     };
 
     return {
-        handle: function (raw)
+        add: function (raw)
         {
             var message = JSON.parse(raw);
             if (message.What in methods)
             {
-                methods[message.What](message);
+                var fn = (function (innerMessage)
+                {
+                    return function () { methods[innerMessage.What](innerMessage); }
+                })(message);
+                if (queueMode)
+                    queue.push(fn);
+                else
+                {
+                    this.runAll();
+                    fn();
+                }
             }
+        },
+        runFirst: function ()
+        {
+            var first = queue.shift();
+            if (first)
+            {
+                first();
+                return true;
+            }
+            else
+                return false;
+        },
+        runAll: function ()
+        {
+            while (this.runFirst()) { };
+        },
+        setQueueMode: function ()
+        {
+            queueMode = true;
+        },
+        setImmediateMode: function ()
+        {
+            queueMode = false;
         }
     }
 })();
@@ -256,6 +302,14 @@ function movable(what)
 function isCurrentPlayer(who)
 {
     return who == 0;
+}
+
+function cloneTile(t)
+{
+    var clone = t.clone();
+    var target = t.data('square');
+    t.remove();
+    $(clone).appendTo(target);
 }
 
 function enableButtons()
