@@ -107,7 +107,6 @@ var turnMgr = (function ()
                 for (var i in original)
                     turnInput.Tiles.push(original[i]);
                 //Post this move to the server
-                this.log();
                 $.ajax(
                 {
                     type: 'POST',

@@ -110,7 +110,7 @@ namespace Scrabble.UI
         /// </summary>
         /// <param name="t"></param>
         /// <param name="p"></param>
-        public void DrawTurn(Turn t, Player p)
+        public void DrawTurn(Turn t, Player p, String s)
         {
             dynamic dynamicTurn = t;
             

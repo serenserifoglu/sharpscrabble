@@ -95,6 +95,7 @@
     <Compile Include="Models\PlayModel.cs" />
     <Compile Include="Models\SessionGameLoader.cs" />
     <Compile Include="Models\WebGameWindow.cs" />
+    <Compile Include="Models\WrappedPayload.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sockets\MessageType.cs" />
     <Compile Include="Sockets\SocketManager.cs" />

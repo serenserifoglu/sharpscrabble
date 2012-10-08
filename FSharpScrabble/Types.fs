@@ -122,7 +122,7 @@ type Bag() =
 
 [<AbstractClass>]
 type Turn() =
-    abstract member Perform : ITurnImplementor -> unit
+    abstract member Perform : ITurnImplementor -> String
 
 and Pass() = 
     inherit Turn()
@@ -142,9 +142,9 @@ and PlaceMove(letters:Map<Coordinate, Tile>) =
     member this.Letters with get() = letters
 
 and ITurnImplementor =
-    abstract member PerformPass : unit -> unit
-    abstract member PerformDumpLetters : DumpLetters -> unit
-    abstract member PerformMove : PlaceMove -> unit
+    abstract member PerformPass : unit -> String
+    abstract member PerformDumpLetters : DumpLetters -> String
+    abstract member PerformMove : PlaceMove -> String
     abstract member TakeTurn : Turn -> unit
 
 type IIntelligenceProvider = 
@@ -156,7 +156,7 @@ type Player(name:string, id:int) =
     let mutable score = 0
     abstract member NotifyTurn : ITurnImplementor -> unit
     abstract member NotifyGameOver : GameOutcome -> unit
-    abstract member DrawTurn : Turn * Player -> unit
+    abstract member DrawTurn : Turn * Player * String -> unit
     abstract member TilesUpdated : unit -> unit
     member this.Name with get() = name
     member this.Id with get() = id
@@ -195,7 +195,7 @@ type ComputerPlayer(name:string, id:int) =
         else
             passes <- 0
 
-        if passes >= 3 && this.Tiles.Count = 7 then //auto-dump after 3 passes in a row, unless at the end of the game
+        if passes >= 3 && this.Tiles.Count = ScrabbleConfig.MaxTiles then //auto-dump after 3 passes in a row, unless at the end of the game
             passes <- 0
             this.TakeTurn(implementor, DumpLetters(this.Tiles))
         else
@@ -206,15 +206,15 @@ type ComputerPlayer(name:string, id:int) =
     override this.NotifyGameOver(o:GameOutcome) = 
         if not(this.window = Unchecked.defaultof<IDispWindow>) then
             this.window.GameOver(o)
-    override this.DrawTurn(t:Turn, p:Player) = 
+    override this.DrawTurn(t:Turn, p:Player, s:String) = 
         if not(this.window = Unchecked.defaultof<IDispWindow>) then
-            this.window.DrawTurn(t, p)
+            this.window.DrawTurn(t, p, s)
     override this.TilesUpdated() = 
         if not(this.window = Unchecked.defaultof<IDispWindow>) then
             this.window.TilesUpdated()
 and IDispWindow = 
     abstract member NotifyTurn : unit -> unit
-    abstract member DrawTurn : Turn * Player -> unit
+    abstract member DrawTurn : Turn * Player * String -> unit
     abstract member Player : ComputerPlayer with get, set
     abstract member GameOver : GameOutcome -> unit
     abstract member TilesUpdated : unit -> unit
@@ -229,8 +229,8 @@ type HumanPlayer(name:string, id:int) =
         this.window.NotifyTurn()
     override this.NotifyGameOver(o:GameOutcome) = 
         this.window.GameOver(o)
-    override this.DrawTurn(t:Turn, p:Player) = 
-        this.window.DrawTurn(t, p)
+    override this.DrawTurn(t:Turn, p:Player, s:String) = 
+        this.window.DrawTurn(t, p, s)
     override this.TilesUpdated() = 
         this.window.TilesUpdated()
     member this.Window with get() = this.window and set w = this.window <- w
@@ -241,7 +241,7 @@ type HumanPlayer(name:string, id:int) =
 
 and IGameWindow =
     abstract member NotifyTurn : unit -> unit
-    abstract member DrawTurn : Turn * Player -> unit
+    abstract member DrawTurn : Turn * Player * String -> unit
     abstract member Player : HumanPlayer with get, set
     abstract member GameOver : GameOutcome -> unit
     abstract member TilesUpdated : unit -> unit
@@ -319,6 +319,7 @@ and GameState(wordLookup:WordLookup, players:Player list) =
     interface ITurnImplementor with
         member this.PerformPass() = 
             passCount <- passCount + 1
+            this.CurrentPlayer.Name + " has passed.";
         member this.PerformDumpLetters(dl) =
             passCount <- 0
             let letters = dl.Letters.OrderBy(fun t -> t).ToList()
@@ -326,6 +327,7 @@ and GameState(wordLookup:WordLookup, players:Player list) =
             this.CurrentPlayer.Tiles.RemoveMany(letters)
             bag.Put(letters)
             this.GiveTiles(this.CurrentPlayer, letters.Count)
+            this.CurrentPlayer.Name + " exchanged letters.";
         member this.PerformMove(turn) =
             passCount <- 0 
             let move = Move(turn.Letters)
@@ -335,10 +337,11 @@ and GameState(wordLookup:WordLookup, players:Player list) =
             this.CurrentPlayer.AddScore(move.Score)
             this.CurrentPlayer.Tiles.RemoveMany(turn.Letters |> Seq.map (fun kv -> kv.Value))
             this.GiveTiles(this.CurrentPlayer, turn.Letters.Count)
+            this.CurrentPlayer.Name + " scored " + move.Score.ToString() + " points.";
         member this.TakeTurn(t:Turn) =
-            t.Perform(this)
+            let summary = t.Perform(this)
             //show this move to the other players
-            this.OtherPlayers() |> Seq.iter (fun p -> p.DrawTurn(t, this.CurrentPlayer))
+            this.OtherPlayers() |> Seq.iter (fun p -> p.DrawTurn(t, this.CurrentPlayer, summary))
             if IsGameComplete() = false then
                 if this.IsOpeningMove && not(t.GetType().ToString() = "Scrabble.Core.Types.PlaceMove") then
                     moveCount <- moveCount - 1

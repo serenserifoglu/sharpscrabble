@@ -14,9 +14,25 @@ namespace Scrabble.Web.Models
             this.Player = p;
         }
 
-        public void DrawTurn(Turn turn, Player player)
+        public void DrawTurn(Turn turn, Player player, String summary)
         {
-            Send("DrawTurn");
+            dynamic dynamicTurn = turn;
+            SendTurn(dynamicTurn, player, summary);
+        }
+
+        private void SendTurn(Pass turn, Player player, String summary)
+        {
+            Send(MessageType.DrawTurn, new WrappedPayload("Pass", summary));
+        }
+
+        private void SendTurn(DumpLetters turn, Player player, String summary)
+        {
+            Send(MessageType.DrawTurn, new WrappedPayload("DumpLetters", summary));
+        }
+
+        private void SendTurn(PlaceMove turn, Player player, String summary)
+        {
+            Send(MessageType.DrawTurn, new WrappedPayload("PlaceMove", summary, turn.Letters.ToList()));
         }
 
         public void GameOver(GameOutcome value)
