@@ -194,7 +194,20 @@ var invoker = (function ()
     {
         DrawTurn: function (message)
         {
-
+            var wrapped = message.Payload;
+            if (wrapped.What === TurnTypes.PlaceMove)
+            {
+                console.log(wrapped.Summary);
+                $.each(wrapped.Payload, function (i, item)
+                {
+                    putTile(item.Key.X, item.Key.Y, item.Value);
+                });
+            }
+            else
+            {
+                //Just log the summary
+                console.log(wrapped.Summary);
+            }
         },
         GameOver: function (message)
         {
@@ -310,6 +323,15 @@ function cloneTile(t)
     var target = t.data('square');
     t.remove();
     $(clone).appendTo(target);
+}
+
+function putTile(x, y, tile)
+{
+    console.log('Putting {0} at ({1}, {2})'.format(tile.Letter, x, y));
+    var element = makeTile(tile, false);
+    var square = $('td:eq(' + x + ')', '#board tr:eq(' + y + ')');
+    element.appendTo(square);
+    square.addClass('occupied');
 }
 
 function enableButtons()
