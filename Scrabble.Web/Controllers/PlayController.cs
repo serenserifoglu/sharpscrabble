@@ -13,12 +13,8 @@ namespace Scrabble.Web.Controllers
     {
         public ActionResult Index(String id)
         {
-            Board b = Game.Instance.PlayingBoard;
-            foreach (KeyValuePair<Core.Config.Coordinate, Core.Squares.Square> pair in b.OccupiedSquares())
-            {
-                //Do something lol
-            }
-            return View(new PlayModel(id, GameState()));
+            GameState state = GameState();
+            return View(new PlayModel(id, state, state.HumanPlayers.First().Id));
         }
 
         public ActionResult Continue(String id)

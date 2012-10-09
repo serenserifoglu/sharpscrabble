@@ -31,9 +31,13 @@ input[type="text"].watermark { color: #c0c0c0; }
 #board td .tile { position: relative!important; left: 0px!important; top: 0px!important; }
 #playingArea { margin-top: 2em; margin-left: 1em; position: relative; }
 .bottomRight { position: absolute; bottom: 0px; left: 566px; }
-#board, #players { float: left; }
-#players { margin-left: 2em; }
-#players h2 { margin-top: 0; }
+#board, #players, #console { float: left; }
+#players, #console { margin-left: 2em; }
+#console .inner { height: 175px; width: 252px; overflow-y: scroll; border: 1px solid #ccc; }
+#console .entry { padding: 0.75em; color: #333; border-bottom: 1px solid #ccc; }
+#console .entry.first { border-bottom: none; }
+#console .entry.alt { background-color: #eee; }
+#players h2, #console h2 { margin-top: 0; }
 #buttonArea { display: none; }
 #buttonArea button .ui-button-text { padding: 0.8em 1.5em; }
 

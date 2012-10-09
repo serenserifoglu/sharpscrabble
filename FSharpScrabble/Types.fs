@@ -340,6 +340,8 @@ and GameState(wordLookup:WordLookup, players:Player list) =
             this.CurrentPlayer.Name + " scored " + move.Score.ToString() + " points.";
         member this.TakeTurn(t:Turn) =
             let summary = t.Perform(this)
+            //send back the summary to the current player
+            this.CurrentPlayer.DrawTurn(t, this.CurrentPlayer, summary)
             //show this move to the other players
             this.OtherPlayers() |> Seq.iter (fun p -> p.DrawTurn(t, this.CurrentPlayer, summary))
             if IsGameComplete() = false then

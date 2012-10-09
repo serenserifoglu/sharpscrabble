@@ -14,25 +14,25 @@ namespace Scrabble.Web.Models
             this.Player = p;
         }
 
-        public void DrawTurn(Turn turn, Player player, String summary)
+        public void DrawTurn(Turn turn, Player who, String summary)
         {
             dynamic dynamicTurn = turn;
-            SendTurn(dynamicTurn, player, summary);
+            SendTurn(dynamicTurn, who, summary);
         }
 
-        private void SendTurn(Pass turn, Player player, String summary)
+        private void SendTurn(Pass turn, Player who, String summary)
         {
-            Send(MessageType.DrawTurn, new WrappedPayload("Pass", summary));
+            Send(who.Id, MessageType.DrawTurn, new WrappedPayload("Pass", summary, who.Score));
         }
 
-        private void SendTurn(DumpLetters turn, Player player, String summary)
+        private void SendTurn(DumpLetters turn, Player who, String summary)
         {
-            Send(MessageType.DrawTurn, new WrappedPayload("DumpLetters", summary));
+            Send(who.Id, MessageType.DrawTurn, new WrappedPayload("DumpLetters", summary, who.Score));
         }
 
-        private void SendTurn(PlaceMove turn, Player player, String summary)
+        private void SendTurn(PlaceMove turn, Player who, String summary)
         {
-            Send(MessageType.DrawTurn, new WrappedPayload("PlaceMove", summary, turn.Letters.ToList()));
+            Send(who.Id, MessageType.DrawTurn, new WrappedPayload("PlaceMove", summary, who.Score, turn.Letters.ToList()));
         }
 
         public void GameOver(GameOutcome value)
@@ -55,7 +55,12 @@ namespace Scrabble.Web.Models
 
         private void Send(MessageType type, Object payload)
         {
-            Send(new SocketMessage(Player.Id, type, payload).ToJson());
+            Send(Player.Id, type, payload);
+        }
+
+        private void Send(int who, MessageType type, Object payload)
+        {
+            Send(new SocketMessage(who, type, payload).ToJson());
         }
 
         private void Send(String value)

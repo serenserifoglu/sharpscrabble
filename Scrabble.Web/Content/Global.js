@@ -79,6 +79,8 @@ function gameId()
 }
 
 /* Game implementation */
+var currentPlayerIndex = -1;
+
 var TurnTypes =
 {
     Pass: 'Pass',
@@ -197,17 +199,17 @@ var invoker = (function ()
             var wrapped = message.Payload;
             if (wrapped.What === TurnTypes.PlaceMove)
             {
-                console.log(wrapped.Summary);
-                $.each(wrapped.Payload, function (i, item)
+                if (message.PlayerId != currentPlayerIndex) //we already have the current player's tiles placed
                 {
-                    putTile(item.Key.X, item.Key.Y, item.Value);
-                });
+                    $.each(wrapped.Payload, function (i, item)
+                    {
+                        putTile(item.Key.X, item.Key.Y, item.Value);
+                    });
+                }
+                updateScore(message.PlayerId, wrapped.NewScore);
             }
-            else
-            {
-                //Just log the summary
-                console.log(wrapped.Summary);
-            }
+            //else, nothing really to do (in all cases, we update the summary)
+            showSummary(wrapped.Summary);
         },
         GameOver: function (message)
         {
@@ -288,6 +290,18 @@ function playerRack(who)
     return $('#player-{0} .rack'.format(who));
 }
 
+function updateScore(who, value)
+{
+    $('#player-{0} .playerScore'.format(who)).text(value);    
+}
+
+function showSummary(value)
+{
+    console.log(value); 
+    var cssClass = consoleContainer.children().length % 2 == 0 ? 'entry' : 'entry alt';
+    consoleContainer.prepend($('<div>').addClass(cssClass).html(value));  
+}
+
 function makeTile(t, canMove)
 {
     var t = $('<div>')
@@ -314,7 +328,7 @@ function movable(what)
 
 function isCurrentPlayer(who)
 {
-    return who == 0;
+    return who == currentPlayerIndex;
 }
 
 function cloneTile(t)
@@ -349,6 +363,7 @@ $(document).ready(function ()
 {
     //Board setup
     buttonArea = $('#buttonArea');
+    consoleContainer = $('#console .inner');
     $('button', buttonArea).button();
     $('#board td').droppable(
     {

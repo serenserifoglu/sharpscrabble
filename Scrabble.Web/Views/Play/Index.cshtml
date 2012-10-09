@@ -1,5 +1,7 @@
-﻿@{ Html.RenderPartial("PlayingArea"); }
+﻿@model Scrabble.Web.Models.PlayModel
+@{ Html.RenderPartial("PlayingArea"); }
 <script type="text/javascript">
+    currentPlayerIndex = @(Model.HumanPlayerIndex);
     console.log('Cookie: ' + gameId());
     beginSocket();
 </script>
