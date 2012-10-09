@@ -333,7 +333,7 @@ function isCurrentPlayer(who)
 
 function cloneTile(t)
 {
-    var clone = t.clone();
+    var clone = t.clone().removeClass('movable');
     var target = t.data('square');
     t.remove();
     $(clone).appendTo(target);
