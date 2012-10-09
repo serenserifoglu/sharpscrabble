@@ -28,7 +28,7 @@ input[type="text"].watermark { color: #c0c0c0; }
 .tile { color: #333; background-color: #eee; text-align: center; position: absolute!important; font-weight: bold; font-size: 1.4em; line-height: 32px; user-select: none; float: left; }
 .tile.movable { cursor: pointer; }
 .tile .tileScore { position: absolute; right: 2px; bottom: 2px; font-size: 0.6em; line-height: 1em; }
-#board td .tile { position: static!important; }
+#board td .tile { position: relative!important; left: 0px!important; top: 0px!important; }
 #playingArea { margin-top: 2em; margin-left: 1em; position: relative; }
 .bottomRight { position: absolute; bottom: 0px; left: 566px; }
 #board, #players { float: left; }
