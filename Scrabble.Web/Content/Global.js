@@ -391,6 +391,13 @@ $(document).ready(function ()
             var x = $(this).index();
             var y = $(this).parent().index();
             turnMgr.tileDown(x, y, ui.draggable);
+            //snap to the square
+            ui.draggable.position(
+            {
+                my: 'top left',
+                at: 'to left',
+                of: $(this)
+            });
         },
         over: function ()
         {
