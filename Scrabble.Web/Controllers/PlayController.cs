@@ -14,7 +14,8 @@ namespace Scrabble.Web.Controllers
         public ActionResult Index(String id)
         {
             GameState state = GameState();
-            return View(new PlayModel(id, state, state.HumanPlayers.First().Id));
+            HumanPlayer human = state.HumanPlayers.FirstOrDefault();
+            return View(new PlayModel(id, state, human != null ? human.Id : -1));
         }
 
         public ActionResult Continue(String id)

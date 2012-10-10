@@ -100,6 +100,7 @@ var turnMgr = (function ()
         },
         commit: function ()
         {
+            var r = this.reset;
             if (ok && turnInput.Type)
             {
                 disableButtons();
@@ -135,9 +136,9 @@ var turnMgr = (function ()
                         }
                         else
                         {
-                            simpleDialog('The move was not valid, please try again.');
-                            reset();
                             enableButtons();
+                            simpleDialog('The move was not valid, please try again.');
+                            r();
                         }
                         invoker.setImmediateMode();
                         invoker.runAll();
@@ -153,11 +154,16 @@ var turnMgr = (function ()
         reset: function ()
         {
             //Needs to return any placed tiles to the player's rack.
-            for (var i = 0; i < turnInput.Tiles.length; i++)
+            $.each(turnInput.Tiles, function (i, t)
             {
-                var t = turnInput.Tiles[i];
-                //Do something with t.
-            }
+                if (t)
+                {                    
+                    t.Element.data('square').removeClass('occupied');
+                    t.Element.data('square', null);
+                    var origin = t.Element.data('origin');
+                    t.Element.animate({ left: origin.left, top: origin.top }, 150);
+                }
+            });
             turnInput.Type = null;
             turnInput.Tiles = [];
         },
@@ -229,12 +235,13 @@ var invoker = (function ()
         {
             var r = playerRack(message.PlayerId);
             var baseLeft = r[0].offsetLeft;
+            var baseTop = r[0].offsetTop;
             r.empty();
             $.each(message.Payload, function (i, t)
             {
                 var e = makeTile(t, isCurrentPlayer(message.PlayerId));
                 r.append(e);
-                e.css('left', baseLeft + 36 * i);
+                positionTile(e, baseTop, baseLeft + 36 * i);
             });
         },
         Debug: function () { }
@@ -315,10 +322,17 @@ function makeTile(t, canMove)
 function positionRack(r)
 {
     var baseLeft = r.offsetLeft;
+    var top = r.offsetTop;
     $('.tile', r).each(function (i, e)
     {
-        $(e).css('left', baseLeft + 36 * i);
-    });    
+        var left = baseLeft + 36 * i;
+        positionTile(e, top, left);
+    });
+}
+
+function positionTile(e, top, left)
+{
+    $(e).css('left', left).data('origin', { left: left, top: top });    
 }
 
 function movable(what)
