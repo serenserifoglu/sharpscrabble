@@ -16,7 +16,7 @@ input[type="text"].watermark { color: #c0c0c0; }
 #playerContainer a.remove { cursor: pointer; float: left; width: 20px; height: 20px; background-image: url('/Content/Images/cross.png'); background-repeat: no-repeat; background-position: center; }
 
 #board { border: 1px solid #000; }
-#board td, .tile { width: 32px; height: 32px; }
+#board td, .tile, .heightFix { width: 32px; height: 32px; }
 #board td { border: 1px solid #ccc; padding: 0; }
 #board .doubleLetter { background-color: #9696ff; }
 #board .tripleLeter { background-color: #0000fe; }

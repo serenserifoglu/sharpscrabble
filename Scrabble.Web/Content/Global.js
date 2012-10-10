@@ -350,7 +350,8 @@ function cloneTile(t)
     var clone = t.clone().removeClass('movable');
     var target = t.data('square');
     t.remove();
-    $(clone).appendTo(target);
+    //$(clone).appendTo(target);
+    appendToSquare(clone, target);
 }
 
 function putTile(x, y, tile)
@@ -358,8 +359,14 @@ function putTile(x, y, tile)
     console.log('Putting {0} at ({1}, {2})'.format(tile.Letter, x, y));
     var element = makeTile(tile, false);
     var square = $('td:eq(' + x + ')', '#board tr:eq(' + y + ')');
-    element.appendTo(square);
+    //element.appendTo(square);
+    appendToSquare(element, square);
     square.addClass('occupied');
+}
+
+function appendToSquare(e, square)
+{
+    $(e).appendTo(square.children().first());
 }
 
 function enableButtons()
