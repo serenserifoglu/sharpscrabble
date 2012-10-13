@@ -1,9 +1,9 @@
 ﻿body { font-size: 0.75em; font-family: Arial,sans-serif; margin: 0; padding: 1em; }
 h1 { padding-left: 0.5em; padding-bottom: 0.5em; margin: 0; border-bottom: 1px solid #eee; color: #004276; }
 h1 .links { margin-left: 2em; font-size: 14px; font-weight: normal; }
-a, a:visited, .ui-widget-content a, .ui-widget-content a:visited { color: #004276; text-decoration: none; }
+#body a, #body a:visited { color: #004276; text-decoration: none; }
 .links a { margin-left: 0.2em; margin-right: 0.2em; }
-a:hover { color: #b3b3b3; text-decoration: underline; }
+#body a:hover { text-decoration: underline; }
 h2 { }
 .container, #playerContainer > div { overflow: hidden; }
 div.radiogroup { font-size: 0.8em; }
@@ -47,6 +47,9 @@ input[type="text"].watermark { color: #c0c0c0; }
 #buttonArea button .ui-button-text { padding: 0.8em 1.5em; }
 .winner { font-weight: bold; }
 .info { cursor: pointer; }
-#aboutDialog { display: none; }
+#aboutDialog, #playerDialog, #quickStartDialog { display: none; }
+#quickStartDialog hr { border: none; border-bottom: 1px dashed #ccc; }
+#quickName { padding: 0.45em; }
+#quickStart { float: right; }
 
 .tile, .noselect, #board td { -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }

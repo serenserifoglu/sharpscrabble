@@ -1,6 +1,6 @@
 ﻿(function ()
 {
-    var dialog, playerContainer, playerCount, radioCount, playerNameWatermark = 'Player Name';
+    var setupDialog, playerContainer, playerCount, radioCount, playerNameWatermark = 'Player Name';
 
     function addPlayerRow(removable, human)
     {
@@ -152,6 +152,7 @@
             return;
         }
 
+        //Custom setup dialog
         playerContainer = $('#playerContainer');
         playerCount = 0;
         radioCount = 0;
@@ -168,14 +169,43 @@
             if (validate())
             {
                 $('#setupForm').submit();
-                $('button', dialog.parent()).button('disable');
+                $('button', setupDialog.parent()).button('disable');
             }
             else
                 showError();
         };
-        dialog = $('#playerDialog').dialog(
+        setupDialog = $('#playerDialog').dialog(
         {
-            width: 'auto', modal: true, autoOpen: true, title: 'Choose Players', closeOnEscape: false, buttons: [{ text: 'Start Game', click: okClick}]
+            width: 'auto', modal: true, autoOpen: false, title: 'Custom Setup', closeOnEscape: false, buttons: [{ text: 'Start Game', click: okClick}]
+        });
+
+        //Quick setup dialog
+        var quickName = $('#quickName').focus(function ()
+        {
+            if ($(this).hasClass('watermark'))
+                $(this).removeClass('watermark').val('');
+        }).blur(function ()
+        {
+            if ($(this).val() == '')
+                $(this).addClass('watermark').val('Your Name');
+            else
+                $(this).removeClass('watermark');
+        });
+        $('#quickStart').click(function (e)
+        {
+            e.preventDefault();
+            if (!quickName.hasClass('watermark'))
+                $('#quickStartForm').submit();
+        });
+        var quickDialog = $('#quickStartDialog').dialog(
+        {
+            width: '350px', modal: true, autoOpen: true, title: 'Welcome to SharpScrabble!', closeOnEscape: false, open: function () { quickName.blur(); }
+        });
+        $('#customLink').click(function (e)
+        {
+            e.preventDefault();
+            quickDialog.dialog('close');
+            setupDialog.dialog('open');
         });
     });
 })();

@@ -531,7 +531,7 @@ $(document).ready(function ()
     //Board setup
     buttonArea = $('#buttonArea');
     consoleContainer = $('#console .inner');
-    $('button', buttonArea).button();
+    $('button').button();
     $('#board td').droppable(
     {
         drop: function (event, ui)
