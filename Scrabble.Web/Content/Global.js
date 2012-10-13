@@ -219,8 +219,15 @@ var invoker = (function ()
         },
         GameOver: function (message)
         {
-            showSummary('Game has ended!');
+            showSummary('Game has ended! Finalising scores.');
             console.log(message);
+            $.each(message.Payload.AllPlayers, function (i, p)
+            {
+                //update score and tiles.
+                updateScore(p.Id, p.Score);
+                refreshPlayerTiles(p.Id, p.Tiles, false);
+            });
+            showWinners(message.Payload.Winners);
         },
         NotifyTurn: function (message)
         {
@@ -234,16 +241,7 @@ var invoker = (function ()
         },
         TilesUpdated: function (message)
         {
-            var r = playerRack(message.PlayerId);
-            var baseLeft = r[0].offsetLeft;
-            var baseTop = r[0].offsetTop;
-            r.empty();
-            $.each(message.Payload, function (i, t)
-            {
-                var e = makeTile(t, isCurrentPlayer(message.PlayerId));
-                r.append(e);
-                positionTile(e, baseTop, baseLeft + 36 * i);
-            });
+            refreshPlayerTiles(message.PlayerId, message.Payload, isCurrentPlayer(message.PlayerId));
         },
         Debug: function () { }
     };
@@ -307,7 +305,105 @@ function showSummary(value)
 {
     console.log(value); 
     var cssClass = consoleContainer.children().length % 2 == 0 ? 'entry' : 'entry alt';
-    consoleContainer.prepend($('<div>').addClass(cssClass).html(value));  
+    consoleContainer.prepend($('<div>').addClass(cssClass).html(value));
+}
+
+function showWinners(winners)
+{
+    if (!winners || winners.length == 0)
+    {
+        console.log('winners array was empty');
+        return;
+    }
+
+    var winningScore = winners[0].Score;
+    var humanWin = any(winners, function (p) { return isCurrentPlayer(p.Id); });
+    var hasHuman = hasHumanPlayer();
+    var d = $('<div>');
+    if (winners.length == 1)
+    {
+        if (humanWin)
+        {
+            $('<p>').addClass('winner').text('Congratulations {0}, you won!'.format(winners[0].Name)).appendTo(d);
+            $('<p>').text('Your final score was {0}, nice job!', winningScore).appendTo(d);
+        }
+        else
+        {
+            $('<p>').addClass('winner').text('{0} has won with a final score of {1}.'.format(winners[0].Name, winningScore)).appendTo(d);
+            if (hasHuman)
+                $('<p>').text('Better luck next time.').appendTo(d);   
+        }
+    }
+    else
+    {
+        $('<p>').addClass('winner').text(joinNames() + ' have tied with a score of {0}!'.format(winningScore)).appendTo(d);
+        if (hasHuman)
+        {
+            if (humanWin)
+                $('<p>').text("You tied the computer, that's still pretty impressive!").appendTo(d);
+            else
+                $('<p>').text('Better luck next time.').appendTo(d);    
+        }
+    }
+    $('<p>').html("Check out the <a href='http://code.google.com/p/sharpscrabble/' target='_blank'>source code</a> if you're interested about how the game works!").appendTo(d);
+
+    $(d).dialog(
+    {
+        modal: true,
+        title: 'Game Over!',
+        buttons:
+        [
+            { text: 'New Game', click: function () { window.location.href = '/'; } },
+            { text: 'Ok', click: function () { $(this).dialog("close"); } }
+        ]
+    });
+}
+
+function any(array, fn)
+{
+    for (var i = 0, l = array.length; i < l; i++)
+    {
+        if (fn(array[i]))
+            return true;
+    }
+    return false;
+}
+
+function joinNames(players)
+{
+    if (!players || players.length == 0)
+        return '';
+
+    if (players.length == 1)
+        return players[0].Name;
+
+    var result = '';
+    var firstAdded = false;
+    var last = players.length - 1;
+    for (var i = 0; i < last; i++)
+    {
+        if (firstAdded)
+            result += ', ';
+        else
+            firstAdded = true;
+        result += players[i].Name;
+    }
+    result += ' and ' + players[last].Name;
+    return result;
+}
+
+function refreshPlayerTiles(who, tiles, canMove)
+{
+    var r = playerRack(who);
+    var baseLeft = r[0].offsetLeft;
+    var baseTop = r[0].offsetTop;
+    r.empty();
+    $.each(tiles, function (i, t)
+    {
+        var e = makeTile(t, canMove);
+        r.append(e);
+        positionTile(e, baseTop, baseLeft + 36 * i);
+    });
 }
 
 function makeTile(t, canMove)
@@ -346,21 +442,24 @@ function isCurrentPlayer(who)
     return who == currentPlayerIndex;
 }
 
+function hasHumanPlayer()
+{
+    return currentPlayerIndex != -1;
+}
+
 function cloneTile(t)
 {
     var clone = t.clone().removeClass('movable');
     var target = t.data('square');
     t.remove();
-    //$(clone).appendTo(target);
     appendToSquare(clone, target);
 }
 
 function putTile(x, y, tile)
 {
-    console.log('Putting {0} at ({1}, {2})'.format(tile.Letter, x, y));
+    //console.log('Putting {0} at ({1}, {2})'.format(tile.Letter, x, y));
     var element = makeTile(tile, false);
     var square = $('td:eq(' + x + ')', '#board tr:eq(' + y + ')');
-    //element.appendTo(square);
     appendToSquare(element, square);
     square.addClass('occupied');
 }

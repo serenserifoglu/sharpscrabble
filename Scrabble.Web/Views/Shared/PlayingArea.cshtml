@@ -15,20 +15,20 @@
             {
                 <div class="player" id="player-@p.Id">
                     <h3>@p.Name, Score: <span class="playerScore">0</span></h3>
-                    @if (p is HumanPlayer || !hasHuman)
-                    { 
-                        <div class="rack">
-                            @foreach(Tile t in p.Tiles)
-                            {
-                                String cssClass = "tile";
-                                if (p is HumanPlayer) { cssClass += " movable"; }
-                                <div class="@cssClass" data-letter="@t.Letter">
-                                    @t.Letter
-                                    <span class="tileScore">@t.Score</span>
-                                </div>    
-                            }
-                        </div>
-                    }
+                    <div class="rack">
+                        @if (p is HumanPlayer || !hasHuman)
+                        { 
+                                foreach(Tile t in p.Tiles)
+                                {
+                                    String cssClass = "tile";
+                                    if (p is HumanPlayer) { cssClass += " movable"; }
+                                    <div class="@cssClass" data-letter="@t.Letter">
+                                        @t.Letter
+                                        <span class="tileScore">@t.Score</span>
+                                    </div>    
+                                }
+                        }
+                    </div>
                 </div>
             }
         </div>
