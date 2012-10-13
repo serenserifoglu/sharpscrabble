@@ -205,22 +205,32 @@ var invoker = (function ()
             var wrapped = message.Payload;
             if (wrapped.What === TurnTypes.PlaceMove)
             {
-                if (message.PlayerId != currentPlayerIndex) //we already have the current player's tiles placed
+                var squares = [];
+                var needsPlacement = message.PlayerId != currentPlayerIndex; //to check if we already have the current player's tiles placed
+                $.each(wrapped.Payload, function (i, item)
                 {
-                    $.each(wrapped.Payload, function (i, item)
-                    {
-                        putTile(item.Key.X, item.Key.Y, item.Value);
-                    });
-                }
+                    var s;
+                    if (needsPlacement)
+                        s = putTile(item.Key.X, item.Key.Y, item.Value);
+                    else
+                        s = findSquare(item.Key.X, item.Key.Y); 
+                    squares.push(s);
+                });
+ 
                 updateScore(message.PlayerId, wrapped.NewScore);
+                var row = showSummary(wrapped.Summary);
+                row.data('squares', squares).addClass('info').hover(summaryOver, summaryOut);
             }
-            //else, nothing really to do (in all cases, we update the summary)
-            showSummary(wrapped.Summary);
+            else
+            {
+                //Not much to do here, other than show the summary.
+                showSummary(wrapped.Summary);
+            }
+
         },
         GameOver: function (message)
         {
             showSummary('Game has ended! Finalising scores.');
-            console.log(message);
             $.each(message.Payload.AllPlayers, function (i, p)
             {
                 //update score and tiles.
@@ -303,9 +313,27 @@ function updateScore(who, value)
 
 function showSummary(value)
 {
-    console.log(value); 
+    console.log(value);
     var cssClass = consoleContainer.children().length % 2 == 0 ? 'entry' : 'entry alt';
-    consoleContainer.prepend($('<div>').addClass(cssClass).html(value));
+    var row = $('<div>').addClass(cssClass).html(value);
+    consoleContainer.prepend(row);
+    return row;
+}
+
+function summaryOver()
+{
+    $.each($(this).data('squares'), function (i, e)
+    {
+        $(e).addClass('highlight');
+    });
+}
+
+function summaryOut()
+{
+    $.each($(this).data('squares'), function (i, e)
+    {
+        $(e).removeClass('highlight');
+    });    
 }
 
 function showWinners(winners)
@@ -434,7 +462,7 @@ function positionTile(e, top, left)
 
 function movable(what)
 {
-    return what.draggable({ containment: '#playingArea', revert: 'invalid', revertDuration: 150, stack: '.tile' /*snap: '#board td', snapMode: 'inner'*/ });
+    return what.draggable({ containment: '#playingArea', revert: 'invalid', revertDuration: 150, stack: '.tile' });
 }
 
 function isCurrentPlayer(who)
@@ -459,9 +487,15 @@ function putTile(x, y, tile)
 {
     //console.log('Putting {0} at ({1}, {2})'.format(tile.Letter, x, y));
     var element = makeTile(tile, false);
-    var square = $('td:eq(' + x + ')', '#board tr:eq(' + y + ')');
+    var square = findSquare(x, y);
     appendToSquare(element, square);
     square.addClass('occupied');
+    return square;
+}
+
+function findSquare(x, y)
+{
+    return $('td:eq(' + x + ')', '#board tr:eq(' + y + ')');
 }
 
 function appendToSquare(e, square)
