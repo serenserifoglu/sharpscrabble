@@ -49,7 +49,12 @@
 </head>
 
 <body id="body">
-    <h1>SharpScrabble</h1>
+    <h1>SharpScrabble <span class="links"><a href="/">New Game</a> | <a href="#" id="about">About</a> | <a href="http://code.google.com/p/sharpscrabble/" target="_blank">Source Code</a></span></h1>
     @RenderBody()
+    <div id="aboutDialog">
+        <p>SharpScrabble was written by <a href="https://plus.google.com/115401559150296838141/" target="_blank">Matt Simmons</a>, <a href="https://www.facebook.com/tim.goric" target="_blank">Tim Goric</a>, and <a href="https://www.facebook.com/wsanville" target="_blank">Will Sanville</a> during a course in Artificial Intelligence at <a href="http://www.ewp.rpi.edu/">RPI</a> in 2010. The original version was a C#/WPF application, and was ported to the web by Will Sanville in 2012.</p>
+        <p>The game logic is implemented entirely in F#, a functional programming language that runs on the .NET Framework. The web application itself is running ASP.NET MVC 3, and uses Web Sockets to send updates asynchronously.</p>
+        <p>For more information about the project, the source code, and for new or exsisting issues, see our <a href="http://code.google.com/p/sharpscrabble/" target="_blank">Google Code page</a>.</p>
+    </div>
 </body>
 </html>

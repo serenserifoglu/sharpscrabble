@@ -54,7 +54,7 @@ function simpleDialog(message)
         title: 'SharpScrabble',
         buttons:
         [
-            { text: 'Ok', click: function() { $(this).dialog("close"); } }
+            { text: 'Ok', click: function() { $(this).dialog('close'); } }
         ]
     });
 }
@@ -516,6 +516,18 @@ function disableButtons()
 
 $(document).ready(function ()
 {
+    var about = $('#aboutDialog').dialog(
+    {
+        title: 'About SharpScrabble', autoOpen: false, modal: true, width: '450px', buttons:
+        [
+            { text: 'Cool Story, Bro', click: function () { $(this).dialog('close'); } }
+        ]
+    });
+    $('#about').click(function (e)
+    {
+        e.preventDefault();
+        about.dialog('open');
+    });
     //Board setup
     buttonArea = $('#buttonArea');
     consoleContainer = $('#console .inner');
