@@ -521,7 +521,8 @@ $(document).ready(function ()
         title: 'About SharpScrabble', autoOpen: false, modal: true, width: '450px', buttons:
         [
             { text: 'Cool Story, Bro', click: function () { $(this).dialog('close'); } }
-        ]
+        ],
+        open: function () { $('a:first', $(this)).blur(); }
     });
     $('#about').click(function (e)
     {
