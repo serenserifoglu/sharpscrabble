@@ -85,6 +85,7 @@
         (isHuman ? humanCheck : computerCheck).attr('checked', 'checked');
         return $('<div>')
                     .addClass('radiogroup')
+                    .addClass('noselect')
                     .append(humanCheck)
                     .append(humanLabel)
                     .append(computerCheck)
