@@ -219,7 +219,7 @@ var invoker = (function ()
         },
         GameOver: function (message)
         {
-
+            showSummary('Game has ended!');
         },
         NotifyTurn: function (message)
         {

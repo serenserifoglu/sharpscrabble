@@ -178,7 +178,7 @@ and GameOutcome(winners:seq<Player>) =
 type ComputerPlayer(name:string, id:int) = 
     inherit Player(name, id)
 
-    [<DefaultValue>] val mutable private window : IDispWindow
+    [<DefaultValue>] val mutable private window : IGameWindow
     [<DefaultValue>] val mutable private provider : IIntelligenceProvider
     member this.Provider with get() = this.provider and set x = this.provider <- x
     [<DefaultValue>] val mutable private utility : TileList * Map<Coordinate, Tile> -> double
@@ -204,21 +204,21 @@ type ComputerPlayer(name:string, id:int) =
     member this.Window with get() = this.window and set w = this.window <- w
 
     override this.NotifyGameOver(o:GameOutcome) = 
-        if not(this.window = Unchecked.defaultof<IDispWindow>) then
+        if not(this.window = Unchecked.defaultof<IGameWindow>) then
             this.window.GameOver(o)
     override this.DrawTurn(t:Turn, p:Player, s:String) = 
-        if not(this.window = Unchecked.defaultof<IDispWindow>) then
+        if not(this.window = Unchecked.defaultof<IGameWindow>) then
             this.window.DrawTurn(t, p, s)
     override this.TilesUpdated() = 
-        if not(this.window = Unchecked.defaultof<IDispWindow>) then
+        if not(this.window = Unchecked.defaultof<IGameWindow>) then
             this.window.TilesUpdated()
-and IDispWindow = 
+
+and IGameWindow =
     abstract member NotifyTurn : unit -> unit
     abstract member DrawTurn : Turn * Player * String -> unit
-    abstract member Player : ComputerPlayer with get, set
+    abstract member Player : Player with get, set
     abstract member GameOver : GameOutcome -> unit
     abstract member TilesUpdated : unit -> unit
-and del1 = delegate of unit -> unit
 
 type HumanPlayer(name:string, id:int) =
     inherit Player(name, id)
@@ -238,13 +238,6 @@ type HumanPlayer(name:string, id:int) =
         base.TakeTurn(this.game, t)
     member this.IsHuman() = 
         true
-
-and IGameWindow =
-    abstract member NotifyTurn : unit -> unit
-    abstract member DrawTurn : Turn * Player * String -> unit
-    abstract member Player : HumanPlayer with get, set
-    abstract member GameOver : GameOutcome -> unit
-    abstract member TilesUpdated : unit -> unit
 
 type Board() = 
     let grid : Square[,] = Array2D.init ScrabbleConfig.BoardLength ScrabbleConfig.BoardLength (fun x y -> ScrabbleConfig.BoardLayout (Coordinate(x, y))) 

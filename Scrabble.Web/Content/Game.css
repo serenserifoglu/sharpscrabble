@@ -41,4 +41,4 @@ input[type="text"].watermark { color: #c0c0c0; }
 #buttonArea { display: none; }
 #buttonArea button .ui-button-text { padding: 0.8em 1.5em; }
 
-.tile, .noselect { -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
+.tile, .noselect, #board td { -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }

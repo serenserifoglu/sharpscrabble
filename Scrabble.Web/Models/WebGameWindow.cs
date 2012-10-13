@@ -9,7 +9,7 @@ namespace Scrabble.Web.Models
 {
     public class WebGameWindow : IGameWindow
     {
-        public WebGameWindow(HumanPlayer p)
+        public WebGameWindow(Player p)
         {
             this.Player = p;
         }
@@ -20,22 +20,22 @@ namespace Scrabble.Web.Models
             SendTurn(dynamicTurn, who, summary);
         }
 
-        private void SendTurn(Pass turn, Player who, String summary)
+        protected virtual void SendTurn(Pass turn, Player who, String summary)
         {
             Send(who.Id, MessageType.DrawTurn, new WrappedPayload("Pass", summary, who.Score));
         }
 
-        private void SendTurn(DumpLetters turn, Player who, String summary)
+        protected virtual void SendTurn(DumpLetters turn, Player who, String summary)
         {
             Send(who.Id, MessageType.DrawTurn, new WrappedPayload("DumpLetters", summary, who.Score));
         }
 
-        private void SendTurn(PlaceMove turn, Player who, String summary)
+        protected virtual void SendTurn(PlaceMove turn, Player who, String summary)
         {
             Send(who.Id, MessageType.DrawTurn, new WrappedPayload("PlaceMove", summary, who.Score, turn.Letters.ToList()));
         }
 
-        public void GameOver(GameOutcome value)
+        public virtual void GameOver(GameOutcome value)
         {
             Player[] winners = value.Winners.ToArray();
             Send(MessageType.GameOver, winners);
@@ -46,24 +46,24 @@ namespace Scrabble.Web.Models
             Send(MessageType.NotifyTurn, null);
         }
 
-        public HumanPlayer Player { get; set; }
+        public Player Player { get; set; }
 
         public void TilesUpdated()
         {
             Send(MessageType.TilesUpdated, Player.Tiles);
         }
 
-        private void Send(MessageType type, Object payload)
+        protected void Send(MessageType type, Object payload)
         {
             Send(Player.Id, type, payload);
         }
 
-        private void Send(int who, MessageType type, Object payload)
+        protected void Send(int who, MessageType type, Object payload)
         {
             Send(new SocketMessage(who, type, payload).ToJson());
         }
 
-        private void Send(String value)
+        protected void Send(String value)
         {
             String gameId = new SessionGameLoader().CurrentGameId();
             SocketManager.SendMessage(gameId, value);

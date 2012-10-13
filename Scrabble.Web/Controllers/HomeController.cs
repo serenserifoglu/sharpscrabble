@@ -4,7 +4,9 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Scrabble.Web.Models;
+using Scrabble.Core;
 using Scrabble.Core.Types;
+using Microsoft.FSharp.Core;
 using Microsoft.FSharp.Collections;
 
 namespace Scrabble.Web.Controllers
@@ -49,8 +51,22 @@ namespace Scrabble.Web.Controllers
         private IEnumerable<Player> MakePlayers(ICollection<PlayerModel> players)
         {
             int index = 0;
+            bool hasHuman = players.Any(model => model.Type == PlayerType.Human);
+            bool mainGameWindowAdded = false;
+
             foreach (PlayerModel model in players)
-                yield return model.ToPlayer(index++);
+            {
+                Player p = model.ToPlayer(index++, hasHuman, mainGameWindowAdded);
+                if (p is ComputerPlayer)
+                {
+                    ComputerPlayer com = (ComputerPlayer)p;
+                    mainGameWindowAdded = mainGameWindowAdded || com.Window != null;
+                }
+                else if (p is HumanPlayer)
+                    mainGameWindowAdded = true;
+
+                yield return p;
+            }
         }
     }
 }

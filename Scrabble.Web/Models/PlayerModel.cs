@@ -38,7 +38,7 @@ namespace Scrabble.Web.Models
             return Int32.TryParse(s, out value) && value >= 0;
         }
 
-        public Player ToPlayer(int index)
+        public Player ToPlayer(int index, bool hasHuman, bool mainGameWindowAdded)
         {
             if (Type == PlayerType.Human)
             {
@@ -49,6 +49,13 @@ namespace Scrabble.Web.Models
             else
             {
                 ComputerPlayer com = new ComputerPlayer(Name, index);
+                if (!hasHuman)
+                {
+                    if (!mainGameWindowAdded)
+                        com.Window = new WebGameWindow(com);
+                    else
+                        com.Window = new SecondaryWebGameWindow(com);
+                }
                 Setup.ApplySetupValues(GameVars.DictionaryInstance(), com, Provider, UtilityFunction);
                 return com;
             }

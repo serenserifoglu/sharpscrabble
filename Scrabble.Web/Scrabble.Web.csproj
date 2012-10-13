@@ -87,6 +87,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\GameVars.cs" />
+    <Compile Include="Models\SecondaryWebGameWindow.cs" />
     <Compile Include="Models\TileLocation.cs" />
     <Compile Include="Models\TurnInput.cs" />
     <Compile Include="Models\TurnResponse.cs" />
@@ -123,9 +124,7 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Scripts\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="Views\Home\Index.cshtml" />
   </ItemGroup>

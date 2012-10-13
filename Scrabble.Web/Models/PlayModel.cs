@@ -8,11 +8,12 @@ namespace Scrabble.Web.Models
 {
     public class PlayModel
     {
-        public PlayModel(String id, GameState s, int humanIndex)
+        public PlayModel(String id, GameState s, int humanIndex, String humanName)
         {
             GameId = id;
             State = s;
             HumanPlayerIndex = humanIndex;
+            HumanPlayerName = humanName;
         }
 
         public String GameId { get; private set; }
@@ -20,5 +21,7 @@ namespace Scrabble.Web.Models
         public GameState State { get; private set; }
 
         public int HumanPlayerIndex { get; private set; }
+
+        public String HumanPlayerName { get; private set; }
     }
 }

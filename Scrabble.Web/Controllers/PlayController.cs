@@ -15,7 +15,19 @@ namespace Scrabble.Web.Controllers
         {
             GameState state = GameState();
             HumanPlayer human = state.HumanPlayers.FirstOrDefault();
-            return View(new PlayModel(id, state, human != null ? human.Id : -1));
+            int humanIndex;
+            String humanName;
+            if (human != null)
+            {
+                humanIndex = human.Id;
+                humanName = human.Name;
+            }
+            else
+            {
+                humanIndex = -1;
+                humanName = null;
+            }
+            return View(new PlayModel(id, state, humanIndex, humanName));
         }
 
         public ActionResult Continue(String id)
