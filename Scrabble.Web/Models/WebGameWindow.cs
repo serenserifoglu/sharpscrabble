@@ -37,8 +37,7 @@ namespace Scrabble.Web.Models
 
         public virtual void GameOver(GameOutcome value)
         {
-            Player[] winners = value.Winners.ToArray();
-            Send(MessageType.GameOver, winners);
+            Send(MessageType.GameOver, new GameOutcomeSummary(value));
         }
 
         public void NotifyTurn()

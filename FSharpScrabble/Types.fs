@@ -172,8 +172,9 @@ type Player(name:string, id:int) =
     member this.IsHuman() = 
         false
 
-and GameOutcome(winners:seq<Player>) =
+and GameOutcome(winners:seq<Player>, allUpdatedPlayers:seq<Player>) =
     member this.Winners with get() = winners
+    member this.AllPlayers with get() = allUpdatedPlayers
 
 type ComputerPlayer(name:string, id:int) = 
     inherit Player(name, id)
@@ -305,7 +306,7 @@ and GameState(wordLookup:WordLookup, players:Player list) =
         players |> List.filter (fun p -> p.Score = max.Score) |> Seq.toList
     let FinishGame() =
         FinalizeScores()
-        let o = GameOutcome(WinningPlayers())
+        let o = GameOutcome(WinningPlayers(), players)
         players |> List.iter (fun p -> p.NotifyGameOver(o))
 
     //Interface implementation
@@ -371,7 +372,7 @@ and GameState(wordLookup:WordLookup, players:Player list) =
         if not(bag.IsEmpty) then
             let newTiles = bag.Take(n) //if there's less than n tiles in the bag, they get the remaining
             p.Tiles.AddRange(newTiles)
-            p.TilesUpdated()
+        p.TilesUpdated()
 
     //Public Members
     member this.Start() = 

@@ -220,6 +220,7 @@ var invoker = (function ()
         GameOver: function (message)
         {
             showSummary('Game has ended!');
+            console.log(message);
         },
         NotifyTurn: function (message)
         {
