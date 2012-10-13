@@ -325,7 +325,7 @@ function showWinners(winners)
         if (humanWin)
         {
             $('<p>').addClass('winner').text('Congratulations {0}, you won!'.format(winners[0].Name)).appendTo(d);
-            $('<p>').text('Your final score was {0}, nice job!', winningScore).appendTo(d);
+            $('<p>').text('Your final score was {0}, nice job!'.format(winningScore)).appendTo(d);
         }
         else
         {
