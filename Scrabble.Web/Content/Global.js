@@ -364,7 +364,7 @@ function showWinners(winners)
     }
     else
     {
-        $('<p>').addClass('winner').text(joinNames() + ' have tied with a score of {0}!'.format(winningScore)).appendTo(d);
+        $('<p>').addClass('winner').text(joinNames(winners) + ' have tied with a score of {0}!'.format(winningScore)).appendTo(d);
         if (hasHuman)
         {
             if (humanWin)
@@ -383,7 +383,8 @@ function showWinners(winners)
         [
             { text: 'New Game', click: function () { window.location.href = '/'; } },
             { text: 'Ok', click: function () { $(this).dialog("close"); } }
-        ]
+        ],
+        open: blurLinks
     });
 }
 
@@ -514,6 +515,11 @@ function disableButtons()
     $('button', buttonArea).button('disable');
 }
 
+function blurLinks()
+{
+    $('a:first', $(this)).blur();
+}
+
 $(document).ready(function ()
 {
     var about = $('#aboutDialog').dialog(
@@ -522,7 +528,7 @@ $(document).ready(function ()
         [
             { text: 'Cool Story, Bro', click: function () { $(this).dialog('close'); } }
         ],
-        open: function () { $('a:first', $(this)).blur(); }
+        open: blurLinks
     });
     $('#about').click(function (e)
     {
