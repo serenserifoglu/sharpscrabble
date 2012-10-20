@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>SharpScrabble</title>
+    <link href="@Url.Content("~/Content/Game.css")" rel="stylesheet" type="text/css" />
+    <link href="@Html.Raw(Request.IsSecureConnection ? "https" : "http")://ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/themes/blitzer/jquery-ui.css" rel="stylesheet" type="text/css" />
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/jquery-ui.min.js" type="text/javascript"></script>
+    <script src="@Url.Content("~/Content/Global.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Content/Setup.js")" type="text/javascript"></script>
+    <script type="text/javascript">
+        var ws;
+        function beginSocket()
+        {
+            if (ws)
+                return;
+
+            ws = new WebSocket('ws://@(Request.Url.Host):@System.Configuration.ConfigurationManager.AppSettings["WebSocketPort"]'); 
+            ws.onopen = function()
+            {
+                console.log('websocket opened');
+                continueGame();
+            };
+            ws.onmessage = function (e)
+            {
+                console.log('got data: ' + e.data);
+                invoker.add(e.data);
+            };
+            ws.onclose = function ()
+            {
+                console.log('websocket closed');
+            }
+        }
+
+        function continueGame()
+        {
+            $.get('/play/{0}/continue'.format(gameId()), function()
+            {
+                //do nothing
+            });     
+        }
+
+        function sendMessage(value)
+        {
+            if (ws)
+                ws.send(value);
+        }
+    </script>
+</head>
+
+<body id="body">
+    <h1>SharpScrabble <span class="links"><a href="/">New Game</a> | <a href="#" id="about">About</a> | <a href="http://code.google.com/p/sharpscrabble/" target="_blank">Source Code</a></span></h1>
+    @RenderBody()
+    <div id="aboutDialog">
+        <p>SharpScrabble was written by <a href="https://plus.google.com/115401559150296838141/" target="_blank">Matt Simmons</a>, <a href="https://www.facebook.com/tim.goric" target="_blank">Tim Goric</a>, and <a href="https://www.facebook.com/wsanville" target="_blank">Will Sanville</a> during a course in Artificial Intelligence at <a href="http://www.ewp.rpi.edu/">RPI</a> in 2010. The original version was a C#/WPF application, and was ported to the web by Will Sanville in 2012.</p>
+        <p>The game logic is implemented entirely in F#, a functional programming language that runs on the .NET Framework. The web application itself is running ASP.NET MVC 3, and uses Web Sockets to send updates asynchronously.</p>
+        <p>For more information about the project, the source code, and for new or exsisting issues, see our <a href="http://code.google.com/p/sharpscrabble/" target="_blank">Google Code page</a>.</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,22 @@
+﻿@{ Html.RenderPartial("PlayingArea"); }
+<div id="playerDialog">
+    @using (Html.BeginForm("Setup", "Home", FormMethod.Post, new { id = "setupForm" }))
+    {
+        <p class="intro">You may play versus one or more comptuer opponents, or choose all computer players to watch AI<br />strategies battle it out.</p>
+        <p class="container"><a href="#" id="addPlayer">Add Player</a></p>
+        <div id="playerContainer">
+                
+        </div>      
+    }    
+</div>
+<div id="quickStartDialog">
+    @using (Html.BeginForm("QuickStart", "Home", FormMethod.Post, new { id = "quickStartForm" }))
+    {
+        <p class="intro">To start playing right away, just enter your name. You'll be up against the toughest opponent!</p>
+        <p class="intro container">
+            <input id="quickName" name="quickName" type="text" /> <button id="quickStart">Quick Start</button>
+        </p>
+        <hr />
+        <p class="intro">You may also <a href="#" id="customLink">customize your opponent(s)</a>, or watch an <a href="@Url.Action("SampleAI", "Home")">AI vs. AI game</a> too!</p>
+    }    
+</div>

@@ -1,0 +1,55 @@
+﻿body { font-size: 0.75em; font-family: Arial,sans-serif; margin: 0; padding: 1em; }
+h1 { padding-left: 0.5em; padding-bottom: 0.5em; margin: 0; border-bottom: 1px solid #eee; color: #004276; }
+h1 .links { margin-left: 2em; font-size: 14px; font-weight: normal; }
+#body a, #body a:visited { color: #004276; text-decoration: none; }
+.links a { margin-left: 0.2em; margin-right: 0.2em; }
+#body a:hover { text-decoration: underline; }
+h2 { }
+.container, #playerContainer > div { overflow: hidden; }
+div.radiogroup { font-size: 0.8em; }
+div.radiogroup .ui-button-text-only .ui-button-text { padding: 0.25em 1em; }
+#playerContainer div.radiogroup, #playerContainer input[type="text"], #playerContainer select { float: left; margin-right: 10px; }
+.ui-dialog .intro { line-height: 1.5em; }
+#playerContainer input[type="text"] { width: 100px; }
+#playerContainer select { width: 160px; }
+#playerContainer div.row { margin-top: 1em; margin-bottom: 1em; }
+#playerContainer div.row.Human .com { display: none; }
+#addPlayer { outline: none; float: left; padding: 2px 0px 2px 20px; background-image: url('/Content/Images/add.png'); background-repeat: no-repeat; background-position: left center; }
+input[type="text"].watermark { color: #c0c0c0; }
+.radiogroup .ui-state-disabled[aria-pressed="true"] { opacity: 1 }
+#playerContainer a.remove { cursor: pointer; float: left; width: 20px; height: 20px; background-image: url('/Content/Images/cross.png'); background-repeat: no-repeat; background-position: center; }
+
+#board { border: 1px solid #000; }
+#board td, .tile, .heightFix { width: 32px; height: 32px; }
+#board td { border: 1px solid #ccc; padding: 0; }
+#board td.highlight { border: 1px solid #f00; }
+#board .doubleLetter { background-color: #9696ff; }
+#board .tripleLeter { background-color: #0000fe; }
+#board .doubleWord { background-color: #ff3c3c; }
+#board .tripleWord { background-color: #f00; }
+#playingArea #board td.tile-over { background-color: #ffd800; }
+#board .start { background-color: #ff3c3c; }
+.rack { width: 252px; height: 36px; }
+.tile { color: #333; background-color: #eee; text-align: center; position: absolute!important; font-weight: bold; font-size: 1.4em; line-height: 32px; user-select: none; float: left; }
+.tile.movable { cursor: pointer; }
+.tile .tileScore { position: absolute; right: 2px; bottom: 2px; font-size: 0.6em; line-height: 1em; }
+#board td .tile { position: relative!important; left: 0px!important; top: 0px!important; }
+#playingArea { margin-top: 2em; margin-left: 1em; position: relative; }
+.bottomRight { position: absolute; bottom: 0px; left: 566px; }
+#board, #players, #console { float: left; }
+#players, #console { margin-left: 2em; }
+#console .inner { height: 175px; width: 252px; overflow-y: scroll; border: 1px solid #ccc; }
+#console .entry { padding: 0.75em; color: #333; border-bottom: 1px solid #ccc; }
+#console .entry.first { border-bottom: none; }
+#console .entry.alt { background-color: #eee; }
+#players h2, #console h2 { margin-top: 0; }
+#buttonArea { display: none; }
+#buttonArea button .ui-button-text { padding: 0.8em 1.5em; }
+.winner { font-weight: bold; }
+.info { cursor: pointer; }
+#aboutDialog, #playerDialog, #quickStartDialog { display: none; }
+#quickStartDialog hr { border: none; border-bottom: 1px dashed #ccc; }
+#quickName { padding: 0.45em; }
+#quickStart { float: right; }
+
+.tile, .noselect, #board td { -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
