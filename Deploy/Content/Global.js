@@ -218,19 +218,19 @@ var invoker = (function ()
                 });
  
                 updateScore(message.PlayerId, wrapped.NewScore);
-                var row = showSummary(wrapped.Summary);
+                var row = showSummary(wrapped.Summary, message.When);
                 row.data('squares', squares).addClass('info').hover(summaryOver, summaryOut);
             }
             else
             {
                 //Not much to do here, other than show the summary.
-                showSummary(wrapped.Summary);
+                showSummary(wrapped.Summary, message.When);
             }
 
         },
         GameOver: function (message)
         {
-            showSummary('Game has ended! Finalising scores.');
+            showSummary('Game has ended! Finalising scores.', message.When);
             $.each(message.Payload.AllPlayers, function (i, p)
             {
                 //update score and tiles.
@@ -311,12 +311,33 @@ function updateScore(who, value)
     $('#player-{0} .playerScore'.format(who)).text(value);    
 }
 
-function showSummary(value)
+function showSummary(value, when)
 {
-    console.log(value);
-    var cssClass = consoleContainer.children().length % 2 == 0 ? 'entry' : 'entry alt';
-    var row = $('<div>').addClass(cssClass).html(value);
-    consoleContainer.prepend(row);
+    var added = false;
+    var row = $('<div>').addClass('entry').html(value).data('when', when);
+    //insert the message in order based on its timestamp (web socket messages get received in varying order)
+    for (var i = consoleContainer.children().length - 1; i >= 0; i--)
+    {
+        var element = $(consoleContainer.children()[i]);
+        var other = element.hasClass('first') ? 0 : element.data('when');
+        if (other > when)
+        {
+            console.log('inserting {0} after {1}'.format(when, other));
+            row.insertAfter(element);
+            added = true;
+            break;
+        }
+    }
+    if (!added) //otherwise, just insert the row first
+        consoleContainer.prepend(row);
+    //style things properly so rows alternate (ugh, this is lame, rows may have been reordered here)
+    $.each(consoleContainer.children(), function (i, e)
+    {
+        if (i % 2 == 0)
+            $(e).removeClass('alt');
+        else
+            $(e).addClass('alt');
+    });
     return row;
 }
 

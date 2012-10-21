@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<publishData>
+  <publishProfile publishUrl="D:\Users\Will\Documents\Visual Studio 2010\Projects\FSharpScrabble\Deploy-Temp" deleteExistingFiles="True" ftpAnonymousLogin="False" ftpPassiveMode="True" msdeploySite="" msdeploySiteID="" msdeployRemoteSitePhysicalPath="" msdeployAllowUntrustedCertificate="False" msdeploySkipExtraFilesOnServer="True" msdeployMarkAsApp="False" profileName="Deploy" publishMethod="FileSystem" replaceMatchingFiles="False" userName="" savePWD="False" userPWD="" SelectedForPublish="True">
+    <file relUrl="Content/Global.js" publishTime="10/20/2012 21:19:25" />
+    <file relUrl="Global.asax" publishTime="07/10/2012 20:17:59" />
+    <file relUrl="Views/_ViewStart.cshtml" publishTime="07/10/2012 20:17:59" />
+    <file relUrl="bin/log4net.dll" publishTime="04/18/2012 21:13:08" />
+    <file relUrl="bin/Scrabble.Web.pdb" publishTime="10/20/2012 22:03:01" />
+    <file relUrl="bin/SuperSocket.Facility.dll" publishTime="04/18/2012 21:13:08" />
+    <file relUrl="bin/SuperSocket.SocketEngine.dll" publishTime="04/18/2012 21:13:08" />
+    <file relUrl="Views/Shared/Error.cshtml" publishTime="07/10/2012 20:17:59" />
+    <file relUrl="bin/Scrabble.Core.pdb" publishTime="10/20/2012 21:44:02" />
+    <file relUrl="bin/SuperWebSocket.pdb" publishTime="09/18/2012 21:01:01" />
+    <file relUrl="bin/Scrabble.Core.dll" publishTime="10/20/2012 21:44:02" />
+    <file relUrl="bin/SuperWebSocketWeb.dll" publishTime="09/18/2012 21:09:15" />
+    <file relUrl="Views/Shared/EmptyBoard.cshtml" publishTime="10/09/2012 22:30:32" />
+    <file relUrl="App_Data/twl.txt" publishTime="07/10/2012 20:21:40" />
+    <file relUrl="bin/SuperWebSocketWeb.pdb" publishTime="09/18/2012 21:09:15" />
+    <file relUrl="bin/Scrabble.Web.dll" publishTime="10/20/2012 22:03:01" />
+    <file relUrl="bin/Newtonsoft.Json.dll" publishTime="04/18/2012 21:13:08" />
+    <file relUrl="bin/SuperSocket.Common.dll" publishTime="04/18/2012 21:13:08" />
+    <file relUrl="Views/Shared/_Layout.cshtml" publishTime="10/13/2012 17:05:13" />
+    <file relUrl="Content/Game.css" publishTime="10/13/2012 16:23:07" />
+    <file relUrl="Content/Setup.js" publishTime="10/13/2012 16:39:16" />
+    <file relUrl="Views/Home/Index.cshtml" publishTime="10/13/2012 16:30:41" />
+    <file relUrl="bin/SuperWebSocket.dll" publishTime="09/18/2012 21:01:01" />
+    <file relUrl="Content/Images/add.png" publishTime="07/17/2012 21:05:00" />
+    <file relUrl="Views/Play/Index.cshtml" publishTime="10/13/2012 09:47:40" />
+    <file relUrl="Views/Shared/PlayingArea.cshtml" publishTime="10/13/2012 12:01:19" />
+    <file relUrl="bin/SuperSocket.SocketBase.dll" publishTime="04/18/2012 21:13:08" />
+    <file relUrl="Content/Images/cross.png" publishTime="07/17/2012 21:05:07" />
+    <file relUrl="Views/Web.config" publishTime="07/10/2012 20:17:59" />
+    <file relUrl="Web.config" publishTime="10/20/2012 14:18:52" />
+  </publishProfile>
+</publishData>
