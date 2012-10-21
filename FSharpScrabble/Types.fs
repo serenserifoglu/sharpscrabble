@@ -187,7 +187,6 @@ type ComputerPlayer(name:string, id:int) =
     let mutable passes = 0
 
     override this.NotifyTurn(implementor) =
-        //NOTE: This is where the WPF dispatcher/threading stuff was. That's totally going to change now that this is going to be used in a web app.
         this.InvokeTurn(implementor)
     member this.InvokeTurn(implementor) =
         let turn = this.provider.Think(this.Tiles, this.utility)
