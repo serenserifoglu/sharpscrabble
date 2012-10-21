@@ -217,7 +217,7 @@ var invoker = (function ()
                     squares.push(s);
                 });
  
-                updateScore(message.PlayerId, wrapped.NewScore);
+                updateScore(message.PlayerId, wrapped.NewScore, message.When);
                 var row = showSummary(wrapped.Summary, message.When);
                 row.data('squares', squares).addClass('info').hover(summaryOver, summaryOut);
             }
@@ -234,7 +234,7 @@ var invoker = (function ()
             $.each(message.Payload.AllPlayers, function (i, p)
             {
                 //update score and tiles.
-                updateScore(p.Id, p.Score);
+                updateScore(p.Id, p.Score, message.When);
                 refreshPlayerTiles(p.Id, p.Tiles, false);
             });
             showWinners(message.Payload.Winners);
@@ -306,9 +306,13 @@ function playerRack(who)
     return $('#player-{0} .rack'.format(who));
 }
 
-function updateScore(who, value)
+function updateScore(who, value, when)
 {
-    $('#player-{0} .playerScore'.format(who)).text(value);    
+    var element = $('#player-{0} .playerScore'.format(who));
+    var existing = element.data('when') || -1; 
+    //make sure we don't update the score with a stale value
+    if (when > existing)
+        element.text(value).data('when', when);
 }
 
 function showSummary(value, when)
@@ -319,7 +323,7 @@ function showSummary(value, when)
     for (var i = consoleContainer.children().length - 1; i >= 0; i--)
     {
         var element = $(consoleContainer.children()[i]);
-        var other = element.hasClass('first') ? 0 : element.data('when');
+        var other = element.hasClass('first') ? -1 : element.data('when');
         if (other > when)
         {
             console.log('inserting {0} after {1}'.format(when, other));
