@@ -251,7 +251,7 @@ var invoker = (function ()
         },
         TilesUpdated: function (message)
         {
-            refreshPlayerTiles(message.PlayerId, message.Payload, isCurrentPlayer(message.PlayerId));
+            refreshPlayerTiles(message.PlayerId, message.Payload, isCurrentPlayer(message.PlayerId), message.When);
         },
         Debug: function () { }
     };
@@ -446,18 +446,23 @@ function joinNames(players)
     return result;
 }
 
-function refreshPlayerTiles(who, tiles, canMove)
+function refreshPlayerTiles(who, tiles, canMove, when)
 {
     var r = playerRack(who);
-    var baseLeft = r[0].offsetLeft;
-    var baseTop = r[0].offsetTop;
-    r.empty();
-    $.each(tiles, function (i, t)
+    var existing = r.data('when') || -1;
+    if (when > existing)
     {
-        var e = makeTile(t, canMove);
-        r.append(e);
-        positionTile(e, baseTop, baseLeft + 36 * i);
-    });
+        r.data('when', when);
+        var baseLeft = r[0].offsetLeft;
+        var baseTop = r[0].offsetTop;
+        r.empty();
+        $.each(tiles, function (i, t)
+        {
+            var e = makeTile(t, canMove);
+            r.append(e);
+            positionTile(e, baseTop, baseLeft + 36 * i);
+        });
+    }
 }
 
 function makeTile(t, canMove)

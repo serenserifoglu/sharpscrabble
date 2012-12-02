@@ -25,7 +25,7 @@ input[type="text"].watermark { color: #c0c0c0; }
 #board td.highlight { border: 1px solid #f00; }
 #board .doubleLetter { background-color: #9696ff; }
 #board .tripleLeter { background-color: #0000fe; }
-#board .doubleWord { background-color: #ff3c3c; }
+#board .doubleWord { background-color: #ff9999; }
 #board .tripleWord { background-color: #f00; }
 #playingArea #board td.tile-over { background-color: #ffd800; }
 #board .start { background-color: #ff3c3c; }
